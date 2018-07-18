@@ -18,3 +18,8 @@ test_that("test parameter_choose", {
   # pixset has same dimensions as img.g
   expect_equal(dim(img.g), dim(px))
 })
+
+test_that('function works properly in app', {
+  app_dir <- system.file('colocr_app', package = 'colocr')
+  shinytest::testApp(app_dir)
+})
