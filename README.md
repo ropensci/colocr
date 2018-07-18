@@ -6,7 +6,14 @@
 
 An R package for conducting co-localization analysis.
 
-Install package from github
+## Overview
+
+A few R packages are available for conducting image analysis, which is a very wide topic. As a result, some of use might feel at loss when all what they want to do is a simple co-localization calculations on a small number of microscopy images. This package provides a simple straight forward workflow for loading images, choosing regions of interest (ROIs) and calculating colocalization statistics. Included in the package, is a [shiny app](https://shiny.rstudio.com) that can be invoked locally to interactively select the regions of interest in a semi-automatic way. The package is based on the infamous [`imager`](https://cran.r-project.org/web/packages/imager/vignettes/gettingstarted.html).
+
+
+## Installin `colocr`
+
+The package is under development and not yet on [CRAN](https://cran.r-project.org). To install the package from [github](https://github.com/MahShaaban/colocr) use the following.
 
 ```r
 devtools::install_github('MahShaaban/colocr')
@@ -34,7 +41,8 @@ img.g <- grayscale(img)
 px <- parameter_choose(img.g, threshold = 90)
 
 # highlight chosen region of interest
-plot(img)
+par(mar=rep(0, 4))
+plot(img, axes = FALSE)
 highlight(px)
 ```
 
@@ -46,6 +54,24 @@ run_app()
 ```
 
 The reset of the anlysis depends on the particular kind of images. Now, `colocr`
-implements two simple colocalizations statistics; Pearson's Coefficeint Correlation (PCC) and the Manders Overlap Coefficient (POC).
+implements two simple colocalizations statistics; Pearson's Coefficeint Correlation [(PCC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013) and the Manders Overlap Coefficient [(MOC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013).
 
-Try the shiny app [here](https://mahshaaban.shinyapps.io/colocr_app/)
+To apply both measures of correlation, we first load the images from the two channels and call `coloc_test`.
+
+```r
+fl <- system.file('extdata', 'Image0001_C002.jpg', package = 'colocr')
+img1 <- load.image(fl)
+
+fl <- system.file('extdata', 'Image0001_C003.jpg', package = 'colocr')
+img2 <- load.image(fl)
+
+corr <- coloc_test(img1, img2, px, type = 'all')
+
+corr$p  # PCC
+corr$r  # MPC
+```
+
+The same analysis and more can be conducted using a web interface for the package available [here](https://mahshaaban.shinyapps.io/colocr_app/)
+## Acknowledgement
+
+## More

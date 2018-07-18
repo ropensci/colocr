@@ -1,10 +1,11 @@
 ---
 title: "Using colocr"
+subtitle: "An R package for conducting co-localization analysis"
 author: "Mahmoud Shaaban"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Using colocr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -12,17 +13,21 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.align = 'center'
 )
 ```
 
-# colocr
+## Overview
 
-An R package for conducting co-localization analysis.
+A few R packages are available for conducting image analysis, which is a very wide topic. As a result, some of use might feel at loss when all what they want to do is a simple co-localization calculations on a small number of microscopy images. This package provides a simple straight forward workflow for loading images, choosing regions of interest (ROIs) and calculating colocalization statistics. Included in the package, is a [shiny app](https://shiny.rstudio.com) that can be invoked locally to interactively select the regions of interest in a semi-automatic way. The package is based on the infamous [`imager`](https://cran.r-project.org/web/packages/imager/vignettes/gettingstarted.html).
 
-Install package from github
 
-```{r, eval=FALSE}
+## Installin `colocr`
+
+The package is under development and not yet on [CRAN](https://cran.r-project.org). To install the package from [github](https://github.com/MahShaaban/colocr) use the following.
+
+```{r install, eval=FALSE}
 devtools::install_github('MahShaaban/colocr')
 ```
 
@@ -34,7 +39,7 @@ Then, apply the appropriate parameters for choosing the regions of interest
 using the `parameter_choose`. Finally, check the appropriatness of the 
 parameters by highlighting the ROIs on the image.
 
-```{r}
+```{r getting_started, fig.width=5,fig.width=5}
 # load libraries
 library(imager)
 library(colocr)
@@ -48,18 +53,141 @@ img.g <- grayscale(img)
 px <- parameter_choose(img.g, threshold = 90)
 
 # highlight chosen region of interest
-plot(img)
+par(mar=rep(0, 4))
+plot(img, axes = FALSE)
 highlight(px)
 ```
 
 The same can be acheived interactively using an accompanying **shiny** app.
 To launch the app run.
 
-```{r, eval=FALSE}
+```{r run_app, eval=FALSE}
 run_app()
 ```
 
 The reset of the anlysis depends on the particular kind of images. Now, `colocr`
-implements two simple colocalizations statistics; Pearson's Coefficeint Correlation (PCC) and the Manders Overlap Coefficient (POC).
+implements two simple colocalizations statistics; Pearson's Coefficeint Correlation [(PCC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013) and the Manders Overlap Coefficient [(MOC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013).
 
-Try the shiny app [here](https://mahshaaban.shinyapps.io/colocr_app/)
+To apply both measures of correlation, we first load the images from the two channels and call `coloc_test`.
+
+```{r call_coloc_test}
+fl <- system.file('extdata', 'Image0001_C002.jpg', package = 'colocr')
+img1 <- load.image(fl)
+
+fl <- system.file('extdata', 'Image0001_C003.jpg', package = 'colocr')
+img2 <- load.image(fl)
+
+corr <- coloc_test(img1, img2, px, type = 'all')
+
+corr$p  # PCC
+corr$r  # MPC
+```
+
+The same analysis and more can be conducted using a web interface for the package available [here](https://mahshaaban.shinyapps.io/colocr_app/)
+
+## Detailed Example
+
+The following example uses images from the [DU145](https://en.wikipedia.org/wiki/DU145) prostate cancer cell line. In this experiment, the cell line was treated with probes for two proteins [RKIP](https://en.wikipedia.org/wiki/Raf_kinase_inhibitor_protein) and [LC3](https://en.wikipedia.org/wiki/MAP1LC3B). The aim of this experiment is to determine, how much of the two proteins are co-localized or co-distrubuted in the particular cell line. The following three images represent the same image viewed in red [(LC3)](https://en.wikipedia.org/wiki/MAP1LC3B), green [(RKIP)](https://en.wikipedia.org/wiki/Raf_kinase_inhibitor_protein) channels and merge.  
+
+```{r show_images, fig.width=7, fig.height=2.5}
+# load required libraries
+library(imager)
+library(colocr)
+
+# load images
+img <- load.image(system.file('extdata', 'Image0001_.jpg', package = 'colocr'))       # merge
+img1 <- load.image(system.file('extdata', 'Image0001_C002.jpg', package = 'colocr'))  # red
+img2 <- load.image(system.file('extdata', 'Image0001_C003.jpg', package = 'colocr'))  # green
+
+# show images
+par(mfrow = c(1,3), mar = rep(1,4))
+plot(img, axes = FALSE, main = 'Merged')
+plot(img1, axes = FALSE, main = 'RKIP')
+plot(img2, axes = FALSE, main = 'LC3')
+```
+
+The `colocr` package provides a straight forward workflow for determining the amount of colocalization. This workflow consists of two steps only:
+
+  * Choosing regions of interest (ROI)
+  * Calculating the correlation between the dyes from different channels
+
+In addition the package provide functions to visualize these steps to make sure the choice of ROI is appropriate and that the calculated correlations are correct.
+
+In the following section, we will explain the functionionality of the package by calling four different functions in order:
+
+  * `parameter_choose`
+  * `parameter_show`
+  * `coloc_test`
+  * `coloc_show`
+
+### Choosing ROIs
+
+The function `parameter_choose` relies on different algorithms from the `imager` package. However, using the functions to select the ROIs doesn't require any background knowledge in the workings of the algorithms and can be done through trying different parameters and choosing the most appropriate ones. The details of these parameters are documented in the function help page `?parameter_choose`.
+
+```{r call_parameter_choos}
+# change the merge image to gray scale
+img.g <- grayscale(img)
+
+# choose parameters
+px <- parameter_choose(img.g, threshold = 90)
+
+# show pixset object structure
+str(px)
+```
+
+Now, to make sure these parameters are appropriately encampasing the ROIs, call the `parameter_show` to visualize side by side the original merge picture, a low resuliontion picture of the ROI and the images from the two different channels highlighted by the ROIs.
+
+```{r call_parameter_show, fig.width=7, fig.height=7}
+# show parameters for selecting ROIs
+par(mfrow=c(1,2), mar = rep(1,4))
+parameter_show(img, img1, img2, px)
+```
+
+Arguable, this is the most time consuming step in this kind of analysis. Usually, one has to do this seleciton by hand when using image analysis software such as `imageJ`. This package only semiautomate this step, but still relies on the user's judgment on which parameters to use and whether or not the selected ROIs are appropriate. To make life easier, the package provides a simple shiny app to interactively determine these parameters and use it in the rest of the workflow. To launch the app run the following
+
+```{r run_app2, eval=FALSE}
+# run the shiny app
+run_app()
+```
+
+And here is a screen shot from the app after applying the sampe parameters used previously.
+
+```{r app_screenshot, echo=FALSE, fig.width=7}
+# show the screen shot of the shiny app
+app_ss <- system.file('colocr_app/tests/mytest-expected', '001.png', package = 'colocr')
+knitr::include_graphics(app_ss)
+```
+
+Although this app was designed to be invoked from within the package to help the users to choose the selection parameters interactively. It's a stand alone app and can run the same analysis descriped here. The app can be accessed from the web [here](https://mahshaaban.shinyapps.io/colocr_app/)
+
+### Calculating Correlation Statistics
+
+The two different statistics implemented in this package are the PCC and MOC. The formal description and the rational for using them is detailed elsewhere.
+
+Invoking the test is a one function call. 
+
+```{r call_coloc_test2}
+# Calculate the correlation statistics
+corr <- coloc_test(img1, img2, px, 
+                   type = 'all', num = TRUE)
+
+corr$p  # PCC
+corr$r  # MOC
+```
+
+The results can be similarily visualized to get a senese of the accuracy or the appropriatness of the values.
+
+```{r call_coloc_show, fig.width=7, fig.height=3}
+# show the scatter and density of the pixel values
+coloc_show(corr)
+```
+
+## Description of the co-localization statistics
+
+### PCC
+
+### MOC
+
+## Acknowledgement
+
+## More
