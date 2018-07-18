@@ -41,7 +41,7 @@ test_that('parameter_show works', {
   expect_identical(class(p), 'list')
 })
 
-test_that('function works properly in app', {
-  app_dir <- system.file('colocr_app', package = 'colocr')
-  shinytest::testApp(app_dir)
-})
+#test_that('function works properly in app', {
+#  app_dir <- system.file('colocr_app', package = 'colocr')
+#  shinytest::testApp(app_dir)
+#})
