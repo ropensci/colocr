@@ -1,0 +1,20 @@
+context("parameter_choose.R")
+
+test_that("test parameter_choose", {
+  # load libraries
+  library(imager)
+
+  # load images
+  fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
+  img <- load.image(fl)
+  img.g <- grayscale(img)
+
+  # choose parameters
+  px <- parameter_choose(img.g, threshold = 90)
+
+  # returns the correct object
+  expect_true(is.pixset(px))
+
+  # pixset has same dimensions as img.g
+  expect_equal(dim(img.g), dim(px))
+})
