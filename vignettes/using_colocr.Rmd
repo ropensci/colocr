@@ -22,7 +22,7 @@ An R package for conducting co-localization analysis.
 
 Install package from github
 
-```{r, echo=FALSE}
+```{r, eval=FALSE}
 devtools::install_github('MahShaaban/colocr')
 ```
 
@@ -55,7 +55,7 @@ highlight(px)
 The same can be acheived interactively using an accompanying **shiny** app.
 To launch the app run.
 
-```{r}
+```{r, eval=FALSE}
 run_app()
 ```
 
