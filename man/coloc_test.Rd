@@ -2,27 +2,28 @@
 % Please edit documentation in R/coloc.R
 \name{coloc_test}
 \alias{coloc_test}
-\title{Test colocalization}
+\title{Test Co-localization}
 \usage{
 coloc_test(img1, img2, px, type = "pearsons", num = FALSE)
 }
 \arguments{
-\item{img1}{An object of class cimg}
+\item{img1}{An object of class \code{\link[imager]{cimg}}}
 
-\item{img2}{An object of class cimg}
+\item{img2}{An object of class \code{\link[imager]{cimg}}}
 
-\item{px}{An object of class pixset}
+\item{px}{An object of class \code{\link[imager]{pixset}}}
 
-\item{type}{A character; pearson's, spearman or all}
+\item{type}{A \code{character}; "pearson's", "spearman" or "all"}
 
-\item{num}{A logical; return the numeric values of the images or not.}
+\item{num}{A \code{logical}; return the \code{numeric} values of the images
+or not}
 }
 \value{
-A list of one or two correlations measures and two numerics when num
-is TRUE
+A \code{list} of one or two correlations measures and two
+\code{numeric}s when num is TRUE
 }
 \description{
-Test colocalization
+Perform co-localization test statistics.
 }
 \examples{
 # load libraries

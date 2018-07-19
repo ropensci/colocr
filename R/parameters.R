@@ -1,15 +1,16 @@
-#' Choose Parameter for selecting ROI
+#' Choose Parameter for selecting ROIs
 #'
-#' Choose the different parameter to select the regions of interest (ROI)
+#' Choose the different parameters to select the regions of interest (ROI)
 #'
 #' @param img An object of class \code{\link[imager]{cimg}}
-#' @param threshold A numeric to be passed to threshold
-#' @param shrink A numeric to be passed to shrink
-#' @param grow A numeric to be passed to grow
-#' @param fill A numeric to be passed to fill
-#' @param clean A numeric to be passed to clean
+#' @param threshold A \code{numeric} to be passed to
+#' \code{\link[imager]{threshold}}
+#' @param shrink A \code{numeric} to be passed to \code{\link[imager]{shrink}}
+#' @param grow A \code{numeric} to be passed to \code{\link[imager]{grow}}
+#' @param fill A \code{numeric} to be passed to \code{\link[imager]{fill}}
+#' @param clean A \code{numeric} to be passed to \code{\link[imager]{clean}}
 #'
-#' @return A pixset
+#' @return A \code{\link[imager]{pixset}}
 #'
 #' @examples
 #' # load libraries
@@ -53,7 +54,9 @@ parameter_choose <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
   px.m
 }
 
-#' Show the selected ROI for set of parameters
+#' Show the selected ROIs
+#'
+#' Show/highlight the selected ROIs for a set of parameters
 #'
 #' @inheritParams parameter_choose
 #' @inheritParams coloc_test

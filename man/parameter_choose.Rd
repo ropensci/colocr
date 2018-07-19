@@ -2,7 +2,7 @@
 % Please edit documentation in R/parameters.R
 \name{parameter_choose}
 \alias{parameter_choose}
-\title{Choose Parameter for selecting ROI}
+\title{Choose Parameter for selecting ROIs}
 \usage{
 parameter_choose(img, threshold, shrink = 5, grow = 5, fill = 5,
   clean = 5)
@@ -10,21 +10,22 @@ parameter_choose(img, threshold, shrink = 5, grow = 5, fill = 5,
 \arguments{
 \item{img}{An object of class \code{\link[imager]{cimg}}}
 
-\item{threshold}{A numeric to be passed to threshold}
+\item{threshold}{A \code{numeric} to be passed to
+\code{\link[imager]{threshold}}}
 
-\item{shrink}{A numeric to be passed to shrink}
+\item{shrink}{A \code{numeric} to be passed to \code{\link[imager]{shrink}}}
 
-\item{grow}{A numeric to be passed to grow}
+\item{grow}{A \code{numeric} to be passed to \code{\link[imager]{grow}}}
 
-\item{fill}{A numeric to be passed to fill}
+\item{fill}{A \code{numeric} to be passed to \code{\link[imager]{fill}}}
 
-\item{clean}{A numeric to be passed to clean}
+\item{clean}{A \code{numeric} to be passed to \code{\link[imager]{clean}}}
 }
 \value{
-A pixset
+A \code{\link[imager]{pixset}}
 }
 \description{
-Choose the different parameter to select the regions of interest (ROI)
+Choose the different parameters to select the regions of interest (ROI)
 }
 \examples{
 # load libraries

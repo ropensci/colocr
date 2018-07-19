@@ -2,21 +2,21 @@
 % Please edit documentation in R/parameters.R
 \name{parameter_show}
 \alias{parameter_show}
-\title{Show the selected ROI for set of parameters}
+\title{Show the selected ROIs}
 \usage{
 parameter_show(img, img1, img2, px)
 }
 \arguments{
 \item{img}{An object of class \code{\link[imager]{cimg}}}
 
-\item{img1}{An object of class cimg}
+\item{img1}{An object of class \code{\link[imager]{cimg}}}
 
-\item{img2}{An object of class cimg}
+\item{img2}{An object of class \code{\link[imager]{cimg}}}
 
-\item{px}{An object of class pixset}
+\item{px}{An object of class \code{\link[imager]{pixset}}}
 }
 \description{
-Show the selected ROI for set of parameters
+Show/highlight the selected ROIs for a set of parameters
 }
 \examples{
 # load libraries

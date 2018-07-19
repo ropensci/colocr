@@ -1,13 +1,16 @@
-#' Test colocalization
+#' Test Co-localization
 #'
-#' @param img1 An object of class cimg
-#' @param img2 An object of class cimg
-#' @param px An object of class pixset
-#' @param type A character; pearson's, spearman or all
-#' @param num A logical; return the numeric values of the images or not.
+#' Perform co-localization test statistics.
 #'
-#' @return A list of one or two correlations measures and two numerics when num
-#' is TRUE
+#' @param img1 An object of class \code{\link[imager]{cimg}}
+#' @param img2 An object of class \code{\link[imager]{cimg}}
+#' @param px An object of class \code{\link[imager]{pixset}}
+#' @param type A \code{character}; "pearson's", "spearman" or "all"
+#' @param num A \code{logical}; return the \code{numeric} values of the images
+#' or not
+#'
+#' @return A \code{list} of one or two correlations measures and two
+#' \code{numeric}s when num is TRUE
 #'
 #' @examples
 #' # load libraries
