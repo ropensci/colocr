@@ -5,6 +5,7 @@
 #' @param img1 An object of class \code{\link[imager]{cimg}}
 #' @param img2 An object of class \code{\link[imager]{cimg}}
 #' @param px An object of class \code{\link[imager]{pixset}}
+#' @param labels A \code{data.frame} of three columns; x, y and value.
 #' @param type A \code{character}; "pearson's", "spearman" or "all"
 #' @param num A \code{logical}; return the \code{numeric} values of the images
 #' or not
@@ -35,7 +36,7 @@
 #' @importFrom stats cor
 #'
 #' @export
-coloc_test <- function(img1, img2, px, type = 'pearsons', num = FALSE) {
+coloc_test <- function(img1, img2, px, labels, type = 'pearsons', num = FALSE) {
   if(!is.cimg(img1)) {
     stop('img1 should be of class cimg.')
   }
@@ -64,9 +65,16 @@ coloc_test <- function(img1, img2, px, type = 'pearsons', num = FALSE) {
     stop('type takes one of these values; pearsons, spearman or all')
   }
 
+  # use labels to subset images when provided
+  if(!missing(labels)) {
+    ind <- as.cimg(labels)
+  } else {
+    ind <- px
+  }
+
   # subset and change images to numeric
-  img1.num <- as.numeric(img1[px])
-  img2.num <- as.numeric(img2[px])
+  img1.num <- as.numeric(img1.g[ind])
+  img2.num <- as.numeric(img2.g[ind])
 
   # calculate correlations
   corr <- switch (type,
@@ -81,7 +89,11 @@ coloc_test <- function(img1, img2, px, type = 'pearsons', num = FALSE) {
     corr$channel1 = img1.num
     corr$channel2 = img2.num
   }
-
+  if(!missing(labels)) {
+    corr$labels = labels$value
+  } else if(missing(labels) && num){
+    corr$labels <- rep(1, length(corr$channel1))
+  }
   # retrun corr
   return(corr)
 }
@@ -114,8 +126,12 @@ coloc_test <- function(img1, img2, px, type = 'pearsons', num = FALSE) {
 #' # call coloc_show
 #' coloc_show(corr)
 #'
-#' @importFrom graphics par plot lines
+#' @importFrom dplyr bind_cols
+#' @importFrom ggplot2 ggplot geom_point aes theme_bw theme labs geom_density
+#' @importFrom tidyr gather
+#' @importFrom stats setNames
 #' @importFrom stats density
+#' @importFrom cowplot plot_grid
 #'
 #' @export
 coloc_show <- function(corr) {
@@ -125,11 +141,23 @@ coloc_show <- function(corr) {
   if(length(corr) < 3) {
     stop('make sure to call coloc_test with num == TRUE.')
   }
-  par(mfrow = c(1,2))
-  plot(corr$channel1,
-       corr$channel2,
-       xlab = 'Channel One', ylab = 'Channel Two', main = '')
 
-  plot(density(corr$channel1), col = 'blue', main = '')
-  lines(density(corr$channel2), col = 'red')
+  df <- bind_cols(channel1 = corr$channel1,
+                  channel2 = corr$channel2,
+                  labels = corr$labels)
+  plot_grid(ggplot(df) +
+              geom_point(aes(x = channel1, y = channel2, color = as.factor(labels))) +
+              theme_bw() +
+              theme(legend.position = 'top') +
+              labs(x = 'Channel One', y = 'Channel Two',
+                   color = 'ROI'),
+
+            df %>%
+              setNames(c('One', 'Two', 'labels')) %>%
+              gather(channel, value, -labels) %>%
+              ggplot() +
+              geom_density(aes(value, group = channel, color = channel)) +
+              theme_bw() +
+              theme(legend.position = 'top') +
+              labs(x = 'Value', y = 'Count', color = 'Channel'))
 }

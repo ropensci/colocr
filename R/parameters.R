@@ -83,10 +83,11 @@ parameter_choose <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
 #' parameter_show(img, img1, img2, px)
 #'
 #' @importFrom imager highlight
-#' @importFrom graphics par plot
+#' @importFrom graphics par plot text
+#' @importFrom stats median
 #'
 #' @export
-parameter_show <- function(img, img1, img2, px) {
+parameter_show <- function(img, img1, img2, px, labels) {
   par(mfrow = c(2,2), mar=rep(1, 4))
 
   # merge image
@@ -99,6 +100,21 @@ parameter_show <- function(img, img1, img2, px) {
        axes = FALSE,
        main = 'Pixel Set')
 
+  # add labels when TRUE
+  if(!missing(labels)) {
+    if(!is.data.frame(labels)) {
+      stop('labels needs to be a data.frame of 3 columns; x, y and value.')
+    }
+
+    px <- as.cimg(labels)
+
+    px.labs <- labels %>%
+      group_by(value) %>%
+      summarise_all(median)
+
+    text(px.labs$x, px.labs$y, labels = px.labs$value, col = 'yellow')
+  }
+
   # channel one highlighted
   plot(img1,
        axes = FALSE,
@@ -110,4 +126,35 @@ parameter_show <- function(img, img1, img2, px) {
        axes = FALSE,
        main = 'Channel Two')
   highlight(px)
+}
+
+#' Make labels data.frame
+#'
+#' @param px An object of class \code{\link[imager]{pixset}}
+#' @param tolerance A \code{numeric} to be passed to \code{\link[imager]{label}}
+#' @param n A \code{numeric} of the number of regions of interest
+#'
+#' @return A \code{data.frame} of three columns x, y and value.
+#'
+#' @importFrom imager label
+#' @importFrom dplyr filter group_by summarise arrange desc mutate full_join select
+#' @importFrom magrittr %>%
+#'
+#' @export
+labels_add <- function(px, tolerance = .1, n = 1) {
+  px.labs <- label(px, tolerance = tolerance) %>%
+    as.data.frame()
+
+  df <- px.labs %>%
+    filter(value != 0) %>%
+    group_by(value) %>%
+    summarise(n = n()) %>%
+    arrange(desc(n)) %>%
+    mutate(id = 1:n()) %>%
+    full_join(px.labs) %>%
+    mutate(value = id) %>%
+    select(value, x, y) %>%
+    filter(value <= n)
+
+  return(df)
 }

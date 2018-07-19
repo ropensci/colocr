@@ -1,36 +1,55 @@
-# load library
+# load required libraries
 library(imager)
+library(colocr)
 
-# read image
-img <- load.image('data-raw/MAP1LC3B/Image0003.jpg.frames/Image0003_.jpg')
+# load images
+img <- load.image(system.file('extdata', 'Image0001_.jpg', package = 'colocr'))       # merge
+img1 <- load.image(system.file('extdata', 'Image0001_C002.jpg', package = 'colocr'))  # red
+img2 <- load.image(system.file('extdata', 'Image0001_C003.jpg', package = 'colocr'))  # green
 
-# change to gray scale
+# show images
+#par(mfrow = c(1,3), mar = rep(1,4))
+#plot(img, axes = FALSE, main = 'Merged')
+#plot(img1, axes = FALSE, main = 'RKIP')
+#plot(img2, axes = FALSE, main = 'LC3')
+
+# change the merge image to gray scale
 img.g <- grayscale(img)
 
-# threshold image
-img.t <- threshold(img.g, '90%')
+# choose parameters
+px <- parameter_choose(img.g, threshold = 90)
 
-# make pixset
-px <- as.pixset(1 - img.t)
+# show pixset object structure
+str(px)
 
-# modify pixset
-px.m <- px %>%
-  shrink(5) %>%
-  fill(5) %>%
-  clean(10)
+labs.df <- labels_add(px, n = 7)
 
-# load colored images
-img2 <- load.image('data-raw/MAP1LC3B/Image0003.jpg.frames/Image0003_C002.jpg')
-img3 <- load.image('data-raw/MAP1LC3B/Image0003.jpg.frames/Image0003_C003.jpg')
+# show parameters for selecting ROIs
+par(mfrow=c(1,2), mar = rep(1,4))
+parameter_show(img, img1, img2, px, labels = labs.df)
 
-# highlight rois
+# Calculate the correlation statistics
+corr <- coloc_test(img1, img2, px, labels = labs.df,
+                   type = 'all', num = TRUE)
+
+corr$p  # PCC
+corr$r  # MOC
+
+# show the scatter and density of the pixel values
+coloc_show(corr)
+
+
+imname <- system.file('extdata/parrots.png',package='imager')
+im <- load.image(imname) %>% grayscale
+#Thresholding yields different discrete regions of high intensity
+regions <- isoblur(im,10) %>% threshold("97%")
+labels <- label(regions)
 layout(t(1:2))
-plot(img2)
-highlight(px.m, col = 'blue')
+plot(regions,"Regions")
+plot(labels,"Labels")
 
-plot(img3)
-highlight(px.m, col = 'blue')
+text(df$x, df$y, labels = as.character(df$value), col = 'yellow')
 
-# calculate correlations
-v2 <- grayscale(img2)[as.logical(px.m)]
-v3 <- grayscale(img3)[as.logical(px.m)]
+df <- as.data.frame(labels) %>%
+  group_by(value) %>%
+  summarise_all(median)

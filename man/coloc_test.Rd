@@ -4,7 +4,7 @@
 \alias{coloc_test}
 \title{Test Co-localization}
 \usage{
-coloc_test(img1, img2, px, type = "pearsons", num = FALSE)
+coloc_test(img1, img2, px, labels, type = "pearsons", num = FALSE)
 }
 \arguments{
 \item{img1}{An object of class \code{\link[imager]{cimg}}}
@@ -12,6 +12,8 @@ coloc_test(img1, img2, px, type = "pearsons", num = FALSE)
 \item{img2}{An object of class \code{\link[imager]{cimg}}}
 
 \item{px}{An object of class \code{\link[imager]{pixset}}}
+
+\item{labels}{A \code{data.frame} of three columns; x, y and value.}
 
 \item{type}{A \code{character}; "pearson's", "spearman" or "all"}
 

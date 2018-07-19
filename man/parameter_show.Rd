@@ -4,7 +4,7 @@
 \alias{parameter_show}
 \title{Show the selected ROIs}
 \usage{
-parameter_show(img, img1, img2, px)
+parameter_show(img, img1, img2, px, labels)
 }
 \arguments{
 \item{img}{An object of class \code{\link[imager]{cimg}}}
@@ -14,6 +14,8 @@ parameter_show(img, img1, img2, px)
 \item{img2}{An object of class \code{\link[imager]{cimg}}}
 
 \item{px}{An object of class \code{\link[imager]{pixset}}}
+
+\item{labels}{A \code{data.frame} of three columns; x, y and value.}
 }
 \description{
 Show/highlight the selected ROIs for a set of parameters

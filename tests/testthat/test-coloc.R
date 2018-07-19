@@ -21,7 +21,7 @@ test_that("coloc_test works", {
 
   # test return type
   expect_identical(class(corr), 'list')
-  expect_true(corr$p > -1 && corr$p < 1)
+  expect_true(corr$p >= -1 && corr$p <= 1)
 
   # test return both
   corr <- coloc_test(img1, img2, px, type = 'all')
@@ -31,7 +31,7 @@ test_that("coloc_test works", {
   # test returns numerics
   corr <- coloc_test(img1, img2, px, num = TRUE)
 
-  expect_equal(length(corr), 3)
+  expect_equal(length(corr), 4)
   expect_identical(class(corr$channel1), 'numeric')
   expect_identical(class(corr$channel2), 'numeric')
 })
@@ -58,5 +58,12 @@ test_that('coloc_show works', {
   # call coloc_show
   p <- coloc_show(corr)
 
-  expect_true(is.null(p))
+  expect_identical(class(p), c('gg', 'ggplot'))
+
+  # test works with labels
+  labs.df <- labels_add(px, n = 3)
+  corr <- coloc_test(img1, img2, px, labs.df, num = TRUE)
+  p <- coloc_show(corr)
+
+  expect_identical(class(p), c('gg', 'ggplot'))
 })
