@@ -31,12 +31,8 @@ test_that('parameter_show works', {
   # choose parameters
   px <- parameter_choose(img.g, threshold = 90)
 
-  # load images from two channels
-  img1 <- load.image(system.file('extdata/', 'Image0001_C002.jpg', package = 'colocr'))
-  img2 <- load.image(system.file('extdata/', 'Image0001_C003.jpg', package = 'colocr'))
-
   # call parameter_show
-  p <- parameter_show(img, img1, img2, px)
+  p <- parameter_show(img, px)
 
   expect_identical(class(p), 'list')
 })

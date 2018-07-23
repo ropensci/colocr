@@ -2,13 +2,13 @@
 #'
 #' Perform co-localization test statistics.
 #'
-#' @param img1 An object of class \code{\link[imager]{cimg}}
-#' @param img2 An object of class \code{\link[imager]{cimg}}
+#' @param img An object of class \code{\link[imager]{cimg}}
 #' @param px An object of class \code{\link[imager]{pixset}}
 #' @param labels A \code{data.frame} of three columns; x, y and value.
 #' @param type A \code{character}; "pearson's", "spearman" or "all"
 #' @param num A \code{logical}; return the \code{numeric} values of the images
 #' or not
+#' @param ind A \code{numeric} of length two for channel indecies
 #'
 #' @return A \code{list} of one or two correlations measures and two
 #' \code{numeric}s when num is TRUE
@@ -25,35 +25,26 @@
 #' # choose parameters
 #' px <- parameter_choose(img.g, threshold = 90)
 #'
-#' # load images from two channels
-#' img1 <- load.image(system.file('extdata/', 'Image0001_C002.jpg', package = 'colocr'))
-#' img2 <- load.image(system.file('extdata/', 'Image0001_C003.jpg', package = 'colocr'))
-#'
 #' # call coloc_test
-#' coloc_test(img1, img2, px)
+#' coloc_test(img, px)
 #'
-#' @importFrom imager is.cimg is.pixset grayscale
+#' @importFrom imager is.cimg is.pixset channel
 #' @importFrom stats cor
 #' @importFrom purrr map map2
 #'
 #' @export
-coloc_test <- function(img1, img2, px, labels, type = 'pearsons', num = FALSE) {
-  if(!is.cimg(img1)) {
-    stop('img1 should be of class cimg.')
+coloc_test <- function(img, px, labels, type = 'pearsons', num = FALSE, ind = c(1,2)) {
+  if(!is.cimg(img)) {
+    stop('img should be of class cimg.')
   }
-  if(!is.cimg(img2)) {
-    stop('img2 should be of class cimg.')
-  }
-  if(all(dim(img2) != dim(img2))) {
-    stop('img1 and img2 do not have identical dimensions.')
-  }
+  
   if(!is.pixset(px)) {
     stop('px should be of class pixset.')
   }
 
   # change images to gray scal
-  img1.g <- grayscale(img1)
-  img2.g <- grayscale(img1)
+  img1.g <- channel(img, ind = ind[1])
+  img2.g <- channel(img, ind = ind[2])
 
   if(all(dim(img1.g) != dim(px))) {
     stop('dimensions of px should match dimensions of img1 in grayscale.')
@@ -127,12 +118,8 @@ coloc_test <- function(img1, img2, px, labels, type = 'pearsons', num = FALSE) {
 #' # choose parameters
 #' px <- parameter_choose(img.g, threshold = 90)
 #'
-#' # load images from two channels
-#' img1 <- load.image(system.file('extdata/', 'Image0001_C002.jpg', package = 'colocr'))
-#' img2 <- load.image(system.file('extdata/', 'Image0001_C003.jpg', package = 'colocr'))
-#'
 #' # call coloc_test
-#' corr <- coloc_test(img1, img2, px, num = TRUE)
+#' corr <- coloc_test(img, px, num = TRUE)
 #'
 #' # call coloc_show
 #' coloc_show(corr)
