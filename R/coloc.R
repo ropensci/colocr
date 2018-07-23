@@ -34,6 +34,7 @@
 #'
 #' @importFrom imager is.cimg is.pixset grayscale
 #' @importFrom stats cor
+#' @importFrom purrr map map2
 #'
 #' @export
 coloc_test <- function(img1, img2, px, labels, type = 'pearsons', num = FALSE) {
@@ -67,22 +68,32 @@ coloc_test <- function(img1, img2, px, labels, type = 'pearsons', num = FALSE) {
 
   # use labels to subset images when provided
   if(!missing(labels)) {
-    ind <- as.cimg(labels)
+    # subset and change images to numeric
+    img1.num <- as.numeric(img1.g[as.cimg(labels)])
+    img2.num <- as.numeric(img2.g[as.cimg(labels)])
+
+    # calculate correlations
+    ll <- map(list(img1.num, img2.num),
+              function(x) split(x, labels$value))
+    corr <- switch (type,
+                    'pearsons' = list(p = unlist(map2(ll[[1]], ll[[2]], function(x,y) cor(x, y)))),
+                    'spearman' = list(r = unlist(map2(ll[[1]], ll[[2]], function(x,y) cor(x, y, method = 'spearman')))),
+                    'all' = list(p = unlist(map2(ll[[1]], ll[[2]], function(x,y) cor(x, y))),
+                                 r = unlist(map2(ll[[1]], ll[[2]], function(x,y) cor(x, y, method = 'spearman'))))
+    )
   } else {
-    ind <- px
+    # subset and change images to numeric
+    img1.num <- as.numeric(img1.g[px])
+    img2.num <- as.numeric(img2.g[px])
+
+    # calculate correlations
+    corr <- switch (type,
+                    'pearsons' = list(p = cor(img1.num, img2.num)),
+                    'spearman' = list(r = cor(img1.num, img2.num, method = 'spearman')),
+                    'all' = list(p = cor(img1.num, img2.num),
+                                 r = cor(img1.num, img2.num, method = 'spearman'))
+    )
   }
-
-  # subset and change images to numeric
-  img1.num <- as.numeric(img1.g[ind])
-  img2.num <- as.numeric(img2.g[ind])
-
-  # calculate correlations
-  corr <- switch (type,
-    'pearsons' = list(p = cor(img1.num, img2.num)),
-    'spearman' = list(r = cor(img1.num, img2.num, method = 'spearman')),
-    'all' = list(p = cor(img1.num, img2.num),
-                 r = cor(img1.num, img2.num, method = 'spearman'))
-  )
 
   # add the numeric values when num == TRUE
   if (num) {

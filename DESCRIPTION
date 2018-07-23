@@ -24,5 +24,6 @@ Imports: imager,
   cowplot,
   dplyr,
   ggplot2,
-  tidyr
+  tidyr,
+  purrr
 VignetteBuilder: knitr
