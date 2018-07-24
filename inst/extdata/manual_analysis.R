@@ -29,20 +29,3 @@ corr$r  # MOC
 
 # show the scatter and density of the pixel values
 coloc_show(corr)
-plot(corr$channel1 - mean(corr$channel1),
-     corr$channel2 - mean(corr$channel2))
-
-imname <- system.file('extdata/parrots.png',package='imager')
-im <- load.image(imname) %>% grayscale
-#Thresholding yields different discrete regions of high intensity
-regions <- isoblur(im,10) %>% threshold("97%")
-labels <- label(regions)
-layout(t(1:2))
-plot(regions,"Regions")
-plot(labels,"Labels")
-
-text(df$x, df$y, labels = as.character(df$value), col = 'yellow')
-
-df <- as.data.frame(labels) %>%
-  group_by(value) %>%
-  summarise_all(median)

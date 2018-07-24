@@ -48,10 +48,10 @@ test_that('parameter_show works with labels', {
 
   # choose parameters
   px <- parameter_choose(img.g, threshold = 90)
-  labs.df <- labels_add(px, n = 3)
+  labs.px <- labels_add(px, n = 3)
 
   # call parameter_show
-  p <- parameter_show(img, px, labs.df)
+  p <- parameter_show(img, px, labs.px)
 
   expect_identical(class(p), 'list')
 })

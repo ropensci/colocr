@@ -53,8 +53,8 @@ test_that('coloc_show works', {
   expect_identical(class(p), c('gg', 'ggplot'))
 
   # test works with labels
-  labs.df <- labels_add(px, n = 3)
-  corr <- coloc_test(img, px, labs.df, num = TRUE)
+  labs.px <- labels_add(px, n = 3)
+  corr <- coloc_test(img, px, labs.px, num = TRUE)
 
   p <- coloc_show(corr)
 
@@ -74,14 +74,10 @@ test_that("coloc_test works with labels", {
   # choose parameters
   px <- parameter_choose(img.g, threshold = 90)
 
-  labs.df <- labels_add(px, n = 3)
-
-  # load images from two channels
-  img1 <- load.image(system.file('extdata/', 'Image0001_C002.jpg', package = 'colocr'))
-  img2 <- load.image(system.file('extdata/', 'Image0001_C003.jpg', package = 'colocr'))
+  labs.px <- labels_add(px, n = 3)
 
   # call coloc_test
-  corr <- coloc_test(img, px, labs.df, type = 'all', num = TRUE)
+  corr <- coloc_test(img, px, labs.px, type = 'all', num = TRUE)
 
   # test return type
   expect_identical(class(corr), 'list')
@@ -100,10 +96,10 @@ test_that('coloc_show works with labels', {
   # choose parameters
   px <- parameter_choose(img.g, threshold = 90)
 
-  labs.df <- labels_add(px, n = 3)
+  labs.px <- labels_add(px, n = 3)
 
   # call coloc_test
-  corr <- coloc_test(img, px, labs.df, type = 'all', num = TRUE)
+  corr <- coloc_test(img, px, labs.px, type = 'all', num = TRUE)
 
   # call coloc_show
   p <- coloc_show(corr)
@@ -111,8 +107,8 @@ test_that('coloc_show works with labels', {
   expect_identical(class(p), c('gg', 'ggplot'))
 
   # test works with labels
-  labs.df <- labels_add(px, n = 3)
-  corr <- coloc_test(img, px, labs.df, num = TRUE)
+  labs.px <- labels_add(px, n = 3)
+  corr <- coloc_test(img, px, labs.px, num = TRUE)
   p <- coloc_show(corr)
 
   expect_identical(class(p), c('gg', 'ggplot'))

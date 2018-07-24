@@ -4,4 +4,4 @@
 ^inst/colocr_app/\.travis\.yml$
 ^appveyor\.yml$
 ^codecov\.yml$
-^docker/$
+^docker/Dockerfile$

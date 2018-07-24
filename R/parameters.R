@@ -137,7 +137,7 @@ parameter_show <- function(img, px, labels, ind = c(1,2)) {
 #'
 #' @return An object of class \code{\link[imager]{cimg}}
 #'
-#' @importFrom imager label
+#' @importFrom imager label as.cimg
 #' @importFrom dplyr filter group_by summarise arrange desc mutate full_join select
 #' @importFrom magrittr %>%
 #' @importFrom stats reorder
