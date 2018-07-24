@@ -133,7 +133,6 @@ Now, to make sure these parameters are appropriately encampasing the ROIs, call 
 
 ```{r call_parameter_show, fig.width=7, fig.height=7}
 # show parameters for selecting ROIs
-par(mfrow=c(1,2), mar = rep(1,4))
 parameter_show(img, px = px)
 ```
 
@@ -173,6 +172,32 @@ The results can be similarily visualized to get a senese of the accuracy or the 
 ```{r call_coloc_show, fig.width=7, fig.height=3}
 # show the scatter and density of the pixel values
 coloc_show(corr)
+```
+
+### Choosing specific regions of interest
+
+```{r}
+# choose specific regions of interest
+labs.px <- labels_add(px, n = 3)
+str(labs.px)
+```
+
+```{r call_parameter_show2, fig.width=7, fig.height=7}
+# show parameters for the selected rois
+parameter_show(img, px, labs.px)
+```
+
+```{r call_coloc_test3}
+# apply colocalization stats on the specific rois
+corr2 <- coloc_test(img, px, labs.px, type = 'pearsons', num = TRUE)
+
+corr2$p
+corr2$r
+```
+
+```{r call_coloc_show2, fig.width=7, fig.height=3}
+# show scatter and density of pixel values of rois
+coloc_show(corr2)
 ```
 
 ## Description of the co-localization statistics

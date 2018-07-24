@@ -37,6 +37,25 @@ test_that('parameter_show works', {
   expect_identical(class(p), 'list')
 })
 
+test_that('parameter_show works with labels', {
+  # load libraries
+  library(imager)
+
+  # load images
+  fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
+  img <- load.image(fl)
+  img.g <- grayscale(img)
+
+  # choose parameters
+  px <- parameter_choose(img.g, threshold = 90)
+  labs.df <- labels_add(px, n = 3)
+
+  # call parameter_show
+  p <- parameter_show(img, px, labs.df)
+
+  expect_identical(class(p), 'list')
+})
+
 #test_that('function works properly in app', {
 #  app_dir <- system.file('colocr_app', package = 'colocr')
 #  shinytest::testApp(app_dir)
@@ -55,14 +74,13 @@ test_that('labels_add works', {
   px <- parameter_choose(img.g, threshold = 90)
 
   # add labels
-  labs.df <- labels_add(px)
+  labs.px <- labels_add(px)
 
   # test return proper data.frame
-  expect_s3_class(labs.df, 'data.frame')
-  expect_identical(names(labs.df), c('value', 'x', 'y'))
+  expect_true(is.cimg(labs.px))
 
   # test returns only values in n
-  labs.df <- labels_add(px, n = 3)
+  labs.px <- labels_add(px, n = 3)
 
-  expect_equal(length(unique(labs.df$value)), 3)
+  expect_equal(length(unique(as.data.frame(labs.px)$value)), 4)
 })

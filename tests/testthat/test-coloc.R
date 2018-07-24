@@ -55,6 +55,7 @@ test_that('coloc_show works', {
   # test works with labels
   labs.df <- labels_add(px, n = 3)
   corr <- coloc_test(img, px, labs.df, num = TRUE)
+
   p <- coloc_show(corr)
 
   expect_identical(class(p), c('gg', 'ggplot'))

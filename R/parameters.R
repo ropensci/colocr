@@ -81,6 +81,8 @@ parameter_choose <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
 #' @importFrom imager highlight channel
 #' @importFrom graphics par plot text
 #' @importFrom stats median
+#' @importFrom dplyr summarise_all group_by
+#' @importFrom magrittr %>%
 #'
 #' @export
 parameter_show <- function(img, px, labels, ind = c(1,2)) {
@@ -98,13 +100,14 @@ parameter_show <- function(img, px, labels, ind = c(1,2)) {
 
   # add labels when TRUE
   if(!missing(labels)) {
-    if(!is.data.frame(labels)) {
-      stop('labels needs to be a data.frame of 3 columns; x, y and value.')
+    if(!is.cimg(labels)) {
+      stop('labels needs to be a a cimg object.')
     }
 
-    px <- as.cimg(labels)
+    px <- as.pixset(labels)
 
-    px.labs <- labels %>%
+    px.labs <-  as.data.frame(labels) %>%
+      filter(value != 0) %>%
       group_by(value) %>%
       summarise_all(median)
 
@@ -132,27 +135,29 @@ parameter_show <- function(img, px, labels, ind = c(1,2)) {
 #' @param tolerance A \code{numeric} to be passed to \code{\link[imager]{label}}
 #' @param n A \code{numeric} of the number of regions of interest
 #'
-#' @return A \code{data.frame} of three columns x, y and value.
+#' @return An object of class \code{\link[imager]{cimg}}
 #'
 #' @importFrom imager label
 #' @importFrom dplyr filter group_by summarise arrange desc mutate full_join select
 #' @importFrom magrittr %>%
+#' @importFrom stats reorder
 #'
 #' @export
 labels_add <- function(px, tolerance = .1, n = 1) {
-  px.labs <- label(px, tolerance = tolerance) %>%
-    as.data.frame()
+  px.labs <- label(px, tolerance = tolerance)
+  value <- as.data.frame(px.labs)$value
 
-  df <- px.labs %>%
-    filter(value != 0) %>%
-    group_by(value) %>%
-    summarise(n = n()) %>%
-    arrange(desc(n)) %>%
-    mutate(id = 1:n()) %>%
-    full_join(px.labs) %>%
-    mutate(value = id) %>%
-    select(value, x, y) %>%
-    filter(value <= n)
+  ids <- reorder(value, value, length)
 
-  return(df)
+  k <- levels(ids)
+
+  k <- k[(length(k)-1):(length(k)-n)]
+
+  new.ids <- ifelse(value %in% as.numeric(k), value, 0)
+
+  new.px <- as.data.frame(px.labs)
+  new.px$value <- new.ids
+  new.px <- as.cimg(new.px)
+
+  return(new.px)
 }

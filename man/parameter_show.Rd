@@ -11,7 +11,7 @@ parameter_show(img, px, labels, ind = c(1, 2))
 
 \item{px}{An object of class \code{\link[imager]{pixset}}}
 
-\item{labels}{A \code{data.frame} of three columns; x, y and value.}
+\item{labels}{An object of class \code{\link[imager]{cimg}}}
 
 \item{ind}{A \code{numeric} of length two for channel indecies}
 }

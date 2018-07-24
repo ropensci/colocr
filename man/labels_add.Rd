@@ -14,7 +14,7 @@ labels_add(px, tolerance = 0.1, n = 1)
 \item{n}{A \code{numeric} of the number of regions of interest}
 }
 \value{
-A \code{data.frame} of three columns x, y and value.
+An object of class \code{\link[imager]{cimg}}
 }
 \description{
 Make labels data.frame

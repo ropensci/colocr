@@ -4,7 +4,7 @@
 #'
 #' @param img An object of class \code{\link[imager]{cimg}}
 #' @param px An object of class \code{\link[imager]{pixset}}
-#' @param labels A \code{data.frame} of three columns; x, y and value.
+#' @param labels An object of class \code{\link[imager]{cimg}}
 #' @param type A \code{character}; "pearson's", "spearman" or "all"
 #' @param num A \code{logical}; return the \code{numeric} values of the images
 #' or not
@@ -31,13 +31,14 @@
 #' @importFrom imager is.cimg is.pixset channel
 #' @importFrom stats cor
 #' @importFrom purrr map map2
+#' @importFrom dplyr filter pull
 #'
 #' @export
 coloc_test <- function(img, px, labels, type = 'pearsons', num = FALSE, ind = c(1,2)) {
   if(!is.cimg(img)) {
     stop('img should be of class cimg.')
   }
-  
+
   if(!is.pixset(px)) {
     stop('px should be of class pixset.')
   }
@@ -60,12 +61,16 @@ coloc_test <- function(img, px, labels, type = 'pearsons', num = FALSE, ind = c(
   # use labels to subset images when provided
   if(!missing(labels)) {
     # subset and change images to numeric
-    img1.num <- as.numeric(img1.g[as.cimg(labels)])
-    img2.num <- as.numeric(img2.g[as.cimg(labels)])
+    img1.num <- as.numeric(img1.g[as.pixset(labels)])
+    img2.num <- as.numeric(img2.g[as.pixset(labels)])
 
     # calculate correlations
+    f <- as.data.frame(labels) %>%
+      filter(value != 0) %>%
+      pull(value)
+
     ll <- map(list(img1.num, img2.num),
-              function(x) split(x, labels$value))
+              function(x) split(x, f))
     corr <- switch (type,
                     'pearsons' = list(p = unlist(map2(ll[[1]], ll[[2]], function(x,y) cor(x, y)))),
                     'spearman' = list(r = unlist(map2(ll[[1]], ll[[2]], function(x,y) cor(x, y, method = 'spearman')))),
@@ -92,7 +97,7 @@ coloc_test <- function(img, px, labels, type = 'pearsons', num = FALSE, ind = c(
     corr$channel2 = img2.num
   }
   if(!missing(labels)) {
-    corr$labels = labels$value
+    corr$labels = f
   } else if(missing(labels) && num){
     corr$labels <- rep(1, length(corr$channel1))
   }
