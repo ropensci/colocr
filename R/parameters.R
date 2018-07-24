@@ -154,9 +154,10 @@ labels_add <- function(px, tolerance = .1, n = 1) {
   k <- k[(length(k)-1):(length(k)-n)]
 
   new.ids <- ifelse(value %in% as.numeric(k), value, 0)
+  f <- as.numeric(factor(new.ids))
 
   new.px <- as.data.frame(px.labs)
-  new.px$value <- new.ids
+  new.px$value <- f - 1
   new.px <- as.cimg(new.px)
 
   return(new.px)
