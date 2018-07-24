@@ -24,12 +24,8 @@ img.g <- grayscale(img)
 # choose parameters
 px <- parameter_choose(img.g, threshold = 90)
 
-# load images from two channels
-img1 <- load.image(system.file('extdata/', 'Image0001_C002.jpg', package = 'colocr'))
-img2 <- load.image(system.file('extdata/', 'Image0001_C003.jpg', package = 'colocr'))
-
 # call coloc_test
-corr <- coloc_test(img1, img2, px, num = TRUE)
+corr <- coloc_test(img, px, num = TRUE)
 
 # call coloc_show
 coloc_show(corr)

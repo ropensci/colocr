@@ -4,18 +4,16 @@
 \alias{parameter_show}
 \title{Show the selected ROIs}
 \usage{
-parameter_show(img, img1, img2, px, labels)
+parameter_show(img, px, labels, ind = c(1, 2))
 }
 \arguments{
 \item{img}{An object of class \code{\link[imager]{cimg}}}
 
-\item{img1}{An object of class \code{\link[imager]{cimg}}}
-
-\item{img2}{An object of class \code{\link[imager]{cimg}}}
-
 \item{px}{An object of class \code{\link[imager]{pixset}}}
 
 \item{labels}{A \code{data.frame} of three columns; x, y and value.}
+
+\item{ind}{A \code{numeric} of length two for channel indecies}
 }
 \description{
 Show/highlight the selected ROIs for a set of parameters
@@ -32,11 +30,7 @@ img.g <- grayscale(img)
 # choose parameters
 px <- parameter_choose(img.g, threshold = 90)
 
-# load images from two channels
-img1 <- load.image(system.file('extdata/', 'Image0001_C002.jpg', package = 'colocr'))
-img2 <- load.image(system.file('extdata/', 'Image0001_C003.jpg', package = 'colocr'))
-
 # call coloc_test
-parameter_show(img, img1, img2, px)
+parameter_show(img, px)
 
 }
