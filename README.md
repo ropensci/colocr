@@ -59,13 +59,7 @@ implements two simple colocalizations statistics; Pearson's Coefficeint Correlat
 To apply both measures of correlation, we first load the images from the two channels and call `coloc_test`.
 
 ```r
-fl <- system.file('extdata', 'Image0001_C002.jpg', package = 'colocr')
-img1 <- load.image(fl)
-
-fl <- system.file('extdata', 'Image0001_C003.jpg', package = 'colocr')
-img2 <- load.image(fl)
-
-corr <- coloc_test(img1, img2, px, type = 'all')
+corr <- coloc_test(img, px, type = 'all')
 
 corr$p  # PCC
 corr$r  # MPC

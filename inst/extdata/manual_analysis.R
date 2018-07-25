@@ -1,36 +1,31 @@
-# load library
+# load required libraries
 library(imager)
+library(colocr)
 
-# read image
-img <- load.image('data-raw/MAP1LC3B/Image0003.jpg.frames/Image0003_.jpg')
+# load images
+img <- load.image(system.file('extdata', 'Image0001_.jpg', package = 'colocr'))       # merge
 
-# change to gray scale
+# change the merge image to gray scale
 img.g <- grayscale(img)
 
-# threshold image
-img.t <- threshold(img.g, '90%')
+# choose parameters
+px <- parameter_choose(img.g, threshold = 90)
 
-# make pixset
-px <- as.pixset(1 - img.t)
+# show pixset object structure
+str(px)
 
-# modify pixset
-px.m <- px %>%
-  shrink(5) %>%
-  fill(5) %>%
-  clean(10)
+labs.px <- labels_add(px, n = 5)
+str(labs.px)
 
-# load colored images
-img2 <- load.image('data-raw/MAP1LC3B/Image0003.jpg.frames/Image0003_C002.jpg')
-img3 <- load.image('data-raw/MAP1LC3B/Image0003.jpg.frames/Image0003_C003.jpg')
+# show parameters for selecting ROIs
+parameter_show(img, px, labels = labs.px)
 
-# highlight rois
-layout(t(1:2))
-plot(img2)
-highlight(px.m, col = 'blue')
+# Calculate the correlation statistics
+corr <- coloc_test(img, px, labels = labs.px,
+                   type = 'all', num = TRUE)
 
-plot(img3)
-highlight(px.m, col = 'blue')
+corr$p  # PCC
+corr$r  # MOC
 
-# calculate correlations
-v2 <- grayscale(img2)[as.logical(px.m)]
-v3 <- grayscale(img3)[as.logical(px.m)]
+# show the scatter and density of the pixel values
+coloc_show(corr)

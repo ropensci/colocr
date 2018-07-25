@@ -12,26 +12,22 @@ test_that("coloc_test works", {
   # choose parameters
   px <- parameter_choose(img.g, threshold = 90)
 
-  # load images from two channels
-  img1 <- load.image(system.file('extdata/', 'Image0001_C002.jpg', package = 'colocr'))
-  img2 <- load.image(system.file('extdata/', 'Image0001_C003.jpg', package = 'colocr'))
-
   # call coloc_test
-  corr <- coloc_test(img1, img2, px)
+  corr <- coloc_test(img, px)
 
   # test return type
   expect_identical(class(corr), 'list')
-  expect_true(corr$p > -1 && corr$p < 1)
+  expect_true(corr$p >= -1 && corr$p <= 1)
 
   # test return both
-  corr <- coloc_test(img1, img2, px, type = 'all')
+  corr <- coloc_test(img, px, type = 'all')
 
   expect_equal(length(corr), 2)
 
   # test returns numerics
-  corr <- coloc_test(img1, img2, px, num = TRUE)
+  corr <- coloc_test(img, px, num = TRUE)
 
-  expect_equal(length(corr), 3)
+  expect_equal(length(corr), 4)
   expect_identical(class(corr$channel1), 'numeric')
   expect_identical(class(corr$channel2), 'numeric')
 })
@@ -48,15 +44,72 @@ test_that('coloc_show works', {
   # choose parameters
   px <- parameter_choose(img.g, threshold = 90)
 
-  # load images from two channels
-  img1 <- load.image(system.file('extdata/', 'Image0001_C002.jpg', package = 'colocr'))
-  img2 <- load.image(system.file('extdata/', 'Image0001_C003.jpg', package = 'colocr'))
-
   # call coloc_test
-  corr <- coloc_test(img1, img2, px, num = TRUE)
+  corr <- coloc_test(img, px, num = TRUE)
 
   # call coloc_show
   p <- coloc_show(corr)
 
-  expect_true(is.null(p))
+  expect_identical(class(p), c('gg', 'ggplot'))
+
+  # test works with labels
+  labs.px <- labels_add(px, n = 3)
+  corr <- coloc_test(img, px, labs.px, num = TRUE)
+
+  p <- coloc_show(corr)
+
+  expect_identical(class(p), c('gg', 'ggplot'))
+})
+
+
+test_that("coloc_test works with labels", {
+  # load libraries
+  library(imager)
+
+  # load images
+  fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
+  img <- load.image(fl)
+  img.g <- grayscale(img)
+
+  # choose parameters
+  px <- parameter_choose(img.g, threshold = 90)
+
+  labs.px <- labels_add(px, n = 3)
+
+  # call coloc_test
+  corr <- coloc_test(img, px, labs.px, type = 'all', num = TRUE)
+
+  # test return type
+  expect_identical(class(corr), 'list')
+  expect_true(length(corr$p) == length(unique(corr$labels)))
+})
+
+test_that('coloc_show works with labels', {
+  # load libraries
+  library(imager)
+
+  # load images
+  fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
+  img <- load.image(fl)
+  img.g <- grayscale(img)
+
+  # choose parameters
+  px <- parameter_choose(img.g, threshold = 90)
+
+  labs.px <- labels_add(px, n = 3)
+
+  # call coloc_test
+  corr <- coloc_test(img, px, labs.px, type = 'all', num = TRUE)
+
+  # call coloc_show
+  p <- coloc_show(corr)
+
+  expect_identical(class(p), c('gg', 'ggplot'))
+
+  # test works with labels
+  labs.px <- labels_add(px, n = 3)
+  corr <- coloc_test(img, px, labs.px, num = TRUE)
+  p <- coloc_show(corr)
+
+  expect_identical(class(p), c('gg', 'ggplot'))
 })

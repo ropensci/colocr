@@ -71,13 +71,7 @@ implements two simple colocalizations statistics; Pearson's Coefficeint Correlat
 To apply both measures of correlation, we first load the images from the two channels and call `coloc_test`.
 
 ```{r call_coloc_test}
-fl <- system.file('extdata', 'Image0001_C002.jpg', package = 'colocr')
-img1 <- load.image(fl)
-
-fl <- system.file('extdata', 'Image0001_C003.jpg', package = 'colocr')
-img2 <- load.image(fl)
-
-corr <- coloc_test(img1, img2, px, type = 'all')
+corr <- coloc_test(img, px = px, type = 'all')
 
 corr$p  # PCC
 corr$r  # MPC
@@ -96,8 +90,8 @@ library(colocr)
 
 # load images
 img <- load.image(system.file('extdata', 'Image0001_.jpg', package = 'colocr'))       # merge
-img1 <- load.image(system.file('extdata', 'Image0001_C002.jpg', package = 'colocr'))  # red
-img2 <- load.image(system.file('extdata', 'Image0001_C003.jpg', package = 'colocr'))  # green
+img1 <- channel(img, 1)  # red
+img2 <- channel(img, 2)  # green
 
 # show images
 par(mfrow = c(1,3), mar = rep(1,4))
@@ -139,8 +133,7 @@ Now, to make sure these parameters are appropriately encampasing the ROIs, call 
 
 ```{r call_parameter_show, fig.width=7, fig.height=7}
 # show parameters for selecting ROIs
-par(mfrow=c(1,2), mar = rep(1,4))
-parameter_show(img, img1, img2, px)
+parameter_show(img, px = px)
 ```
 
 Arguable, this is the most time consuming step in this kind of analysis. Usually, one has to do this seleciton by hand when using image analysis software such as `imageJ`. This package only semiautomate this step, but still relies on the user's judgment on which parameters to use and whether or not the selected ROIs are appropriate. To make life easier, the package provides a simple shiny app to interactively determine these parameters and use it in the rest of the workflow. To launch the app run the following
@@ -168,8 +161,7 @@ Invoking the test is a one function call.
 
 ```{r call_coloc_test2}
 # Calculate the correlation statistics
-corr <- coloc_test(img1, img2, px, 
-                   type = 'all', num = TRUE)
+corr <- coloc_test(img, px = px, type = 'all', num = TRUE)
 
 corr$p  # PCC
 corr$r  # MOC
@@ -180,6 +172,32 @@ The results can be similarily visualized to get a senese of the accuracy or the 
 ```{r call_coloc_show, fig.width=7, fig.height=3}
 # show the scatter and density of the pixel values
 coloc_show(corr)
+```
+
+### Choosing specific regions of interest
+
+```{r}
+# choose specific regions of interest
+labs.px <- labels_add(px, n = 3)
+str(labs.px)
+```
+
+```{r call_parameter_show2, fig.width=7, fig.height=7}
+# show parameters for the selected rois
+parameter_show(img, px, labs.px)
+```
+
+```{r call_coloc_test3}
+# apply colocalization stats on the specific rois
+corr2 <- coloc_test(img, px, labs.px, type = 'pearsons', num = TRUE)
+
+corr2$p
+corr2$r
+```
+
+```{r call_coloc_show2, fig.width=7, fig.height=3}
+# show scatter and density of pixel values of rois
+coloc_show(corr2)
 ```
 
 ## Description of the co-localization statistics

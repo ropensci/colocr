@@ -75,18 +75,17 @@ parameter_choose <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
 #' # choose parameters
 #' px <- parameter_choose(img.g, threshold = 90)
 #'
-#' # load images from two channels
-#' img1 <- load.image(system.file('extdata/', 'Image0001_C002.jpg', package = 'colocr'))
-#' img2 <- load.image(system.file('extdata/', 'Image0001_C003.jpg', package = 'colocr'))
-#'
 #' # call coloc_test
-#' parameter_show(img, img1, img2, px)
+#' parameter_show(img, px)
 #'
-#' @importFrom imager highlight
-#' @importFrom graphics par plot
+#' @importFrom imager highlight channel
+#' @importFrom graphics par plot text
+#' @importFrom stats median
+#' @importFrom dplyr summarise_all group_by
+#' @importFrom magrittr %>%
 #'
 #' @export
-parameter_show <- function(img, img1, img2, px) {
+parameter_show <- function(img, px, labels, ind = c(1,2)) {
   par(mfrow = c(2,2), mar=rep(1, 4))
 
   # merge image
@@ -99,15 +98,67 @@ parameter_show <- function(img, img1, img2, px) {
        axes = FALSE,
        main = 'Pixel Set')
 
+  # add labels when TRUE
+  if(!missing(labels)) {
+    if(!is.cimg(labels)) {
+      stop('labels needs to be a a cimg object.')
+    }
+
+    px <- as.pixset(labels)
+
+    px.labs <-  as.data.frame(labels) %>%
+      filter(value != 0) %>%
+      group_by(value) %>%
+      summarise_all(median)
+
+    text(px.labs$x, px.labs$y, labels = px.labs$value, col = 'yellow')
+  }
+
   # channel one highlighted
+  img1 <- channel(img, ind = ind[1])
   plot(img1,
        axes = FALSE,
        main = 'Channel One')
   highlight(px)
 
   # channel two highlighted
+  img2 <- channel(img, ind = ind[2])
   plot(img2,
        axes = FALSE,
        main = 'Channel Two')
   highlight(px)
+}
+
+#' Make labels data.frame
+#'
+#' @param px An object of class \code{\link[imager]{pixset}}
+#' @param tolerance A \code{numeric} to be passed to \code{\link[imager]{label}}
+#' @param n A \code{numeric} of the number of regions of interest
+#'
+#' @return An object of class \code{\link[imager]{cimg}}
+#'
+#' @importFrom imager label as.cimg
+#' @importFrom dplyr filter group_by summarise arrange desc mutate full_join select
+#' @importFrom magrittr %>%
+#' @importFrom stats reorder
+#'
+#' @export
+labels_add <- function(px, tolerance = .1, n = 1) {
+  px.labs <- label(px, tolerance = tolerance)
+  value <- as.data.frame(px.labs)$value
+
+  ids <- reorder(value, value, length)
+
+  k <- levels(ids)
+
+  k <- k[(length(k)-1):(length(k)-n)]
+
+  new.ids <- ifelse(value %in% as.numeric(k), value, 0)
+  f <- as.numeric(factor(new.ids))
+
+  new.px <- as.data.frame(px.labs)
+  new.px$value <- f - 1
+  new.px <- as.cimg(new.px)
+
+  return(new.px)
 }

@@ -4,19 +4,21 @@
 \alias{coloc_test}
 \title{Test Co-localization}
 \usage{
-coloc_test(img1, img2, px, type = "pearsons", num = FALSE)
+coloc_test(img, px, labels, type = "pearsons", num = FALSE, ind = c(1, 2))
 }
 \arguments{
-\item{img1}{An object of class \code{\link[imager]{cimg}}}
-
-\item{img2}{An object of class \code{\link[imager]{cimg}}}
+\item{img}{An object of class \code{\link[imager]{cimg}}}
 
 \item{px}{An object of class \code{\link[imager]{pixset}}}
+
+\item{labels}{An object of class \code{\link[imager]{cimg}}}
 
 \item{type}{A \code{character}; "pearson's", "spearman" or "all"}
 
 \item{num}{A \code{logical}; return the \code{numeric} values of the images
 or not}
+
+\item{ind}{A \code{numeric} of length two for channel indecies}
 }
 \value{
 A \code{list} of one or two correlations measures and two
@@ -37,11 +39,7 @@ img.g <- grayscale(img)
 # choose parameters
 px <- parameter_choose(img.g, threshold = 90)
 
-# load images from two channels
-img1 <- load.image(system.file('extdata/', 'Image0001_C002.jpg', package = 'colocr'))
-img2 <- load.image(system.file('extdata/', 'Image0001_C003.jpg', package = 'colocr'))
-
 # call coloc_test
-coloc_test(img1, img2, px)
+coloc_test(img, px)
 
 }

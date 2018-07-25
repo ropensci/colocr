@@ -31,12 +31,27 @@ test_that('parameter_show works', {
   # choose parameters
   px <- parameter_choose(img.g, threshold = 90)
 
-  # load images from two channels
-  img1 <- load.image(system.file('extdata/', 'Image0001_C002.jpg', package = 'colocr'))
-  img2 <- load.image(system.file('extdata/', 'Image0001_C003.jpg', package = 'colocr'))
+  # call parameter_show
+  p <- parameter_show(img, px)
+
+  expect_identical(class(p), 'list')
+})
+
+test_that('parameter_show works with labels', {
+  # load libraries
+  library(imager)
+
+  # load images
+  fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
+  img <- load.image(fl)
+  img.g <- grayscale(img)
+
+  # choose parameters
+  px <- parameter_choose(img.g, threshold = 90)
+  labs.px <- labels_add(px, n = 3)
 
   # call parameter_show
-  p <- parameter_show(img, img1, img2, px)
+  p <- parameter_show(img, px, labs.px)
 
   expect_identical(class(p), 'list')
 })
@@ -45,3 +60,27 @@ test_that('parameter_show works', {
 #  app_dir <- system.file('colocr_app', package = 'colocr')
 #  shinytest::testApp(app_dir)
 #})
+
+test_that('labels_add works', {
+  # load libraries
+  library(imager)
+
+  # load images
+  fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
+  img <- load.image(fl)
+  img.g <- grayscale(img)
+
+  # choose parameters
+  px <- parameter_choose(img.g, threshold = 90)
+
+  # add labels
+  labs.px <- labels_add(px)
+
+  # test return proper data.frame
+  expect_true(is.cimg(labs.px))
+
+  # test returns only values in n
+  labs.px <- labels_add(px, n = 3)
+
+  expect_equal(length(unique(as.data.frame(labs.px)$value)), 4)
+})
