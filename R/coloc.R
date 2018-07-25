@@ -5,7 +5,7 @@
 #' @param img An object of class \code{\link[imager]{cimg}}
 #' @param px An object of class \code{\link[imager]{pixset}}
 #' @param labels An object of class \code{\link[imager]{cimg}}
-#' @param type A \code{character}; "pearson's", "spearman" or "all"
+#' @param type A \code{character}; "pearsons", "manders" or "all"
 #' @param num A \code{logical}; return the \code{numeric} values of the images
 #' or not
 #' @param ind A \code{numeric} of length two for channel indecies
@@ -30,8 +30,6 @@
 #'
 #' @importFrom imager is.cimg is.pixset channel
 #' @importFrom stats cor
-#' @importFrom purrr map map2
-#' @importFrom dplyr filter pull
 #'
 #' @export
 coloc_test <- function(img, px, labels, type = 'pearsons', num = FALSE, ind = c(1,2)) {
@@ -47,15 +45,8 @@ coloc_test <- function(img, px, labels, type = 'pearsons', num = FALSE, ind = c(
   img1.g <- channel(img, ind = ind[1])
   img2.g <- channel(img, ind = ind[2])
 
-  if(all(dim(img1.g) != dim(px))) {
-    stop('dimensions of px should match dimensions of img1 in grayscale.')
-  }
-  if(all(dim(img2.g) != dim(px))) {
-    stop('dimensions of px should match dimensions of img2 in grayscale.')
-  }
-
-  if(!type %in% c('pearsons', 'spearman', 'all')) {
-    stop('type takes one of these values; pearsons, spearman or all')
+  if(!type %in% c('pearsons', 'manders', 'all')) {
+    stop('type takes one of these values; pearsons, manders or all')
   }
 
   # use labels to subset images when provided
@@ -65,17 +56,18 @@ coloc_test <- function(img, px, labels, type = 'pearsons', num = FALSE, ind = c(
     img2.num <- as.numeric(img2.g[as.pixset(labels)])
 
     # calculate correlations
-    f <- as.data.frame(labels) %>%
-      filter(value != 0) %>%
-      pull(value)
+    f <- as.data.frame(labels)
+    f <- f[f$value != 0,]
+    f <- f$value
 
-    ll <- map(list(img1.num, img2.num),
-              function(x) split(x, f))
+    # split pixels by labels
+    ll <- lapply(list(img1.num, img2.num), split, f = f)
+
     corr <- switch (type,
-                    'pearsons' = list(p = unlist(map2(ll[[1]], ll[[2]], function(x,y) cor(x, y)))),
-                    'spearman' = list(r = unlist(map2(ll[[1]], ll[[2]], function(x,y) cor(x, y, method = 'spearman')))),
-                    'all' = list(p = unlist(map2(ll[[1]], ll[[2]], function(x,y) cor(x, y))),
-                                 r = unlist(map2(ll[[1]], ll[[2]], function(x,y) cor(x, y, method = 'spearman'))))
+                    'pearsons' = list(p = unlist(mapply(function(x, y) .pearson(x, y), ll[[1]], ll[[2]]))),
+                    'manders' = list(r = unlist(mapply(function(x, y) .manders(x, y), ll[[1]], ll[[2]]))),
+                    'all' = list(p = unlist(mapply(function(x, y) .pearson(x, y), ll[[1]], ll[[2]])),
+                                 r = unlist(mapply(function(x, y) .manders(x, y), ll[[1]], ll[[2]])))
     )
   } else {
     # subset and change images to numeric
@@ -84,10 +76,10 @@ coloc_test <- function(img, px, labels, type = 'pearsons', num = FALSE, ind = c(
 
     # calculate correlations
     corr <- switch (type,
-                    'pearsons' = list(p = cor(img1.num, img2.num)),
-                    'spearman' = list(r = cor(img1.num, img2.num, method = 'spearman')),
-                    'all' = list(p = cor(img1.num, img2.num),
-                                 r = cor(img1.num, img2.num, method = 'spearman'))
+                    'pearsons' = list(p = .pearson(img1.num, img2.num)),
+                    'manders' = list(r = .manders(img1.num, img2.num)),
+                    'all' = list(p = .pearson(img1.num, img2.num),
+                                 r = .manders(img1.num, img2.num))
     )
   }
 
@@ -129,12 +121,9 @@ coloc_test <- function(img, px, labels, type = 'pearsons', num = FALSE, ind = c(
 #' # call coloc_show
 #' coloc_show(corr)
 #'
-#' @importFrom dplyr bind_cols
-#' @importFrom ggplot2 ggplot geom_point aes theme_bw theme labs geom_density
-#' @importFrom tidyr gather
-#' @importFrom stats setNames
 #' @importFrom stats density
-#' @importFrom cowplot plot_grid
+#' @importFrom scales alpha
+#' @importFrom graphics plot lines
 #'
 #' @export
 coloc_show <- function(corr) {
@@ -145,22 +134,69 @@ coloc_show <- function(corr) {
     stop('make sure to call coloc_test with num == TRUE.')
   }
 
-  df <- bind_cols(channel1 = corr$channel1,
-                  channel2 = corr$channel2,
-                  labels = corr$labels)
-  plot_grid(ggplot(df) +
-              geom_point(aes(x = channel1, y = channel2, color = as.factor(labels))) +
-              theme_bw() +
-              theme(legend.position = 'top') +
-              labs(x = 'Channel One', y = 'Channel Two',
-                   color = 'ROI'),
+  # plot
+  par(mfrow = c(1,2))
 
-            df %>%
-              setNames(c('One', 'Two', 'labels')) %>%
-              gather(channel, value, -labels) %>%
-              ggplot() +
-              geom_density(aes(value, group = channel, color = channel)) +
-              theme_bw() +
-              theme(legend.position = 'top') +
-              labs(x = 'Value', y = 'Count', color = 'Channel'))
+  # scatter plot
+  plot(corr$channel1, corr$channel2,
+       col = alpha(corr$labels, 0.5),
+       pch = 16,
+       xlab = 'Channel One', ylab = 'Channel Two')
+
+  # density plot
+  d1 <- density(corr$channel1)
+  d2 <- density(corr$channel2)
+  xlim <- c(min(c(d1$x, d2$x)), max(c(d1$x, d2$x)))
+  ylim <- c(min(c(d1$y, d2$y)), max(c(d1$y, d2$y)))
+  plot(d1$x, d1$y,
+       xlim = xlim, ylim = ylim,
+       type = 'l', col = alpha('green', .5),
+       xlab = 'Pixel Value', ylab = 'Density')
+  lines(d2$x, d2$y,
+        col = alpha('red', .5))
+}
+
+
+#' Calculate Pearson's Correlation Coefficient
+#'
+#' @param r A \code{numeric} vector
+#' @param g A \code{numeric} vector
+#'
+#' @return A \code{numeric} of length one.
+#'
+#' @examples
+#' set.seed(123)
+#' r <- rnorm(10)
+#'
+#' set.seed(1234)
+#' g <- rnorm(10)
+#'
+#' .pearson(r, g)
+.pearson <- function(r, g) {
+  rx <- r - mean(r)
+  gx <- g - mean(g)
+
+  nom <- sum(rx * gx)
+  den <- sqrt(sum(rx**2) * sum(gx**2))
+  nom/den
+}
+
+#' Calculate Marnders Overlap Coefficient
+#'
+#' @inheritParams .pearson
+#'
+#' @return A \code{numeric} of length one.
+#'
+#' @examples
+#' set.seed(123)
+#' r <- rnorm(10)
+#'
+#' set.seed(1234)
+#' g <- rnorm(10)
+#'
+#' .manders(r, g)
+.manders <- function(r, g) {
+  nom <- sum(r * g)
+  den <- sqrt(sum(r**2) * sum(g**2))
+  nom/den
 }

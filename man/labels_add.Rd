@@ -2,7 +2,7 @@
 % Please edit documentation in R/parameters.R
 \name{labels_add}
 \alias{labels_add}
-\title{Make labels data.frame}
+\title{Make labels}
 \usage{
 labels_add(px, tolerance = 0.1, n = 1)
 }
@@ -17,5 +17,5 @@ labels_add(px, tolerance = 0.1, n = 1)
 An object of class \code{\link[imager]{cimg}}
 }
 \description{
-Make labels data.frame
+Make labels
 }

@@ -30,7 +30,6 @@
 #' highlight(px)
 #'
 #' @importFrom imager is.cimg threshold as.pixset shrink grow fill clean
-#' @importFrom magrittr %>%
 #'
 #' @export
 parameter_choose <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
@@ -42,16 +41,26 @@ parameter_choose <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
     stop('threshold should be a numeric between 0 and 100.')
   }
 
+  # apply threshold
   img.t <- threshold(img, paste0(threshold, '%'))
 
+  # change to pixset
   px <- as.pixset(1-img.t)
 
-  px.m <- px %>%
-    shrink(shrink) %>%
-    grow(grow) %>%
-    fill(fill) %>%
-    clean(clean)
-  px.m
+  # apply shrink
+  px.m <- shrink(px, shrink)
+
+  # apply grow
+  px.m <- grow(px.m, grow)
+
+  # apply fill
+  px.m <- fill(px.m, fill)
+
+  # apply clean
+  px.m <- clean(px.m, clean)
+
+  # return px.m
+  return(px.m)
 }
 
 #' Show the selected ROIs
@@ -80,9 +89,7 @@ parameter_choose <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
 #'
 #' @importFrom imager highlight channel
 #' @importFrom graphics par plot text
-#' @importFrom stats median
-#' @importFrom dplyr summarise_all group_by
-#' @importFrom magrittr %>%
+#' @importFrom stats aggregate median
 #'
 #' @export
 parameter_show <- function(img, px, labels, ind = c(1,2)) {
@@ -104,13 +111,17 @@ parameter_show <- function(img, px, labels, ind = c(1,2)) {
       stop('labels needs to be a a cimg object.')
     }
 
+    # change to pixset
     px <- as.pixset(labels)
 
-    px.labs <-  as.data.frame(labels) %>%
-      filter(value != 0) %>%
-      group_by(value) %>%
-      summarise_all(median)
+    # get positions for labels
+    px.labs <- as.data.frame(labels)
+    px.labs <- px.labs[px.labs$value != 0,]
+    px.labs <- aggregate(px.labs[, c('x', 'y')],
+                         by = list(value = px.labs$value),
+                         FUN = median)
 
+    # draw labels
     text(px.labs$x, px.labs$y, labels = px.labs$value, col = 'yellow')
   }
 
@@ -129,7 +140,7 @@ parameter_show <- function(img, px, labels, ind = c(1,2)) {
   highlight(px)
 }
 
-#' Make labels data.frame
+#' Make labels
 #'
 #' @param px An object of class \code{\link[imager]{pixset}}
 #' @param tolerance A \code{numeric} to be passed to \code{\link[imager]{label}}
@@ -138,8 +149,6 @@ parameter_show <- function(img, px, labels, ind = c(1,2)) {
 #' @return An object of class \code{\link[imager]{cimg}}
 #'
 #' @importFrom imager label as.cimg
-#' @importFrom dplyr filter group_by summarise arrange desc mutate full_join select
-#' @importFrom magrittr %>%
 #' @importFrom stats reorder
 #'
 #' @export
@@ -158,7 +167,7 @@ labels_add <- function(px, tolerance = .1, n = 1) {
 
   new.px <- as.data.frame(px.labs)
   new.px$value <- f - 1
-  new.px <- as.cimg(new.px)
+  new.px <- as.cimg(new.px, dim = dim(px))
 
   return(new.px)
 }

@@ -50,7 +50,7 @@ test_that('coloc_show works', {
   # call coloc_show
   p <- coloc_show(corr)
 
-  expect_identical(class(p), c('gg', 'ggplot'))
+  expect_true(is.null(p))
 
   # test works with labels
   labs.px <- labels_add(px, n = 3)
@@ -58,7 +58,7 @@ test_that('coloc_show works', {
 
   p <- coloc_show(corr)
 
-  expect_identical(class(p), c('gg', 'ggplot'))
+  expect_true(is.null(p))
 })
 
 
@@ -104,12 +104,12 @@ test_that('coloc_show works with labels', {
   # call coloc_show
   p <- coloc_show(corr)
 
-  expect_identical(class(p), c('gg', 'ggplot'))
+  expect_true(is.null(p))
 
   # test works with labels
   labs.px <- labels_add(px, n = 3)
   corr <- coloc_test(img, px, labs.px, num = TRUE)
   p <- coloc_show(corr)
 
-  expect_identical(class(p), c('gg', 'ggplot'))
+  expect_true(is.null(p))
 })

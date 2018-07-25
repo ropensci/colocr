@@ -84,3 +84,14 @@ test_that('labels_add works', {
 
   expect_equal(length(unique(as.data.frame(labs.px)$value)), 4)
 })
+
+test_that("helper functions for coefficients work", {
+  set.seed(123)
+  r <- rnorm(10)
+
+  set.seed(1234)
+  g <- rnorm(10)
+
+  expect_true(round(.pearson(r, g), 3) == round(cor(r, g), 3))
+  expect_false(.manders(r, g) == cor(r, g))
+})

@@ -66,7 +66,7 @@ run_app()
 ```
 
 The reset of the anlysis depends on the particular kind of images. Now, `colocr`
-implements two simple colocalizations statistics; Pearson's Coefficeint Correlation [(PCC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013) and the Manders Overlap Coefficient [(MOC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013).
+implements two simple colocalizations statistics; Pearson's Coefficeint Correlation [(PCC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013) and the Manders Overlap Coefficient [(SCC)](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient).
 
 To apply both measures of correlation, we first load the images from the two channels and call `coloc_test`.
 
@@ -155,7 +155,7 @@ Although this app was designed to be invoked from within the package to help the
 
 ### Calculating Correlation Statistics
 
-The two different statistics implemented in this package are the PCC and MOC. The formal description and the rational for using them is detailed elsewhere.
+The two different statistics implemented in this package are the PCC and SCC. The formal description and the rational for using them is detailed elsewhere.
 
 Invoking the test is a one function call. 
 
@@ -176,10 +176,11 @@ coloc_show(corr)
 
 ### Choosing specific regions of interest
 
-```{r}
+```{r labels_add}
 # choose specific regions of interest
 labs.px <- labels_add(px, n = 3)
 str(labs.px)
+unique(as.numeric(labs.px[,,,1]))
 ```
 
 ```{r call_parameter_show2, fig.width=7, fig.height=7}
@@ -189,10 +190,10 @@ parameter_show(img, px, labs.px)
 
 ```{r call_coloc_test3}
 # apply colocalization stats on the specific rois
-corr2 <- coloc_test(img, px, labs.px, type = 'pearsons', num = TRUE)
+corr2 <- coloc_test(img, px, labs.px, type = 'all', num = TRUE)
 
-corr2$p
-corr2$r
+corr2$p  # PCC
+corr2$r  # MOC
 ```
 
 ```{r call_coloc_show2, fig.width=7, fig.height=3}
@@ -202,9 +203,71 @@ coloc_show(corr2)
 
 ## Description of the co-localization statistics
 
+The following is a brief discussion of the theory and interpretations of different statistics that we used in this package as a measure of co-localization. For through and formal details, check this article by [Dunn et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3074624/).
+
 ### PCC
 
+$$
+PPC = \frac{\sum_i{(R_i-\bar R)\times(G_i-\bar G)}}{\sqrt{\sum_i{(R_i-\bar R)^2\times\sum_i(G_i-\bar G)^2}}}
+$$
+Where $R_i$ and the $G_i$ is the intensities of the red and green channels and the $\bar R$ and $\bar G$ are the average intensities.
+
 ### MOC
+
+$$
+MOC = \frac{\sum_i{(R_i\times G_i)}}{\sqrt{\sum_i{R_i^2\times\sum_i G_i^2}}}
+$$
+
+## Colocalization Benchmark Source
+
+> The Colocalization Benchmark Source (CBS) is a free collection of downloadable images to test and validate the degree of colocalization of markers in fluorescence microscopy studies. It consists of computer-simulated images with exactly known (pre-defined) values of colocalization ranging from 0% to 90%. They can be downloaded as sets as well as separately.
+
+```{r example1}
+# load image
+ex1 <- load.image(system.file('extdata', 'example1.png', package = 'colocr'))
+
+# choose parameters (based on the app)
+px <- parameter_choose(ex1, 
+                       threshold = 90, 
+                       shrink = 8)
+
+# add labels
+labs.px <- labels_add(px, n = 50)
+
+# show parameters
+parameter_show(ex1, px, labs.px)
+
+# test colocalization
+pearsons <- coloc_test(ex1, px, labs.px)
+
+# results
+mean(pearsons$p, na.rm = TRUE)
+```
+
+```{r example3}
+# load image
+ex3 <- load.image(system.file('extdata', 'example3.png', package = 'colocr'))
+
+# choose parameters (based on the app)
+px <- parameter_choose(ex3, 
+                       threshold = 90, 
+                       shrink = 9,
+                       grow = 1,
+                       fill = 10,
+                       clean = 10)
+
+# add labels
+labs.px <- labels_add(px, n = 20)
+
+# show parameters
+parameter_show(ex3, px, labs.px)
+
+# test colocalization
+pearsons <- coloc_test(ex3, px, labs.px, type = 'all')
+
+# results
+mean(pearsons$p, na.rm = TRUE)
+```
 
 ## Acknowledgement
 

@@ -13,7 +13,7 @@ coloc_test(img, px, labels, type = "pearsons", num = FALSE, ind = c(1, 2))
 
 \item{labels}{An object of class \code{\link[imager]{cimg}}}
 
-\item{type}{A \code{character}; "pearson's", "spearman" or "all"}
+\item{type}{A \code{character}; "pearsons", "manders" or "all"}
 
 \item{num}{A \code{logical}; return the \code{numeric} values of the images
 or not}

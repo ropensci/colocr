@@ -19,11 +19,7 @@ Suggests: testthat,
     devtools
 RoxygenNote: 6.0.1
 Imports: imager,
-  magrittr,
   shiny,
-  cowplot,
-  dplyr,
-  ggplot2,
-  tidyr,
-  purrr
+  purrr,
+  scales
 VignetteBuilder: knitr
