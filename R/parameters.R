@@ -20,16 +20,15 @@
 #' # load images
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 #' img <- load.image(fl)
-#' img.g <- grayscale(img)
 #'
 #' # choose parameters
-#' px <- parameter_choose(img.g, threshold = 90)
+#' px <- parameter_choose(img, threshold = 90)
 #'
 #' # highlight chosen region of interest
 #' plot(img)
 #' highlight(px)
 #'
-#' @importFrom imager is.cimg threshold as.pixset shrink grow fill clean
+#' @importFrom imager is.cimg grayscale threshold as.pixset shrink grow fill clean
 #'
 #' @export
 parameter_choose <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
@@ -41,8 +40,11 @@ parameter_choose <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
     stop('threshold should be a numeric between 0 and 100.')
   }
 
+  # change image to gray scale
+  img.g <- grayscale(img)
+
   # apply threshold
-  img.t <- threshold(img, paste0(threshold, '%'))
+  img.t <- threshold(img.g, paste0(threshold, '%'))
 
   # change to pixset
   px <- as.pixset(1-img.t)
@@ -79,10 +81,9 @@ parameter_choose <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
 #' # load images
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 #' img <- load.image(fl)
-#' img.g <- grayscale(img)
 #'
 #' # choose parameters
-#' px <- parameter_choose(img.g, threshold = 90)
+#' px <- parameter_choose(img, threshold = 90)
 #'
 #' # call coloc_test
 #' parameter_show(img, px)

@@ -7,16 +7,15 @@ test_that("test parameter_choose", {
   # load images
   fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
   img <- load.image(fl)
-  img.g <- grayscale(img)
 
   # choose parameters
-  px <- parameter_choose(img.g, threshold = 90)
+  px <- parameter_choose(img, threshold = 90)
 
   # returns the correct object
   expect_true(is.pixset(px))
 
   # pixset has same dimensions as img.g
-  expect_equal(dim(img.g), dim(px))
+  expect_equal(dim(img)[1:2], dim(px)[1:2])
 })
 
 test_that('parameter_show works', {
@@ -26,10 +25,9 @@ test_that('parameter_show works', {
   # load images
   fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
   img <- load.image(fl)
-  img.g <- grayscale(img)
 
   # choose parameters
-  px <- parameter_choose(img.g, threshold = 90)
+  px <- parameter_choose(img, threshold = 90)
 
   # call parameter_show
   p <- parameter_show(img, px)
@@ -44,10 +42,9 @@ test_that('parameter_show works with labels', {
   # load images
   fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
   img <- load.image(fl)
-  img.g <- grayscale(img)
 
   # choose parameters
-  px <- parameter_choose(img.g, threshold = 90)
+  px <- parameter_choose(img, threshold = 90)
   labs.px <- labels_add(px, n = 3)
 
   # call parameter_show
@@ -68,10 +65,9 @@ test_that('labels_add works', {
   # load images
   fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
   img <- load.image(fl)
-  img.g <- grayscale(img)
 
   # choose parameters
-  px <- parameter_choose(img.g, threshold = 90)
+  px <- parameter_choose(img, threshold = 90)
 
   # add labels
   labs.px <- labels_add(px)

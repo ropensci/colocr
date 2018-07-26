@@ -7,10 +7,9 @@ test_that("coloc_test works", {
   # load images
   fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
   img <- load.image(fl)
-  img.g <- grayscale(img)
 
   # choose parameters
-  px <- parameter_choose(img.g, threshold = 90)
+  px <- parameter_choose(img, threshold = 90)
 
   # call coloc_test
   corr <- coloc_test(img, px)
@@ -39,10 +38,9 @@ test_that('coloc_show works', {
   # load images
   fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
   img <- load.image(fl)
-  img.g <- grayscale(img)
 
   # choose parameters
-  px <- parameter_choose(img.g, threshold = 90)
+  px <- parameter_choose(img, threshold = 90)
 
   # call coloc_test
   corr <- coloc_test(img, px, num = TRUE)
@@ -69,10 +67,9 @@ test_that("coloc_test works with labels", {
   # load images
   fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
   img <- load.image(fl)
-  img.g <- grayscale(img)
 
   # choose parameters
-  px <- parameter_choose(img.g, threshold = 90)
+  px <- parameter_choose(img, threshold = 90)
 
   labs.px <- labels_add(px, n = 3)
 
@@ -91,10 +88,9 @@ test_that('coloc_show works with labels', {
   # load images
   fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
   img <- load.image(fl)
-  img.g <- grayscale(img)
 
   # choose parameters
-  px <- parameter_choose(img.g, threshold = 90)
+  px <- parameter_choose(img, threshold = 90)
 
   labs.px <- labels_add(px, n = 3)
 

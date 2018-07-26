@@ -47,10 +47,9 @@ library(colocr)
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- load.image(fl)
-img.g <- grayscale(img)
 
 # choose parameters
-px <- parameter_choose(img.g, threshold = 90)
+px <- parameter_choose(img, threshold = 90)
 
 # highlight chosen region of interest
 par(mar=rep(0, 4))
@@ -119,11 +118,8 @@ In the following section, we will explain the functionionality of the package by
 The function `parameter_choose` relies on different algorithms from the `imager` package. However, using the functions to select the ROIs doesn't require any background knowledge in the workings of the algorithms and can be done through trying different parameters and choosing the most appropriate ones. The details of these parameters are documented in the function help page `?parameter_choose`.
 
 ```{r call_parameter_choos}
-# change the merge image to gray scale
-img.g <- grayscale(img)
-
 # choose parameters
-px <- parameter_choose(img.g, threshold = 90)
+px <- parameter_choose(img, threshold = 90)
 
 # show pixset object structure
 str(px)
@@ -222,7 +218,7 @@ $$
 
 > The Colocalization Benchmark Source (CBS) is a free collection of downloadable images to test and validate the degree of colocalization of markers in fluorescence microscopy studies. It consists of computer-simulated images with exactly known (pre-defined) values of colocalization ranging from 0% to 90%. They can be downloaded as sets as well as separately.
 
-```{r example1}
+```{r example1, fig.height=4, fig.width=4}
 # load image
 ex1 <- load.image(system.file('extdata', 'example1.png', package = 'colocr'))
 
@@ -238,13 +234,14 @@ labs.px <- labels_add(px, n = 50)
 parameter_show(ex1, px, labs.px)
 
 # test colocalization
-pearsons <- coloc_test(ex1, px, labs.px)
+corr <- coloc_test(ex1, px, labs.px, type = 'all')
 
 # results
-mean(pearsons$p, na.rm = TRUE)
+mean(corr$p, na.rm = TRUE)  # PCC
+mean(corr$r)                # MOC
 ```
 
-```{r example3}
+```{r example3, fig.height=4, fig.width=4}
 # load image
 ex3 <- load.image(system.file('extdata', 'example3.png', package = 'colocr'))
 
@@ -263,12 +260,16 @@ labs.px <- labels_add(px, n = 20)
 parameter_show(ex3, px, labs.px)
 
 # test colocalization
-pearsons <- coloc_test(ex3, px, labs.px, type = 'all')
+corr <- coloc_test(ex3, px, labs.px, type = 'all')
 
 # results
-mean(pearsons$p, na.rm = TRUE)
+mean(corr$p)
+mean(corr$r)
 ```
 
 ## Acknowledgement
 
-## More
+* The vignette images from [Lai Huyen Trang](https://www.researchgate.net/profile/Lai_Huyen_Trang)  
+* The test examples from [Colocalization Benchmark Source (CBS)](https://www.colocalization-benchmark.com/index.html)  
+* The implementation of the co-localization statistics from [Dunn et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3074624/)  
+

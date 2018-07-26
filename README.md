@@ -35,10 +35,9 @@ library(colocr)
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- load.image(fl)
-img.g <- grayscale(img)
 
 # choose parameters
-px <- parameter_choose(img.g, threshold = 90)
+px <- parameter_choose(img, threshold = 90)
 
 # highlight chosen region of interest
 par(mar=rep(0, 4))
@@ -69,4 +68,12 @@ The same analysis and more can be conducted using a web interface for the packag
 
 ## Acknowledgement
 
+* The vignette images from [Lai Huyen Trang](https://www.researchgate.net/profile/Lai_Huyen_Trang)  
+* The test examples from [Colocalization Benchmark Source (CBS)](https://www.colocalization-benchmark.com/index.html)  
+* The implementation of the co-localization statistics from [Dunn et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3074624/)  
+
 ## More
+
+```r
+browseVignettes('colocr')
+```

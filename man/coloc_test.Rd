@@ -34,10 +34,9 @@ library(imager)
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- load.image(fl)
-img.g <- grayscale(img)
 
 # choose parameters
-px <- parameter_choose(img.g, threshold = 90)
+px <- parameter_choose(img, threshold = 90)
 
 # call coloc_test
 coloc_test(img, px)
