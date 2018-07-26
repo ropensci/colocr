@@ -2,3 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+packrat/lib*/
+.DS_Store
+inst/.DS_Store
+.Rprofile
+.gitignore

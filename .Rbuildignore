@@ -5,3 +5,6 @@
 ^appveyor\.yml$
 ^codecov\.yml$
 ^docker/Dockerfile$
+^packrat/
+^\.Rprofile$
+^inst/colocr_app/\.git$

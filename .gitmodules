@@ -1,6 +1,3 @@
-[submodule "inst/extdata/colocr_app"]
-	path = inst/extdata/colocr_app
-	url = https://github.com/MahShaaban/colocr_app
 [submodule "inst/colocr_app"]
 	path = inst/colocr_app
 	url = https://github.com/MahShaaban/colocr_app
