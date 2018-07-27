@@ -20,14 +20,14 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-A few R packages are available for conducting image analysis, which is a very wide topic. As a result, some of use might feel at loss when all what they want to do is a simple co-localization calculations on a small number of microscopy images. This package provides a simple straight forward workflow for loading images, choosing regions of interest (ROIs) and calculating colocalization statistics. Included in the package, is a [shiny app](https://shiny.rstudio.com) that can be invoked locally to interactively select the regions of interest in a semi-automatic way. The package is based on the infamous [`imager`](https://cran.r-project.org/web/packages/imager/vignettes/gettingstarted.html).
+A few R packages are available for conducting image analysis, which is a very wide topic. As a result, some of use might feel at loss when all they want to do is a simple co-localization calculations on a small number of microscopy images. This package provides a simple straight forward workflow for loading images, choosing regions of interest (ROIs) and calculating co-localization statistics. Included in the package, is a [shiny app](https://shiny.rstudio.com) that can be invoked locally to interactively select the regions of interest in a semi-automatic way. The package is based on the R package [`imager`](https://cran.r-project.org/web/packages/imager/vignettes/gettingstarted.html).
 
 
 ## Installing `colocr`
 
-The package is under development and not yet on [CRAN](https://cran.r-project.org). To install the package from [github](https://github.com/MahShaaban/colocr) use the following.
+The package development version is available at [github](https://github.com/MahShaaban/colocr).
 
-```{r install, eval=FALSE}
+```{r install_github, eval=FALSE}
 devtools::install_github('MahShaaban/colocr')
 ```
 
@@ -67,7 +67,7 @@ run_app()
 The reset of the anlysis depends on the particular kind of images. Now, `colocr`
 implements two simple colocalizations statistics; Pearson's Coefficeint Correlation [(PCC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013) and the Manders Overlap Coefficient [(SCC)](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient).
 
-To apply both measures of correlation, we first load the images from the two channels and call `coloc_test`.
+To apply both measures of correlation, we call `coloc_test` on the merge image.
 
 ```{r call_coloc_test}
 corr <- coloc_test(img, px = px, type = 'all')
@@ -80,7 +80,7 @@ The same analysis and more can be conducted using a web interface for the packag
 
 ## Detailed Example
 
-The following example uses images from the [DU145](https://en.wikipedia.org/wiki/DU145) prostate cancer cell line. In this experiment, the cell line was treated with probes for two proteins [RKIP](https://en.wikipedia.org/wiki/Raf_kinase_inhibitor_protein) and [LC3](https://en.wikipedia.org/wiki/MAP1LC3B). The aim of this experiment is to determine, how much of the two proteins are co-localized or co-distrubuted in the particular cell line. The following three images represent the same image viewed in red [(LC3)](https://en.wikipedia.org/wiki/MAP1LC3B), green [(RKIP)](https://en.wikipedia.org/wiki/Raf_kinase_inhibitor_protein) channels and merge.  
+The following example uses images from the [DU145](https://en.wikipedia.org/wiki/DU145) prostate cancer cell line. In this experiment, the cell line was treated with probes for two proteins [RKIP](https://en.wikipedia.org/wiki/Raf_kinase_inhibitor_protein) and [LC3](https://en.wikipedia.org/wiki/MAP1LC3B). The aim of this experiment is to determine, how much of the two proteins are co-localized or co-distrubuted in the particular cell line.  
 
 ```{r show_images, fig.width=7, fig.height=2.5}
 # load required libraries
@@ -113,6 +113,11 @@ In the following section, we will explain the functionionality of the package by
   * `coloc_test`
   * `coloc_show`
 
+```{r workflow, echo=FALSE, out.width='300px'}
+workflow_fig <- system.file('colocr_app', 'workflow.png', package = 'colocr')
+knitr::include_graphics(workflow_fig)
+```
+
 ### Choosing ROIs
 
 The function `parameter_choose` relies on different algorithms from the `imager` package. However, using the functions to select the ROIs doesn't require any background knowledge in the workings of the algorithms and can be done through trying different parameters and choosing the most appropriate ones. The details of these parameters are documented in the function help page `?parameter_choose`.
@@ -132,7 +137,7 @@ Now, to make sure these parameters are appropriately encampasing the ROIs, call 
 parameter_show(img, px = px)
 ```
 
-Arguable, this is the most time consuming step in this kind of analysis. Usually, one has to do this seleciton by hand when using image analysis software such as `imageJ`. This package only semiautomate this step, but still relies on the user's judgment on which parameters to use and whether or not the selected ROIs are appropriate. To make life easier, the package provides a simple shiny app to interactively determine these parameters and use it in the rest of the workflow. To launch the app run the following
+Arguable, this is the most time consuming step in this kind of analysis. Usually, one has to do this seleciton by hand when using image analysis software such as [imageJ]([CRAN](https://cran.r-project.org)). This package only semiautomate this step, but still relies on the user's judgment on which parameters to use and whether or not the selected ROIs are appropriate. To make life easier, the package provides a simple shiny app to interactively determine these parameters and use it in the rest of the workflow. To launch the app run the following
 
 ```{r run_app2, eval=FALSE}
 # run the shiny app
@@ -141,7 +146,7 @@ run_app()
 
 And here is a screen shot from the app after applying the sampe parameters used previously.
 
-```{r app_screenshot, echo=FALSE, fig.width=7}
+```{r app_screenshot, echo=FALSE, out.width="600px"}
 # show the screen shot of the shiny app
 app_ss <- system.file('colocr_app/tests/mytest-expected', '001.png', package = 'colocr')
 knitr::include_graphics(app_ss)
@@ -163,7 +168,7 @@ corr$p  # PCC
 corr$r  # MOC
 ```
 
-The results can be similarily visualized to get a senese of the accuracy or the appropriatness of the values.
+Both co-localization statistics quantify different aspects of the linear trend between the pixel intensities from the two channels of the image. Therefore, it is useful to visualize this trend and the distribution of the intensities to make sure the analysis is appropriate.
 
 ```{r call_coloc_show, fig.width=7, fig.height=3}
 # show the scatter and density of the pixel values
@@ -172,6 +177,8 @@ coloc_show(corr)
 
 ### Choosing specific regions of interest
 
+Some researchers recommend calculating the co-localization statistics for individual cells in the images, specially the PCC. Here, we can add labels to individual regions of interest which will be treated separatly in the subsequent calculation.
+
 ```{r labels_add}
 # choose specific regions of interest
 labs.px <- labels_add(px, n = 3)
@@ -179,10 +186,14 @@ str(labs.px)
 unique(as.numeric(labs.px[,,,1]))
 ```
 
+The labeled regions of interest are highlighted and the rest is excluded.
+
 ```{r call_parameter_show2, fig.width=7, fig.height=7}
 # show parameters for the selected rois
 parameter_show(img, px, labs.px)
 ```
+
+The co-localization statistics for separate regions of interest.
 
 ```{r call_coloc_test3}
 # apply colocalization stats on the specific rois
@@ -203,20 +214,31 @@ The following is a brief discussion of the theory and interpretations of differe
 
 ### PCC
 
+Pearson's Correlation Coefficient is the covariance of the pixel intensity from the two channels. The mean of the intensities is subtracted from each pixel which makes the coefficient independent of the background level.
+
+The PCC is calculated as follows
+
 $$
 PPC = \frac{\sum_i{(R_i-\bar R)\times(G_i-\bar G)}}{\sqrt{\sum_i{(R_i-\bar R)^2\times\sum_i(G_i-\bar G)^2}}}
 $$
 Where $R_i$ and the $G_i$ is the intensities of the red and green channels and the $\bar R$ and $\bar G$ are the average intensities.
 
+The values of PCC are between 1 and -1 for perfect correlations in the positive and negative directions respectively and 0 means no correltion.
+
 ### MOC
+
+On the other hand, the Manders Overlap Coefficient doesn't require subtraction of the mean. Therefore, the values are always between 0 and 1. Also, the MOC is independent from signal proportionality. 
 
 $$
 MOC = \frac{\sum_i{(R_i\times G_i)}}{\sqrt{\sum_i{R_i^2\times\sum_i G_i^2}}}
 $$
+Where $R_i$ and the $G_i$ is the intensities of the red and green channels.
 
 ## Colocalization Benchmark Source
 
 > The Colocalization Benchmark Source (CBS) is a free collection of downloadable images to test and validate the degree of colocalization of markers in fluorescence microscopy studies. It consists of computer-simulated images with exactly known (pre-defined) values of colocalization ranging from 0% to 90%. They can be downloaded as sets as well as separately.
+
+Here, we used two examples from the CBS to test the results of the analysis using `colocr`.
 
 ```{r example1, fig.height=4, fig.width=4}
 # load image

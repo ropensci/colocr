@@ -8,14 +8,13 @@ An R package for conducting co-localization analysis.
 
 ## Overview
 
-A few R packages are available for conducting image analysis, which is a very wide topic. As a result, some of use might feel at loss when all what they want to do is a simple co-localization calculations on a small number of microscopy images. This package provides a simple straight forward workflow for loading images, choosing regions of interest (ROIs) and calculating colocalization statistics. Included in the package, is a [shiny app](https://shiny.rstudio.com) that can be invoked locally to interactively select the regions of interest in a semi-automatic way. The package is based on the infamous [`imager`](https://cran.r-project.org/web/packages/imager/vignettes/gettingstarted.html).
-
+A few R packages are available for conducting image analysis, which is a very wide topic. As a result, some of use might feel at loss when all they want to do is a simple co-localization calculations on a small number of microscopy images. This package provides a simple straight forward workflow for loading images, choosing regions of interest (ROIs) and calculating co-localization statistics. Included in the package, is a [shiny app](https://shiny.rstudio.com) that can be invoked locally to interactively select the regions of interest in a semi-automatic way. The package is based on the R package [`imager`](https://cran.r-project.org/web/packages/imager/vignettes/gettingstarted.html).
 
 ## Installing `colocr`
 
-The package is under development and not yet on [CRAN](https://cran.r-project.org). To install the package from [github](https://github.com/MahShaaban/colocr) use the following.
+To install the development version from [github](https://github.com/MahShaaban/colocr) use the following.
 
-```r
+```{r install_github, eval=FALSE}
 devtools::install_github('MahShaaban/colocr')
 ```
 
