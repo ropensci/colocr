@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-A few R packages are available for conducting image analysis, which is a very wide topic. As a result, some of use might feel at loss when all they want to do is a simple co-localization calculations on a small number of microscopy images. This package provides a simple straight forward workflow for loading images, choosing regions of interest (ROIs) and calculating co-localization statistics. Included in the package, is a [shiny app](https://shiny.rstudio.com) that can be invoked locally to interactively select the regions of interest in a semi-automatic way. The package is based on the R package [`imager`](https://cran.r-project.org/web/packages/imager/vignettes/gettingstarted.html).
+A few R packages are available for conducting image analysis, which is a very wide topic. As a result, some of us might feel at loss when all they want to do is a simple co-localization calculations on a small number of microscopy images. This package provides a simple straight forward workflow for loading images, choosing regions of interest (ROIs) and calculating co-localization statistics. Included in the package, is a [shiny app](https://shiny.rstudio.com) that can be invoked locally to interactively select the regions of interest in a semi-automatic way. The package is based on the R package [`imager`](https://cran.r-project.org/web/packages/imager/vignettes/gettingstarted.html).
 
 
 ## Installing `colocr`
@@ -36,7 +36,7 @@ devtools::install_github('MahShaaban/colocr')
 
 To get started, load the required packages and the images.
 Then, apply the appropriate parameters for choosing the regions of interest
-using the `parameter_choose`. Finally, check the appropriatness of the 
+using the `roi_select`. Finally, check the appropriatness of the 
 parameters by highlighting the ROIs on the image.
 
 ```{r getting_started, fig.width=5,fig.width=5}
@@ -49,7 +49,7 @@ fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- load.image(fl)
 
 # choose parameters
-px <- parameter_choose(img, threshold = 90)
+px <- roi_select(img, threshold = 90)
 
 # highlight chosen region of interest
 par(mar=rep(0, 4))
@@ -73,7 +73,7 @@ To apply both measures of correlation, we call `coloc_test` on the merge image.
 corr <- coloc_test(img, px = px, type = 'all')
 
 corr$p  # PCC
-corr$r  # MPC
+corr$r  # MOC
 ```
 
 The same analysis and more can be conducted using a web interface for the package available [here](https://mahshaaban.shinyapps.io/colocr_app/)
@@ -108,8 +108,8 @@ In addition the package provide functions to visualize these steps to make sure 
 
 In the following section, we will explain the functionionality of the package by calling four different functions in order:
 
-  * `parameter_choose`
-  * `parameter_show`
+  * `roi_select`
+  * `roi_show`
   * `coloc_test`
   * `coloc_show`
 
@@ -120,21 +120,22 @@ knitr::include_graphics(workflow_fig)
 
 ### Choosing ROIs
 
-The function `parameter_choose` relies on different algorithms from the `imager` package. However, using the functions to select the ROIs doesn't require any background knowledge in the workings of the algorithms and can be done through trying different parameters and choosing the most appropriate ones. The details of these parameters are documented in the function help page `?parameter_choose`.
+The function `roi_select` relies on different algorithms from the `imager` package. However, using the functions to select the ROIs doesn't require any background knowledge in the workings of the algorithms and can be done through trying different parameters and choosing the most appropriate ones. The details of these parameters are documented in the function help page `?roi_select`.
 
 ```{r call_parameter_choos}
 # choose parameters
-px <- parameter_choose(img, threshold = 90)
+px <- roi_select(img, threshold = 90)
 
 # show pixset object structure
 str(px)
 ```
 
-Now, to make sure these parameters are appropriately encampasing the ROIs, call the `parameter_show` to visualize side by side the original merge picture, a low resuliontion picture of the ROI and the images from the two different channels highlighted by the ROIs.
+Now, to make sure these parameters are appropriately encampasing the ROIs, call the `roi_show` to visualize side by side the original merge picture, a low resuliontion picture of the ROI and the images from the two different channels highlighted by the ROIs.
 
-```{r call_parameter_show, fig.width=7, fig.height=7}
+```{r call_roi_show, fig.width=7, fig.height=7}
 # show parameters for selecting ROIs
-parameter_show(img, px = px)
+par(mfrow=c(2,2), mar = rep(1, 4))
+roi_show(img, px = px)
 ```
 
 Arguable, this is the most time consuming step in this kind of analysis. Usually, one has to do this seleciton by hand when using image analysis software such as [imageJ]([CRAN](https://cran.r-project.org)). This package only semiautomate this step, but still relies on the user's judgment on which parameters to use and whether or not the selected ROIs are appropriate. To make life easier, the package provides a simple shiny app to interactively determine these parameters and use it in the rest of the workflow. To launch the app run the following
@@ -172,6 +173,7 @@ Both co-localization statistics quantify different aspects of the linear trend b
 
 ```{r call_coloc_show, fig.width=7, fig.height=3}
 # show the scatter and density of the pixel values
+par(mfrow=c(1,2), mar = c(4,4,1,1))
 coloc_show(corr)
 ```
 
@@ -181,23 +183,24 @@ Some researchers recommend calculating the co-localization statistics for indivi
 
 ```{r labels_add}
 # choose specific regions of interest
-labs.px <- labels_add(px, n = 3)
+labs.px <- roi_select(img, threshold = 90, n = 3)
 str(labs.px)
 unique(as.numeric(labs.px[,,,1]))
 ```
 
 The labeled regions of interest are highlighted and the rest is excluded.
 
-```{r call_parameter_show2, fig.width=7, fig.height=7}
+```{r call_roi_show2, fig.width=7, fig.height=7}
 # show parameters for the selected rois
-parameter_show(img, px, labs.px)
+par(mfrow=c(2,2), mar = rep(1, 4))
+roi_show(img, px, labs.px)
 ```
 
 The co-localization statistics for separate regions of interest.
 
 ```{r call_coloc_test3}
 # apply colocalization stats on the specific rois
-corr2 <- coloc_test(img, px, labs.px, type = 'all', num = TRUE)
+corr2 <- coloc_test(img, labs.px, type = 'all', num = TRUE)
 
 corr2$p  # PCC
 corr2$r  # MOC
@@ -205,6 +208,7 @@ corr2$r  # MOC
 
 ```{r call_coloc_show2, fig.width=7, fig.height=3}
 # show scatter and density of pixel values of rois
+par(mfrow=c(1,2), mar = c(4,4,1,1))
 coloc_show(corr2)
 ```
 
@@ -245,18 +249,22 @@ Here, we used two examples from the CBS to test the results of the analysis usin
 ex1 <- load.image(system.file('extdata', 'example1.png', package = 'colocr'))
 
 # choose parameters (based on the app)
-px <- parameter_choose(ex1, 
+px <- roi_select(ex1, 
                        threshold = 90, 
                        shrink = 8)
 
 # add labels
-labs.px <- labels_add(px, n = 50)
+labs.px <- roi_select(ex1, 
+                       threshold = 90, 
+                       shrink = 8,
+                       n = 50)
 
 # show parameters
-parameter_show(ex1, px, labs.px)
+par(mfrow=c(2,2), mar = rep(1, 4))
+roi_show(ex1, px, labs.px)
 
 # test colocalization
-corr <- coloc_test(ex1, px, labs.px, type = 'all')
+corr <- coloc_test(ex1, labs.px, type = 'all')
 
 # results
 mean(corr$p, na.rm = TRUE)  # PCC
@@ -268,7 +276,7 @@ mean(corr$r)                # MOC
 ex3 <- load.image(system.file('extdata', 'example3.png', package = 'colocr'))
 
 # choose parameters (based on the app)
-px <- parameter_choose(ex3, 
+px <- roi_select(ex3, 
                        threshold = 90, 
                        shrink = 9,
                        grow = 1,
@@ -276,10 +284,17 @@ px <- parameter_choose(ex3,
                        clean = 10)
 
 # add labels
-labs.px <- labels_add(px, n = 20)
+labs.px <- roi_select(ex3, 
+                       threshold = 90, 
+                       shrink = 9,
+                       grow = 1,
+                       fill = 10,
+                       clean = 10,
+                       n = 20)
 
 # show parameters
-parameter_show(ex3, px, labs.px)
+par(mfrow=c(2,2), mar = rep(1, 4))
+roi_show(ex3, px, labs.px)
 
 # test colocalization
 corr <- coloc_test(ex3, px, labs.px, type = 'all')
