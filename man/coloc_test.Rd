@@ -4,24 +4,15 @@
 \alias{coloc_test}
 \title{Test Co-localization}
 \usage{
-coloc_test(img, px, type = "pearsons", num = FALSE, ind = c(1, 2))
+coloc_test(pix_int, type = "pearsons")
 }
 \arguments{
-\item{img}{An object of class \code{\link[imager]{cimg}}}
-
-\item{px}{An object of class \code{\link[imager]{pixset}} or with labels
-\code{\link[imager]{cimg}}}
+\item{pix_int}{A list, such as that returned by \code{\link{intensity_get}}}
 
 \item{type}{A \code{character}; "pearsons", "manders" or "all"}
-
-\item{num}{A \code{logical}; return the \code{numeric} values of the images
-or not}
-
-\item{ind}{A \code{numeric} of length two for channel indecies}
 }
 \value{
-A \code{list} of one or two correlations measures and two
-\code{numeric}s when num is TRUE
+A \code{list} of one or two correlations measures.
 }
 \description{
 Perform co-localization test statistics.
@@ -34,10 +25,13 @@ library(imager)
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- load.image(fl)
 
-# choose parameters
+# choose roi
 px <- roi_select(img, threshold = 90)
 
+# get intensities
+pix_int <- intensity_get(img, px)
+
 # call coloc_test
-coloc_test(img, px)
+coloc_test(pix_int)
 
 }

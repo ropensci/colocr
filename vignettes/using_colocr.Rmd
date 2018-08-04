@@ -67,10 +67,11 @@ run_app()
 The reset of the anlysis depends on the particular kind of images. Now, `colocr`
 implements two simple colocalizations statistics; Pearson's Coefficeint Correlation [(PCC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013) and the Manders Overlap Coefficient [(SCC)](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient).
 
-To apply both measures of correlation, we call `coloc_test` on the merge image.
+To apply both measures of correlation, we first get the pixel intensities and call `coloc_test` on the merge image.
 
 ```{r call_coloc_test}
-corr <- coloc_test(img, px = px, type = 'all')
+pix_int <- intensity_get(img, px)
+corr <- coloc_test(pix_int, type = 'all')
 
 corr$p  # PCC
 corr$r  # MOC
@@ -99,10 +100,11 @@ plot(img1, axes = FALSE, main = 'RKIP')
 plot(img2, axes = FALSE, main = 'LC3')
 ```
 
-The `colocr` package provides a straight forward workflow for determining the amount of colocalization. This workflow consists of two steps only:
+The `colocr` package provides a straight forward workflow for determining the amount of colocalization. This workflow consists of three steps only:
 
   * Choosing regions of interest (ROI)
-  * Calculating the correlation between the dyes from different channels
+  * Getting the pixel intensities from the two channels
+  * Calculating the correlation between the pixel intensites
 
 In addition the package provide functions to visualize these steps to make sure the choice of ROI is appropriate and that the calculated correlations are correct.
 
@@ -110,8 +112,9 @@ In the following section, we will explain the functionionality of the package by
 
   * `roi_select`
   * `roi_show`
+  * `intensity_get`
+  * `intensity_show`
   * `coloc_test`
-  * `coloc_show`
 
 ```{r workflow, echo=FALSE, out.width='300px'}
 workflow_fig <- system.file('colocr_app', 'workflow.png', package = 'colocr')
@@ -159,23 +162,27 @@ Although this app was designed to be invoked from within the package to help the
 
 The two different statistics implemented in this package are the PCC and SCC. The formal description and the rational for using them is detailed elsewhere.
 
+Both co-localization statistics quantify different aspects of the linear trend between the pixel intensities from the two channels of the image. Therefore, it is useful to visualize this trend and the distribution of the intensities to make sure the analysis is appropriate.
+
+```{r call_coloc_show, fig.width=7, fig.height=3}
+# get image intensity
+pix_int <- intensity_get(img, px)
+
+# show the scatter and density of the pixel values
+par(mfrow=c(1,2), mar = c(4,4,1,1))
+intensity_show(pix_int)
+```
+
 Invoking the test is a one function call. 
 
 ```{r call_coloc_test2}
 # Calculate the correlation statistics
-corr <- coloc_test(img, px = px, type = 'all', num = TRUE)
+corr <- coloc_test(pix_int, type = 'all')
 
 corr$p  # PCC
 corr$r  # MOC
 ```
 
-Both co-localization statistics quantify different aspects of the linear trend between the pixel intensities from the two channels of the image. Therefore, it is useful to visualize this trend and the distribution of the intensities to make sure the analysis is appropriate.
-
-```{r call_coloc_show, fig.width=7, fig.height=3}
-# show the scatter and density of the pixel values
-par(mfrow=c(1,2), mar = c(4,4,1,1))
-coloc_show(corr)
-```
 
 ### Choosing specific regions of interest
 
@@ -199,8 +206,11 @@ roi_show(img, px, labs.px)
 The co-localization statistics for separate regions of interest.
 
 ```{r call_coloc_test3}
+# get pixel intensities
+pix_int2 <- intensity_get(img, labs.px)
+
 # apply colocalization stats on the specific rois
-corr2 <- coloc_test(img, labs.px, type = 'all', num = TRUE)
+corr2 <- coloc_test(pix_int2, type = 'all')
 
 corr2$p  # PCC
 corr2$r  # MOC
@@ -209,7 +219,7 @@ corr2$r  # MOC
 ```{r call_coloc_show2, fig.width=7, fig.height=3}
 # show scatter and density of pixel values of rois
 par(mfrow=c(1,2), mar = c(4,4,1,1))
-coloc_show(corr2)
+intensity_show(pix_int2)
 ```
 
 ## Description of the co-localization statistics
@@ -264,7 +274,9 @@ par(mfrow=c(2,2), mar = rep(1, 4))
 roi_show(ex1, px, labs.px)
 
 # test colocalization
-corr <- coloc_test(ex1, labs.px, type = 'all')
+pix_int01 <- intensity_get(ex1, labs.px)
+
+corr <- coloc_test(pix_int01, type = 'all')
 
 # results
 mean(corr$p, na.rm = TRUE)  # PCC
@@ -297,7 +309,9 @@ par(mfrow=c(2,2), mar = rep(1, 4))
 roi_show(ex3, px, labs.px)
 
 # test colocalization
-corr <- coloc_test(ex3, px, labs.px, type = 'all')
+pix_int03 <- intensity_get(ex3, labs.px)
+
+corr <- coloc_test(pix_int03, type = 'all')
 
 # results
 mean(corr$p)

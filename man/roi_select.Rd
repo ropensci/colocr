@@ -26,7 +26,7 @@ roi_select(img, threshold, shrink = 5, grow = 5, fill = 5, clean = 5,
 \item{n}{A \code{numeric} of the number of regions of interest}
 }
 \value{
-A \code{\link[imager]{pixset}}
+A \code{\link[imager]{pixset}} or a labeled image \code{\link[imager]{cimg}}
 }
 \description{
 Choose the different parameters to select the regions of interest (ROI)

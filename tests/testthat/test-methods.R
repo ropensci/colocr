@@ -36,47 +36,60 @@ test_that('roi_show works with labels', {
   expect_identical(class(p), 'list')
 })
 
+# call intensity_get
+pix_int <- intensity_get(img, px)
+pix_int2 <- intensity_get(img, labs.px)
+
+test_that("intensity_get works", {
+  # returns correct type
+  expect_true(is.list(pix_int))
+  expect_equal(length(pix_int), 3)
+})
+
+test_that("intensity_get works with labels", {
+  # retursn correct type
+  expect_true(is.list(pix_int2))
+  expect_equal(length(pix_int2), 3)
+  expect_equal(length(unique(pix_int2[[3]])), 3)
+})
+
+# call intensity_show
+test_that('intensity_show works', {
+  # call intensity_show
+  p <- intensity_show(pix_int)
+
+  expect_true(is.null(p))
+})
+
+test_that('intensity_show works with labels', {
+  p <- intensity_show(pix_int2)
+
+  expect_true(is.null(p))
+})
+
 # call coloc_test
-corr <- coloc_test(img, px)
-corr2 <- coloc_test(img, px, type = 'all')
-corr3 <- coloc_test(img, px, num = TRUE)
-corr4 <- coloc_test(img, labs.px, num = TRUE)
-corr5 <- coloc_test(img, labs.px, type = 'all', num = TRUE)
+corr <- coloc_test(pix_int, type = 'pearsons')
+corr2 <- coloc_test(pix_int, type = 'manders')
+corr3 <- coloc_test(pix_int, type = 'all')
+corr4 <- coloc_test(pix_int2, type = 'all')
 
-test_that("coloc_test works", {
-  # test return type
-  expect_identical(class(corr), 'list')
-  expect_true(corr$p >= -1 && corr$p <= 1)
+test_that('coloc_test works', {
+  # return correct type
+  expect_true(is.list(corr))
+  expect_equal(length(corr), 1)
+  expect_true(all(corr$p < 1, corr$p > -1))
 
-  # test return both
-  expect_equal(length(corr2), 2)
+  expect_true(is.list(corr2))
+  expect_equal(length(corr2), 1)
+  expect_true(all(corr2$r < 1))
 
-  # test returns numerics
-  expect_equal(length(corr3), 4)
-  expect_identical(class(corr3$channel1), 'numeric')
-  expect_identical(class(corr3$channel2), 'numeric')
+  expect_true(is.list(corr3))
+  expect_equal(length(corr3), 2)
 })
 
-
-test_that("coloc_test works with labels", {
-  # test return type
-  expect_identical(class(corr5), 'list')
-  expect_true(length(corr5$p) == length(unique(corr5$labels)))
-})
-
-test_that('coloc_show works', {
-  # call coloc_show
-  p <- coloc_show(corr3)
-
-  expect_true(is.null(p))
-
-  p <- coloc_show(corr4)
-
-  expect_true(is.null(p))
-})
-
-test_that('coloc_show works with labels', {
-  p <- coloc_show(corr5)
-
-  expect_true(is.null(p))
+test_that('coloc_test works with labels', {
+  # return correct type
+  expect_true(is.list(corr4))
+  expect_equal(length(corr4), 2)
+  expect_true(length(corr4$p) == length(corr4$r))
 })

@@ -10,9 +10,10 @@ An R package for conducting co-localization analysis.
 
 A few R packages are available for conducting image analysis, which is a very wide topic. As a result, some of us might feel at loss when all they want to do is a simple co-localization calculations on a small number of microscopy images. This package provides a simple straight forward workflow for loading images, choosing regions of interest (ROIs) and calculating co-localization statistics. Included in the package, is a [shiny app](https://shiny.rstudio.com) that can be invoked locally to interactively select the regions of interest in a semi-automatic way. The package is based on the R package [`imager`](https://cran.r-project.org/web/packages/imager/vignettes/gettingstarted.html).
 
+
 ## Installing `colocr`
 
-To install the development version from [github](https://github.com/MahShaaban/colocr) use the following.
+The package development version is available at [github](https://github.com/MahShaaban/colocr).
 
 ```{r install_github, eval=FALSE}
 devtools::install_github('MahShaaban/colocr')
@@ -23,10 +24,10 @@ devtools::install_github('MahShaaban/colocr')
 
 To get started, load the required packages and the images.
 Then, apply the appropriate parameters for choosing the regions of interest
-using the `parameter_choose`. Finally, check the appropriatness of the 
+using the `roi_select`. Finally, check the appropriatness of the 
 parameters by highlighting the ROIs on the image.
 
-```r
+```{r getting_started, fig.width=5,fig.width=5}
 # load libraries
 library(imager)
 library(colocr)
@@ -36,7 +37,7 @@ fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- load.image(fl)
 
 # choose parameters
-px <- parameter_choose(img, threshold = 90)
+px <- roi_select(img, threshold = 90)
 
 # highlight chosen region of interest
 par(mar=rep(0, 4))
@@ -47,20 +48,21 @@ highlight(px)
 The same can be acheived interactively using an accompanying **shiny** app.
 To launch the app run.
 
-```r
+```{r run_app, eval=FALSE}
 run_app()
 ```
 
 The reset of the anlysis depends on the particular kind of images. Now, `colocr`
-implements two simple colocalizations statistics; Pearson's Coefficeint Correlation [(PCC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013) and the Manders Overlap Coefficient [(MOC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013).
+implements two simple colocalizations statistics; Pearson's Coefficeint Correlation [(PCC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013) and the Manders Overlap Coefficient [(SCC)](https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient).
 
-To apply both measures of correlation, we first load the images from the two channels and call `coloc_test`.
+To apply both measures of correlation, we first get the pixel intensities and call `coloc_test` on the merge image.
 
-```r
-corr <- coloc_test(img, px, type = 'all')
+```{r call_coloc_test}
+pix_int <- intensity_get(img, px)
+corr <- coloc_test(pix_int, type = 'all')
 
 corr$p  # PCC
-corr$r  # MPC
+corr$r  # MOC
 ```
 
 The same analysis and more can be conducted using a web interface for the package available [here](https://mahshaaban.shinyapps.io/colocr_app/)

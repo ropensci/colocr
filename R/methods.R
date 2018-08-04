@@ -171,20 +171,14 @@ roi_show.cimg <- function(img, px, labels, ind = c(1,2)) {
   highlight(px)
 }
 
-#' Test Co-localization
-#'
-#' Perform co-localization test statistics.
+#' Get channel intensities
 #'
 #' @param img An object of class \code{\link[imager]{cimg}}
 #' @param px An object of class \code{\link[imager]{pixset}} or with labels
 #' \code{\link[imager]{cimg}}
-#' @param type A \code{character}; "pearsons", "manders" or "all"
-#' @param num A \code{logical}; return the \code{numeric} values of the images
-#' or not
 #' @param ind A \code{numeric} of length two for channel indecies
 #'
-#' @return A \code{list} of one or two correlations measures and two
-#' \code{numeric}s when num is TRUE
+#' @return A \code{list} of three items.
 #'
 #' @examples
 #' # load libraries
@@ -198,35 +192,28 @@ roi_show.cimg <- function(img, px, labels, ind = c(1,2)) {
 #' px <- roi_select(img, threshold = 90)
 #'
 #' # call coloc_test
-#' coloc_test(img, px)
+#' pix_int <- intensity_get(img, px)
 #'
-#' @importFrom imager is.cimg is.pixset channel
+#' @importFrom imager channel is.cimg as.pixset is.pixset
 #'
 #' @export
-coloc_test <- function(img, px, type = 'pearsons', num = FALSE, ind = c(1,2)) {
-  UseMethod('coloc_test')
+intensity_get <- function(img, px, ind = c(1,2)) {
+  UseMethod('intensity_get')
 }
 
 #' @export
-coloc_test.default <- function(img, ...) {
+intensity_get.default <- function(img, ...) {
   warning(paste("img is of class",
                 class(img),
                 ". img should be a cimg object."))
 }
 
 #' @export
-coloc_test.cimg <- function(img, px, type = 'pearsons', num = FALSE, ind = c(1,2)) {
-  if(!is.cimg(img)) {
-    stop('img should be of class cimg.')
-  }
+intensity_get.cimg <- function(img, px, ind = c(1,2)) {
 
-  # change images to gray scal
+  # get channel intensities
   img1.g <- channel(img, ind = ind[1])
   img2.g <- channel(img, ind = ind[2])
-
-  if(!type %in% c('pearsons', 'manders', 'all')) {
-    stop('type takes one of these values; pearsons, manders or all')
-  }
 
   # use labels to subset images when provided
   if(is.cimg(px)) {
@@ -239,47 +226,28 @@ coloc_test.cimg <- function(img, px, type = 'pearsons', num = FALSE, ind = c(1,2
     f <- f[f$value != 0,]
     f <- f$value
 
-    # split pixels by labels
-    ll <- lapply(list(img1.num, img2.num), split, f = f)
-
-    corr <- switch (type,
-                    'pearsons' = list(p = unlist(mapply(function(x, y) .pearson(x, y), ll[[1]], ll[[2]]))),
-                    'manders' = list(r = unlist(mapply(function(x, y) .manders(x, y), ll[[1]], ll[[2]]))),
-                    'all' = list(p = unlist(mapply(function(x, y) .pearson(x, y), ll[[1]], ll[[2]])),
-                                 r = unlist(mapply(function(x, y) .manders(x, y), ll[[1]], ll[[2]])))
-    )
+    # make list
+    pixel_int <- list(channel1 = img1.num,
+                      channel2 = img2.num,
+                      labels = f)
   } else if(is.pixset(px)) {
     # subset and change images to numeric
     img1.num <- as.numeric(img1.g[px])
     img2.num <- as.numeric(img2.g[px])
 
-    # calculate correlations
-    corr <- switch (type,
-                    'pearsons' = list(p = .pearson(img1.num, img2.num)),
-                    'manders' = list(r = .manders(img1.num, img2.num)),
-                    'all' = list(p = .pearson(img1.num, img2.num),
-                                 r = .manders(img1.num, img2.num))
-    )
-  }
-
-  # add the numeric values when num == TRUE
-  if (num) {
-    corr$channel1 = img1.num
-    corr$channel2 = img2.num
-  }
-  if(is.cimg(px)) {
-    corr$labels = f
-  } else if(!is.cimg(px) && num){
-    corr$labels <- rep(1, length(corr$channel1))
+    # make list
+    pixel_int <- list(channel1 = img1.num,
+                      channel2 = img2.num,
+                      labels = rep(1, length(img1.num)))
   }
 
   # retrun corr
-  return(corr)
+  return(pixel_int)
 }
 
-#' Show the colocalization output
+#' Show the pixel intensities
 #'
-#' @param corr A list, such as that returned by coloc_test with num == TRUE
+#' @param pix_int A list, such as that returned by \code{\link{intensity_get}}
 #'
 #' @return NULL
 #'
@@ -295,33 +263,30 @@ coloc_test.cimg <- function(img, px, type = 'pearsons', num = FALSE, ind = c(1,2
 #' px <- roi_select(img, threshold = 90)
 #'
 #' # call coloc_test
-#' corr <- coloc_test(img, px, num = TRUE)
+#' pix_int <- intensity_get(img, px)
 #'
-#' # call coloc_show
-#' coloc_show(corr)
+#' # call intensity_show
+#' intensity_show(pix_int)
 #'
 #' @importFrom stats density
 #' @importFrom scales alpha
 #' @importFrom graphics plot lines
 #'
 #' @export
-coloc_show <- function(corr) {
-  if(!is.list(corr)) {
-    stop('corr should be a list, output of coloc_test.')
-  }
-  if(length(corr) < 3) {
-    stop('make sure to call coloc_test with num == TRUE.')
+intensity_show <- function(pix_int) {
+  if(!is.list(pix_int)) {
+    stop('pix_int should be a list, output of coloc_test.')
   }
 
   # scatter plot
-  plot(corr$channel1, corr$channel2,
-       col = alpha(corr$labels, 0.5),
+  plot(pix_int[[1]], pix_int[[2]],
+       col = alpha(pix_int[[3]], 0.5),
        pch = 16,
        xlab = 'Channel One', ylab = 'Channel Two')
 
   # density plot
-  d1 <- density(corr$channel1)
-  d2 <- density(corr$channel2)
+  d1 <- density(pix_int[[1]])
+  d2 <- density(pix_int[[2]])
   xlim <- c(min(c(d1$x, d2$x)), max(c(d1$x, d2$x)))
   ylim <- c(min(c(d1$y, d2$y)), max(c(d1$y, d2$y)))
   plot(d1$x, d1$y,
@@ -330,4 +295,70 @@ coloc_show <- function(corr) {
        xlab = 'Pixel Value', ylab = 'Density')
   lines(d2$x, d2$y,
         col = alpha('red', .5))
+}
+
+#' Test Co-localization
+#'
+#' Perform co-localization test statistics.
+#'
+#' @inheritParams intensity_show
+#' @param type A \code{character}; "pearsons", "manders" or "all"
+#'
+#' @return A \code{list} of one or two correlations measures.
+#'
+#' @examples
+#' # load libraries
+#' library(imager)
+#'
+#' # load images
+#' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
+#' img <- load.image(fl)
+#'
+#' # choose roi
+#' px <- roi_select(img, threshold = 90)
+#'
+#' # get intensities
+#' pix_int <- intensity_get(img, px)
+#'
+#' # call coloc_test
+#' coloc_test(pix_int)
+#'
+#' @importFrom imager is.cimg is.pixset channel
+#'
+#' @export
+coloc_test <- function(pix_int, type = 'pearsons') {
+
+  if(!type %in% c('pearsons', 'manders', 'all')) {
+    stop('type takes one of these values; pearsons, manders or all')
+  }
+
+  # unpack pix_int
+  img1.num = pix_int[[1]]
+  img2.num = pix_int[[2]]
+  f = pix_int[[3]]
+
+  # use labels to subset images when provided
+  if(length(unique(pix_int[[3]])) > 1) {
+
+    # split pixels by labels
+    ll <- lapply(list(img1.num, img2.num), split, f = f)
+
+    corr <- switch (type,
+                    'pearsons' = list(p = unlist(mapply(function(x, y) .pearson(x, y), ll[[1]], ll[[2]]))),
+                    'manders' = list(r = unlist(mapply(function(x, y) .manders(x, y), ll[[1]], ll[[2]]))),
+                    'all' = list(p = unlist(mapply(function(x, y) .pearson(x, y), ll[[1]], ll[[2]])),
+                                 r = unlist(mapply(function(x, y) .manders(x, y), ll[[1]], ll[[2]])))
+    )
+  } else {
+    # calculate correlations
+    corr <- switch (type,
+                    'pearsons' = list(p = .pearson(img1.num, img2.num)),
+                    'manders' = list(r = .manders(img1.num, img2.num)),
+                    'all' = list(p = .pearson(img1.num, img2.num),
+                                 r = .manders(img1.num, img2.num))
+    )
+  }
+
+  # retrun corr
+  return(corr)
 }
