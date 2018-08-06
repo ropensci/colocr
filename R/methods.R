@@ -1,6 +1,6 @@
-#' Choose Parameter for selecting ROIs
+#' Select regions of interest
 #'
-#' Choose the different parameters to select the regions of interest (ROI)
+#' Select regions of interest in an image using different morphological operations
 #'
 #' @param img An object of class \code{\link[imager]{cimg}}
 #' @param threshold A \code{numeric} to be passed to
@@ -13,6 +13,15 @@
 #' @param n A \code{numeric} of the number of regions of interest
 #'
 #' @return A \code{\link[imager]{pixset}} or a labeled image \code{\link[imager]{cimg}}
+#'
+#' @details The function applies several \code{\link{imager}} morphological
+#' manipulations to select the regions of interest. Thes include
+#' \code{\link[imager]{threshold}} which sets all values below certain cut to
+#' 0; \code{\link[imager]{shrink}}/\code{\link[imager]{grow}} for pixel set
+#' dilation and erosion; \code{\link[imager]{fill}}\\code{\link[imager]{clean}}
+#' for removing isolated regions and holes. When \code{n} is provided, the
+#' individual regions (connected components) are selected where \code{tolerance}
+#' is used to determin if two pixels belong to the same region.
 #'
 #' @examples
 #' # load libraries
@@ -74,7 +83,7 @@ roi_select.cimg <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
   # apply clean
   px.m <- clean(px.m, clean)
 
-  # add labels when n is povided
+  # add labels when n is provided
   if(!missing(n)) {
     labs.px <- .labels_add(px.m, tolerance = tolerance, n = n)
     return(labs.px)
@@ -83,9 +92,9 @@ roi_select.cimg <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
   }
 }
 
-#' Show the selected ROIs
+#' Show the selected regions of interest
 #'
-#' Show/highlight the selected ROIs for a set of parameters
+#' Show/highlight the selected regions of interest on differen image channels
 #'
 #' @param img An object of class \code{\link[imager]{cimg}}
 #' @param px An object of class \code{\link[imager]{pixset}}
@@ -93,6 +102,13 @@ roi_select.cimg <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
 #' @param ind A \code{numeric} object of length two. For the channel indicies.
 #'
 #' @return NULL
+#'
+#' @details Calling this function on an image and a \code{px}, \code{\link[imager]{pixset}}
+#' of the same dimensions returns four different plots. The original image, a
+#' a low reslution representation of the \code{\link[imager]{pixset}} and the
+#' two channels indicated through \code{ind} highlighted. Additionally, when
+#' labels are provided through \code{labels} the regions are individually
+#' labeled.
 #'
 #' @examples
 #' # load libraries
@@ -171,14 +187,19 @@ roi_show.cimg <- function(img, px, labels, ind = c(1,2)) {
   highlight(px)
 }
 
-#' Get channel intensities
+#' Get pixel intensities
+#'
+#' Get the pixel intensities of certain image channels
 #'
 #' @param img An object of class \code{\link[imager]{cimg}}
 #' @param px An object of class \code{\link[imager]{pixset}} or with labels
 #' \code{\link[imager]{cimg}}
 #' @param ind A \code{numeric} of length two for channel indecies
 #'
-#' @return A \code{list} of three items.
+#' @return A \code{list} of three items. The first two items are the values of
+#' the pixel intensities of the channels indicated by \code{ind}. The third is
+#' the labels of the individual regions of interest when a labeled \code{px}
+#' is provided. Otherwise, the value of labels is set to 1.
 #'
 #' @examples
 #' # load libraries
@@ -245,11 +266,17 @@ intensity_get.cimg <- function(img, px, ind = c(1,2)) {
   return(pixel_int)
 }
 
-#' Show the pixel intensities
+#' Show pixel intensities
+#'
+#' Show the pixel intensities of certain image channels
 #'
 #' @param pix_int A list, such as that returned by \code{\link{intensity_get}}
 #'
 #' @return NULL
+#'
+#' @details Calling this function returns two plots. The first is a scatter
+#' plot of the pixel intensities from two channels. The second is the density
+#' distribution of the intensities from the two channels.
 #'
 #' @examples
 #' # load libraries
@@ -304,7 +331,11 @@ intensity_show <- function(pix_int) {
 #' @inheritParams intensity_show
 #' @param type A \code{character}; "pearsons", "manders" or "all"
 #'
-#' @return A \code{list} of one or two correlations measures.
+#' @return A \code{list}.
+#'
+#' @details The co-localization stats requested in \code{type} is returned as
+#' list items for each. When different labels are provided, the stats are
+#' caculated for each label individually.
 #'
 #' @examples
 #' # load libraries

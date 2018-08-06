@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods.R
 \name{intensity_show}
 \alias{intensity_show}
-\title{Show the pixel intensities}
+\title{Show pixel intensities}
 \usage{
 intensity_show(pix_int)
 }
@@ -10,7 +10,12 @@ intensity_show(pix_int)
 \item{pix_int}{A list, such as that returned by \code{\link{intensity_get}}}
 }
 \description{
-Show the pixel intensities
+Show the pixel intensities of certain image channels
+}
+\details{
+Calling this function returns two plots. The first is a scatter
+plot of the pixel intensities from two channels. The second is the density
+distribution of the intensities from the two channels.
 }
 \examples{
 # load libraries

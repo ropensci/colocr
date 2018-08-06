@@ -15,10 +15,9 @@ A few R packages are available for conducting image analysis, which is a very wi
 
 The package development version is available at [github](https://github.com/MahShaaban/colocr).
 
-```{r install_github, eval=FALSE}
+```r
 devtools::install_github('MahShaaban/colocr')
 ```
-
 
 ## Getting started
 
@@ -27,7 +26,7 @@ Then, apply the appropriate parameters for choosing the regions of interest
 using the `roi_select`. Finally, check the appropriatness of the 
 parameters by highlighting the ROIs on the image.
 
-```{r getting_started, fig.width=5,fig.width=5}
+```r
 # load libraries
 library(imager)
 library(colocr)
@@ -48,7 +47,7 @@ highlight(px)
 The same can be acheived interactively using an accompanying **shiny** app.
 To launch the app run.
 
-```{r run_app, eval=FALSE}
+```r
 run_app()
 ```
 
@@ -57,7 +56,7 @@ implements two simple colocalizations statistics; Pearson's Coefficeint Correlat
 
 To apply both measures of correlation, we first get the pixel intensities and call `coloc_test` on the merge image.
 
-```{r call_coloc_test}
+```r
 pix_int <- intensity_get(img, px)
 corr <- coloc_test(pix_int, type = 'all')
 
@@ -65,7 +64,7 @@ corr$p  # PCC
 corr$r  # MOC
 ```
 
-The same analysis and more can be conducted using a web interface for the package available [here](https://mahshaaban.shinyapps.io/colocr_app/)
+The same analysis and more can be conducted using a web interface for the package available [here](https://mahshaaban.shinyapps.io/colocr_app2/)
 
 ## Acknowledgement
 

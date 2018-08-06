@@ -12,10 +12,15 @@ coloc_test(pix_int, type = "pearsons")
 \item{type}{A \code{character}; "pearsons", "manders" or "all"}
 }
 \value{
-A \code{list} of one or two correlations measures.
+A \code{list}.
 }
 \description{
 Perform co-localization test statistics.
+}
+\details{
+The co-localization stats requested in \code{type} is returned as
+list items for each. When different labels are provided, the stats are
+caculated for each label individually.
 }
 \examples{
 # load libraries

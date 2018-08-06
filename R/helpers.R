@@ -1,10 +1,13 @@
-#' Make labels
+#' Label regions of interest
+#'
+#' Add labels to regions of interest in an image
 #'
 #' @param px An object of class \code{\link[imager]{pixset}}
 #' @param tolerance A \code{numeric} to be passed to \code{\link[imager]{label}}
-#' @param n A \code{numeric} of the number of regions of interest
+#' @param n A \code{numeric}, the number of desired regions of interest
 #'
-#' @return An object of class \code{\link[imager]{cimg}}
+#' @return An object of class \code{\link[imager]{cimg}}. The labels are coded
+#' the values in the object starting from 1. The rest of the image is labeled 0.
 #'
 #' @importFrom imager label as.cimg
 #' @importFrom stats reorder
@@ -31,6 +34,8 @@
 
 #' Calculate Pearson's Correlation Coefficient
 #'
+#' Calculates the Pearson's correlation coefficient between two numeric vectors
+#'
 #' @param r A \code{numeric} vector
 #' @param g A \code{numeric} vector
 #'
@@ -54,6 +59,8 @@
 }
 
 #' Calculate Marnders Overlap Coefficient
+#'
+#' Calculates the manders overlap coefficient between two numeric vectors
 #'
 #' @param r A \code{numeric} vector
 #' @param g A \code{numeric} vector

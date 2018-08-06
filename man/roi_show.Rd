@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods.R
 \name{roi_show}
 \alias{roi_show}
-\title{Show the selected ROIs}
+\title{Show the selected regions of interest}
 \usage{
 roi_show(img, px, labels, ind = c(1, 2))
 }
@@ -16,7 +16,15 @@ roi_show(img, px, labels, ind = c(1, 2))
 \item{ind}{A \code{numeric} object of length two. For the channel indicies.}
 }
 \description{
-Show/highlight the selected ROIs for a set of parameters
+Show/highlight the selected regions of interest on differen image channels
+}
+\details{
+Calling this function on an image and a \code{px}, \code{\link[imager]{pixset}}
+of the same dimensions returns four different plots. The original image, a
+a low reslution representation of the \code{\link[imager]{pixset}} and the
+two channels indicated through \code{ind} highlighted. Additionally, when
+labels are provided through \code{labels} the regions are individually
+labeled.
 }
 \examples{
 # load libraries

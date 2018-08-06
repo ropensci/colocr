@@ -2,7 +2,7 @@
 % Please edit documentation in R/methods.R
 \name{intensity_get}
 \alias{intensity_get}
-\title{Get channel intensities}
+\title{Get pixel intensities}
 \usage{
 intensity_get(img, px, ind = c(1, 2))
 }
@@ -15,10 +15,13 @@ intensity_get(img, px, ind = c(1, 2))
 \item{ind}{A \code{numeric} of length two for channel indecies}
 }
 \value{
-A \code{list} of three items.
+A \code{list} of three items. The first two items are the values of
+the pixel intensities of the channels indicated by \code{ind}. The third is
+the labels of the individual regions of interest when a labeled \code{px}
+is provided. Otherwise, the value of labels is set to 1.
 }
 \description{
-Get channel intensities
+Get the pixel intensities of certain image channels
 }
 \examples{
 # load libraries
