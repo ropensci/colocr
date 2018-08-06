@@ -16,7 +16,8 @@ A few R packages are available for conducting image analysis, which is a very wi
 The package development version is available at [github](https://github.com/MahShaaban/colocr).
 
 ```r
-devtools::install_github('MahShaaban/colocr')
+# install from development branch (no submodules!)
+devtools::install_github('MahShaaban/colocr@development')
 ```
 
 ## Getting started
