@@ -15,13 +15,13 @@
 #' @return A \code{\link[imager]{pixset}} or a labeled image \code{\link[imager]{cimg}}
 #'
 #' @details The function applies several \code{\link{imager}} morphological
-#' manipulations to select the regions of interest. Thes include
+#' manipulations to select the regions of interest. These include
 #' \code{\link[imager]{threshold}} which sets all values below certain cut to
 #' 0; \code{\link[imager]{shrink}}/\code{\link[imager]{grow}} for pixel set
 #' dilation and erosion; \code{\link[imager]{fill}}\\code{\link[imager]{clean}}
 #' for removing isolated regions and holes. When \code{n} is provided, the
 #' individual regions (connected components) are selected where \code{tolerance}
-#' is used to determin if two pixels belong to the same region.
+#' is used to determine if two pixels belong to the same region.
 #'
 #' @examples
 #' # load libraries
@@ -94,18 +94,18 @@ roi_select.cimg <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
 
 #' Show the selected regions of interest
 #'
-#' Show/highlight the selected regions of interest on differen image channels
+#' Show/highlight the selected regions of interest on different image channels
 #'
 #' @param img An object of class \code{\link[imager]{cimg}}
 #' @param px An object of class \code{\link[imager]{pixset}}
 #' @param labels An object of class \code{\link[imager]{cimg}}
-#' @param ind A \code{numeric} object of length two. For the channel indicies.
+#' @param ind A \code{numeric} object of length two. For the channel indexes.
 #'
 #' @return NULL
 #'
 #' @details Calling this function on an image and a \code{px}, \code{\link[imager]{pixset}}
 #' of the same dimensions returns four different plots. The original image, a
-#' a low reslution representation of the \code{\link[imager]{pixset}} and the
+#' a low resolution representation of the \code{\link[imager]{pixset}} and the
 #' two channels indicated through \code{ind} highlighted. Additionally, when
 #' labels are provided through \code{labels} the regions are individually
 #' labeled.
@@ -194,7 +194,7 @@ roi_show.cimg <- function(img, px, labels, ind = c(1,2)) {
 #' @param img An object of class \code{\link[imager]{cimg}}
 #' @param px An object of class \code{\link[imager]{pixset}} or with labels
 #' \code{\link[imager]{cimg}}
-#' @param ind A \code{numeric} of length two for channel indecies
+#' @param ind A \code{numeric} of length two for channel indexes
 #'
 #' @return A \code{list} of three items. The first two items are the values of
 #' the pixel intensities of the channels indicated by \code{ind}. The third is
@@ -335,7 +335,7 @@ intensity_show <- function(pix_int) {
 #'
 #' @details The co-localization stats requested in \code{type} is returned as
 #' list items for each. When different labels are provided, the stats are
-#' caculated for each label individually.
+#' calculated for each label individually.
 #'
 #' @examples
 #' # load libraries
@@ -364,9 +364,9 @@ coloc_test <- function(pix_int, type = 'pearsons') {
   }
 
   # unpack pix_int
-  img1.num = pix_int[[1]]
-  img2.num = pix_int[[2]]
-  f = pix_int[[3]]
+  img1.num <- pix_int[[1]]
+  img2.num <- pix_int[[2]]
+  f <- pix_int[[3]]
 
   # use labels to subset images when provided
   if(length(unique(pix_int[[3]])) > 1) {
@@ -375,10 +375,18 @@ coloc_test <- function(pix_int, type = 'pearsons') {
     ll <- lapply(list(img1.num, img2.num), split, f = f)
 
     corr <- switch (type,
-                    'pearsons' = list(p = unlist(mapply(function(x, y) .pearson(x, y), ll[[1]], ll[[2]]))),
-                    'manders' = list(r = unlist(mapply(function(x, y) .manders(x, y), ll[[1]], ll[[2]]))),
-                    'all' = list(p = unlist(mapply(function(x, y) .pearson(x, y), ll[[1]], ll[[2]])),
-                                 r = unlist(mapply(function(x, y) .manders(x, y), ll[[1]], ll[[2]])))
+                    'pearsons' = list(p = unlist(mapply(function(x, y) {
+                      .pearson(x, y)
+                      }, ll[[1]], ll[[2]]))),
+                    'manders' = list(r = unlist(mapply(function(x, y) {
+                      .manders(x, y)
+                      }, ll[[1]], ll[[2]]))),
+                    'all' = list(p = unlist(mapply(function(x, y) {
+                      .pearson(x, y)
+                      }, ll[[1]], ll[[2]])),
+                                 r = unlist(mapply(function(x, y) {
+                                   .manders(x, y)
+                                   }, ll[[1]], ll[[2]])))
     )
   } else {
     # calculate correlations

@@ -12,7 +12,7 @@ intensity_get(img, px, ind = c(1, 2))
 \item{px}{An object of class \code{\link[imager]{pixset}} or with labels
 \code{\link[imager]{cimg}}}
 
-\item{ind}{A \code{numeric} of length two for channel indecies}
+\item{ind}{A \code{numeric} of length two for channel indexes}
 }
 \value{
 A \code{list} of three items. The first two items are the values of

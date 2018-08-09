@@ -8,7 +8,7 @@ Authors@R: person("Mahmoud", "Ahmed",
     role = c("aut", "cre"))
 URL: https://github.com/MahShaaban/colocr
 BugReports: https://github.com/MahShaaban/colocr/issues
-Description: Automate the co-localization analysis of fluoresence microscopy 
+Description: Automate the co-localization analysis of fluorescence microscopy 
   images. Selecting regions of interest, extract pixel intensities from 
   the image channels and calculate different co-localization statistics.
 Encoding: UTF-8

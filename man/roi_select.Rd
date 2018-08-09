@@ -33,13 +33,13 @@ Select regions of interest in an image using different morphological operations
 }
 \details{
 The function applies several \code{\link{imager}} morphological
-manipulations to select the regions of interest. Thes include
+manipulations to select the regions of interest. These include
 \code{\link[imager]{threshold}} which sets all values below certain cut to
 0; \code{\link[imager]{shrink}}/\code{\link[imager]{grow}} for pixel set
 dilation and erosion; \code{\link[imager]{fill}}\\code{\link[imager]{clean}}
 for removing isolated regions and holes. When \code{n} is provided, the
 individual regions (connected components) are selected where \code{tolerance}
-is used to determin if two pixels belong to the same region.
+is used to determine if two pixels belong to the same region.
 }
 \examples{
 # load libraries

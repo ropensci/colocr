@@ -20,7 +20,7 @@ Perform co-localization test statistics.
 \details{
 The co-localization stats requested in \code{type} is returned as
 list items for each. When different labels are provided, the stats are
-caculated for each label individually.
+calculated for each label individually.
 }
 \examples{
 # load libraries
