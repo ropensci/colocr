@@ -1,10 +1,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.Rprofile$
 ^\.travis\.yml$
-^inst/colocr_app/\.travis\.yml$
 ^appveyor\.yml$
 ^codecov\.yml$
 ^docker/Dockerfile$
-^packrat/
-^\.Rprofile$
+^inst/colocr_app/\.travis\.yml$
 ^inst/colocr_app/\.git$
+^inst/colocr_app/packrat/.*$
+^inst/colocr_app/packrat/*/.*$
