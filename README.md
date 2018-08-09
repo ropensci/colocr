@@ -1,6 +1,7 @@
 [![Travis-CI Build Status](https://travis-ci.org/MahShaaban/colocr.svg?branch=master)](https://travis-ci.org/MahShaaban/colocr)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/MahShaaban/colocr?branch=master&svg=true)](https://ci.appveyor.com/project/MahShaaban/colocr)
 [![Coverage Status](https://img.shields.io/codecov/c/github/MahShaaban/colocr/master.svg)](https://codecov.io/github/MahShaaban/colocr?branch=master)
+[![Build Status](https://travis-ci.org/MahShaaban/colocr_app.svg?branch=master)](https://travis-ci.org/MahShaaban/colocr_app)
 [![status](https://img.shields.io/badge/shinyapps.io-running-green.svg)](https://mahshaaban.shinyapps.io/colocr_app/) 
 
 # colocr
