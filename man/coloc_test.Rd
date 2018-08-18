@@ -4,12 +4,16 @@
 \alias{coloc_test}
 \title{Test Co-localization}
 \usage{
-coloc_test(pix_int, type = "pearsons")
+coloc_test(img, ind = c(1, 2), type = "pearsons")
 }
 \arguments{
-\item{pix_int}{A list, such as that returned by \code{\link{intensity_get}}}
+\item{img}{A \code{\link[imager]{cimg}} obeject such as the one returned
+from \code{\link{roi_select}}}
 
-\item{type}{A \code{character}; "pearsons", "manders" or "all"}
+\item{ind}{A \code{numeric} object of length two. For the channel indexes.}
+
+\item{type}{A \code{character} vector of the desired co-localization
+statistics. Default is 'pearsons', other inputs are 'manders' or 'all'.}
 }
 \value{
 A \code{list}.
@@ -23,20 +27,16 @@ list items for each. When different labels are provided, the stats are
 calculated for each label individually.
 }
 \examples{
-# load libraries
+# load required libraries
 library(imager)
+library(magrittr)
 
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- load.image(fl)
 
-# choose roi
-px <- roi_select(img, threshold = 90)
-
-# get intensities
-pix_int <- intensity_get(img, px)
-
-# call coloc_test
-coloc_test(pix_int)
+# choose roi and test colocalization
+roi_select(img, threshold = 90) \%>\%
+  coloc_test()
 
 }

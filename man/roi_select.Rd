@@ -26,7 +26,10 @@ roi_select(img, threshold, shrink = 5, grow = 5, fill = 5, clean = 5,
 \item{n}{A \code{numeric} of the number of regions of interest}
 }
 \value{
-A \code{\link[imager]{pixset}} or a labeled image \code{\link[imager]{cimg}}
+A \code{\link[imager]{cimg}}. The original input \code{img} with an
+additional attribute \code{label}. \code{label} is a \code{vector} of
+\code{integer}s. The labels for the selected regions of interests starts
+from 1 and 0 is ignored.
 }
 \description{
 Select regions of interest in an image using different morphological operations
@@ -42,19 +45,18 @@ individual regions (connected components) are selected where \code{tolerance}
 is used to determine if two pixels belong to the same region.
 }
 \examples{
-# load libraries
+# load required libraries
 library(imager)
-library(colocr)
+library(magrittr)
 
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- load.image(fl)
 
-# choose parameters
-px <- roi_select(img, threshold = 90)
+# choose ROI
+newimg <- roi_select(img, threshold = 90)
 
-# highlight chosen region of interest
-plot(img)
-highlight(px)
+# check the ROI labels
+unique(attr(newimg, 'label'))
 
 }

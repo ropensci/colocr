@@ -12,7 +12,10 @@
 #' @param tolerance A \code{numeric} to be passed to \code{\link[imager]{label}}
 #' @param n A \code{numeric} of the number of regions of interest
 #'
-#' @return A \code{\link[imager]{pixset}} or a labeled image \code{\link[imager]{cimg}}
+#' @return A \code{\link[imager]{cimg}}. The original input \code{img} with an
+#' additional attribute \code{label}. \code{label} is a \code{vector} of
+#' \code{integer}s. The labels for the selected regions of interests starts
+#' from 1 and 0 is ignored.
 #'
 #' @details The function applies several \code{\link{imager}} morphological
 #' manipulations to select the regions of interest. These include
@@ -24,20 +27,19 @@
 #' is used to determine if two pixels belong to the same region.
 #'
 #' @examples
-#' # load libraries
+#' # load required libraries
 #' library(imager)
-#' library(colocr)
+#' library(magrittr)
 #'
 #' # load images
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 #' img <- load.image(fl)
 #'
-#' # choose parameters
-#' px <- roi_select(img, threshold = 90)
+#' # choose ROI
+#' newimg <- roi_select(img, threshold = 90)
 #'
-#' # highlight chosen region of interest
-#' plot(img)
-#' highlight(px)
+#' # check the ROI labels
+#' unique(attr(newimg, 'label'))
 #'
 #' @importFrom imager is.cimg grayscale threshold as.pixset shrink grow fill clean
 #'
@@ -56,7 +58,7 @@ roi_select.default <- function(img, ...) {
 
 #' @export
 roi_select.cimg <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
-                                  clean = 5, tolerance = .1, n) {
+                            clean = 5, tolerance = .1, n) {
 
   if(!is.numeric(threshold)) {
     stop('threshold should be a numeric between 0 and 100.')
@@ -86,50 +88,49 @@ roi_select.cimg <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
   # add labels when n is provided
   if(!missing(n)) {
     labs.px <- .labels_add(px.m, tolerance = tolerance, n = n)
-    return(labs.px)
+    newimg <- img
+    attr(newimg, 'label') <- as.numeric(labs.px)
   } else {
-    return(px.m)
+    newimg <- img
+    attr(newimg, 'label') <- as.numeric(px.m)
   }
+  return(newimg)
 }
 
 #' Show the selected regions of interest
 #'
 #' Show/highlight the selected regions of interest on different image channels
 #'
-#' @param img An object of class \code{\link[imager]{cimg}}
-#' @param px An object of class \code{\link[imager]{pixset}}
-#' @param labels An object of class \code{\link[imager]{cimg}}
+#' @param img A \code{\link[imager]{cimg}} obeject such as the one returned
+#' from \code{\link{roi_select}}
 #' @param ind A \code{numeric} object of length two. For the channel indexes.
 #'
 #' @return NULL
 #'
-#' @details Calling this function on an image and a \code{px}, \code{\link[imager]{pixset}}
-#' of the same dimensions returns four different plots. The original image, a
-#' a low resolution representation of the \code{\link[imager]{pixset}} and the
-#' two channels indicated through \code{ind} highlighted. Additionally, when
-#' labels are provided through \code{labels} the regions are individually
-#' labeled.
+#' @details calling this function with \code{img} object which is returned from
+#' \code{\link{roi_select}} returns four different plots. The original image, a
+#' low resolution representation of the selected regions of interest and the
+#' two channels indicated through \code{ind} highlighted.
 #'
 #' @examples
-#' # load libraries
+#' # load required libraries
 #' library(imager)
+#' library(magrittr)
 #'
 #' # load images
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 #' img <- load.image(fl)
 #'
-#' # choose parameters
-#' px <- roi_select(img, threshold = 90)
+#' # choose and show ROI
+#' par(mfrow=c(2,2))
+#' roi_select(img, threshold = 90) %>%
+#'   roi_show()
 #'
-#' # call coloc_test
-#' roi_show(img, px)
-#'
-#' @importFrom imager highlight channel
-#' @importFrom graphics plot text
-#' @importFrom stats aggregate median
+#' @importFrom imager highlight channel cimg
+#' @importFrom graphics plot
 #'
 #' @export
-roi_show <- function(img, px, labels, ind = c(1,2)) {
+roi_show <- function(img, ind = c(1,2)) {
 UseMethod('roi_show')
 }
 
@@ -141,7 +142,16 @@ roi_show.default <- function(img, ...) {
 }
 
 #' @export
-roi_show.cimg <- function(img, px, labels, ind = c(1,2)) {
+roi_show.cimg <- function(img, ind = c(1,2)) {
+
+  # get labels from img
+  # transform labels to cimg object
+  labels <- attr(img, 'label')
+  dims <- dim(grayscale(img))
+  a <- array(labels, dim = dims)
+
+  px <- cimg(a)
+
   # merge image
   plot(img,
        axes = FALSE,
@@ -151,26 +161,6 @@ roi_show.cimg <- function(img, px, labels, ind = c(1,2)) {
   plot(px,
        axes = FALSE,
        main = 'Pixel Set')
-
-  # add labels when TRUE
-  if(!missing(labels)) {
-    if(!is.cimg(labels)) {
-      stop('labels needs to be a a cimg object.')
-    }
-
-    # change to pixset
-    px <- as.pixset(labels)
-
-    # get positions for labels
-    px.labs <- as.data.frame(labels)
-    px.labs <- px.labs[px.labs$value != 0,]
-    px.labs <- aggregate(px.labs[, c('x', 'y')],
-                         by = list(value = px.labs$value),
-                         FUN = median)
-
-    # draw labels
-    text(px.labs$x, px.labs$y, labels = px.labs$value, col = 'yellow')
-  }
 
   # channel one highlighted
   img1 <- channel(img, ind = ind[1])
@@ -187,90 +177,11 @@ roi_show.cimg <- function(img, px, labels, ind = c(1,2)) {
   highlight(px)
 }
 
-#' Get pixel intensities
-#'
-#' Get the pixel intensities of certain image channels
-#'
-#' @param img An object of class \code{\link[imager]{cimg}}
-#' @param px An object of class \code{\link[imager]{pixset}} or with labels
-#' \code{\link[imager]{cimg}}
-#' @param ind A \code{numeric} of length two for channel indexes
-#'
-#' @return A \code{list} of three items. The first two items are the values of
-#' the pixel intensities of the channels indicated by \code{ind}. The third is
-#' the labels of the individual regions of interest when a labeled \code{px}
-#' is provided. Otherwise, the value of labels is set to 1.
-#'
-#' @examples
-#' # load libraries
-#' library(imager)
-#'
-#' # load images
-#' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-#' img <- load.image(fl)
-#'
-#' # choose parameters
-#' px <- roi_select(img, threshold = 90)
-#'
-#' # call coloc_test
-#' pix_int <- intensity_get(img, px)
-#'
-#' @importFrom imager channel is.cimg as.pixset is.pixset
-#'
-#' @export
-intensity_get <- function(img, px, ind = c(1,2)) {
-  UseMethod('intensity_get')
-}
-
-#' @export
-intensity_get.default <- function(img, ...) {
-  warning(paste("img is of class",
-                class(img),
-                ". img should be a cimg object."))
-}
-
-#' @export
-intensity_get.cimg <- function(img, px, ind = c(1,2)) {
-
-  # get channel intensities
-  img1.g <- channel(img, ind = ind[1])
-  img2.g <- channel(img, ind = ind[2])
-
-  # use labels to subset images when provided
-  if(is.cimg(px)) {
-    # subset and change images to numeric
-    img1.num <- as.numeric(img1.g[as.pixset(px)])
-    img2.num <- as.numeric(img2.g[as.pixset(px)])
-
-    # calculate correlations
-    f <- as.data.frame(px)
-    f <- f[f$value != 0,]
-    f <- f$value
-
-    # make list
-    pixel_int <- list(channel1 = img1.num,
-                      channel2 = img2.num,
-                      labels = f)
-  } else if(is.pixset(px)) {
-    # subset and change images to numeric
-    img1.num <- as.numeric(img1.g[px])
-    img2.num <- as.numeric(img2.g[px])
-
-    # make list
-    pixel_int <- list(channel1 = img1.num,
-                      channel2 = img2.num,
-                      labels = rep(1, length(img1.num)))
-  }
-
-  # retrun corr
-  return(pixel_int)
-}
-
 #' Show pixel intensities
 #'
 #' Show the pixel intensities of certain image channels
 #'
-#' @param pix_int A list, such as that returned by \code{\link{intensity_get}}
+#' @inheritParams roi_show
 #'
 #' @return NULL
 #'
@@ -279,28 +190,39 @@ intensity_get.cimg <- function(img, px, ind = c(1,2)) {
 #' distribution of the intensities from the two channels.
 #'
 #' @examples
-#' # load libraries
+#' # load required libraries
 #' library(imager)
+#' library(magrittr)
 #'
 #' # load images
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 #' img <- load.image(fl)
 #'
-#' # choose parameters
-#' px <- roi_select(img, threshold = 90)
-#'
-#' # call coloc_test
-#' pix_int <- intensity_get(img, px)
-#'
-#' # call intensity_show
-#' intensity_show(pix_int)
+#' # choose ROI and show the pixel intensities
+#' roi_select(img, threshold = 90) %>%
+#'   intensity_show()
 #'
 #' @importFrom stats density
 #' @importFrom scales alpha
 #' @importFrom graphics plot lines
 #'
 #' @export
-intensity_show <- function(pix_int) {
+intensity_show <- function(img, ind = c(1,2)) {
+  UseMethod('intensity_show')
+}
+
+#' @export
+intensity_show.default <- function(img, ...) {
+  warning(paste("img is of class",
+                class(img),
+                ". img should be a cimg object."))
+}
+
+#' @export
+intensity_show.cimg <- function(img, ind = c(1,2)) {
+  # get pixel intensities
+  pix_int <- .intensity_get(img, ind = ind)
+
   if(!is.list(pix_int)) {
     stop('pix_int should be a list, output of coloc_test.')
   }
@@ -328,8 +250,9 @@ intensity_show <- function(pix_int) {
 #'
 #' Perform co-localization test statistics.
 #'
-#' @inheritParams intensity_show
-#' @param type A \code{character}; "pearsons", "manders" or "all"
+#' @inheritParams roi_show
+#' @param type A \code{character} vector of the desired co-localization
+#' statistics. Default is 'pearsons', other inputs are 'manders' or 'all'.
 #'
 #' @return A \code{list}.
 #'
@@ -338,26 +261,36 @@ intensity_show <- function(pix_int) {
 #' calculated for each label individually.
 #'
 #' @examples
-#' # load libraries
+#' # load required libraries
 #' library(imager)
+#' library(magrittr)
 #'
 #' # load images
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 #' img <- load.image(fl)
 #'
-#' # choose roi
-#' px <- roi_select(img, threshold = 90)
-#'
-#' # get intensities
-#' pix_int <- intensity_get(img, px)
-#'
-#' # call coloc_test
-#' coloc_test(pix_int)
+#' # choose roi and test colocalization
+#' roi_select(img, threshold = 90) %>%
+#'   coloc_test()
 #'
 #' @importFrom imager is.cimg is.pixset channel
 #'
 #' @export
-coloc_test <- function(pix_int, type = 'pearsons') {
+coloc_test <- function(img, ind = c(1,2), type = 'pearsons') {
+  UseMethod('coloc_test')
+}
+
+#' @export
+coloc_test.default <- function(img, ...) {
+  warning(paste("img is of class",
+                class(img),
+                ". img should be a cimg object."))
+}
+
+#' @export
+coloc_test.cimg <- function(img, ind = c(1,2), type = 'pearsons') {
+  # get pixel intensity
+  pix_int <- .intensity_get(img, ind = ind)
 
   if(!type %in% c('pearsons', 'manders', 'all')) {
     stop('type takes one of these values; pearsons, manders or all')

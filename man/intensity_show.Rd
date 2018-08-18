@@ -4,10 +4,13 @@
 \alias{intensity_show}
 \title{Show pixel intensities}
 \usage{
-intensity_show(pix_int)
+intensity_show(img, ind = c(1, 2))
 }
 \arguments{
-\item{pix_int}{A list, such as that returned by \code{\link{intensity_get}}}
+\item{img}{A \code{\link[imager]{cimg}} obeject such as the one returned
+from \code{\link{roi_select}}}
+
+\item{ind}{A \code{numeric} object of length two. For the channel indexes.}
 }
 \description{
 Show the pixel intensities of certain image channels
@@ -18,20 +21,16 @@ plot of the pixel intensities from two channels. The second is the density
 distribution of the intensities from the two channels.
 }
 \examples{
-# load libraries
+# load required libraries
 library(imager)
+library(magrittr)
 
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- load.image(fl)
 
-# choose parameters
-px <- roi_select(img, threshold = 90)
-
-# call coloc_test
-pix_int <- intensity_get(img, px)
-
-# call intensity_show
-intensity_show(pix_int)
+# choose ROI and show the pixel intensities
+roi_select(img, threshold = 90) \%>\%
+  intensity_show()
 
 }

@@ -4,14 +4,11 @@
 \alias{roi_show}
 \title{Show the selected regions of interest}
 \usage{
-roi_show(img, px, labels, ind = c(1, 2))
+roi_show(img, ind = c(1, 2))
 }
 \arguments{
-\item{img}{An object of class \code{\link[imager]{cimg}}}
-
-\item{px}{An object of class \code{\link[imager]{pixset}}}
-
-\item{labels}{An object of class \code{\link[imager]{cimg}}}
+\item{img}{A \code{\link[imager]{cimg}} obeject such as the one returned
+from \code{\link{roi_select}}}
 
 \item{ind}{A \code{numeric} object of length two. For the channel indexes.}
 }
@@ -19,25 +16,23 @@ roi_show(img, px, labels, ind = c(1, 2))
 Show/highlight the selected regions of interest on different image channels
 }
 \details{
-Calling this function on an image and a \code{px}, \code{\link[imager]{pixset}}
-of the same dimensions returns four different plots. The original image, a
-a low resolution representation of the \code{\link[imager]{pixset}} and the
-two channels indicated through \code{ind} highlighted. Additionally, when
-labels are provided through \code{labels} the regions are individually
-labeled.
+calling this function with \code{img} object which is returned from
+\code{\link{roi_select}} returns four different plots. The original image, a
+low resolution representation of the selected regions of interest and the
+two channels indicated through \code{ind} highlighted.
 }
 \examples{
-# load libraries
+# load required libraries
 library(imager)
+library(magrittr)
 
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- load.image(fl)
 
-# choose parameters
-px <- roi_select(img, threshold = 90)
-
-# call coloc_test
-roi_show(img, px)
+# choose and show ROI
+par(mfrow=c(2,2))
+roi_select(img, threshold = 90) \%>\%
+  roi_show()
 
 }
