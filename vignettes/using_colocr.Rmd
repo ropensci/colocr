@@ -1,0 +1,377 @@
+---
+title: "Using colocr"
+subtitle: "An R package for conducting co-localization analysis"
+author: "Mahmoud Ahmed"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    self_contained: yes
+vignette: >
+  %\VignetteIndexEntry{Using colocr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = 'center',
+  message = FALSE
+)
+```
+
+## Overview
+
+A few R packages are available for conducting image analysis, which is a very wide topic. As a result, some of us might feel at a loss when all they want to do is a simple co-localization calculations on a small number of microscopy images. This package provides a simple straight forward workflow for loading images, choosing regions of interest (ROIs) and calculating co-localization statistics. Included in the package, is a [shiny app](https://shiny.rstudio.com) that can be invoked locally to interactively select the regions of interest in a semi-automatic way. The package is based on the R package [`imager`](https://cran.r-project.org/web/packages/imager/vignettes/gettingstarted.html).
+
+
+## Installing `colocr`
+
+The package development version is available at [github](https://github.com/MahShaaban/colocr).
+
+```{r install_github, eval=FALSE}
+devtools::install_github('MahShaaban/colocr')
+```
+
+
+## Getting started
+
+To get started, load the required packages and the images. The images below
+are from [DU145](https://en.wikipedia.org/wiki/DU145) cell line and were 
+stained for two proteins; [RKIP](https://en.wikipedia.org/wiki/Raf_kinase_inhibitor_protein) and [LC3](https://en.wikipedia.org/wiki/MAP1LC3B).
+Then, apply the appropriate parameters for choosing the regions of interest
+using the `roi_select`. Finally, check the appropriateness of the 
+parameters by highlighting the ROIs on the image.
+
+```{r getting_started, fig.width=7, fig.height=7}
+# load libraries
+library(imager)
+library(purrr)
+library(colocr)
+
+# load images
+fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
+img <- load.image(fl)
+
+# select ROI and show the results
+par(mfrow = c(2,2), mar = rep(1, 4))
+
+img %>%
+  roi_select(threshold = 90) %>%
+  roi_show()
+```
+
+The same can be achieved interactively using an accompanying **shiny** app.
+To launch the app run.
+
+```{r run_app, eval=FALSE}
+run_app()
+```
+
+The reset of the analysis depends on the particular kind of images. Now, `colocr`
+implements two simple co-localization statistics; Pearson's Coefficient Correlation [(PCC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013) and the Manders Overlap Coefficient [(MOC)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3074624/).
+
+To apply both measures of correlation, we first get the pixel intensities and call `roi_test` on the merge image.
+
+```{r call_roi_test}
+# calculate co-localization statistics
+img %>%
+  roi_select(threshold = 90) %>%
+  roi_test(type = 'both')
+```
+
+The same analysis and more can be conducted using a web interface for the package available [here](https://mahshaaban.shinyapps.io/colocr_app2/)
+
+## Detailed Example
+
+The following example uses images from the [DU145](https://en.wikipedia.org/wiki/DU145) prostate cancer cell line. In this experiment, the cell line was treated with probes for two proteins [RKIP](https://en.wikipedia.org/wiki/Raf_kinase_inhibitor_protein) and [LC3](https://en.wikipedia.org/wiki/MAP1LC3B). The aim of this experiment is to determine, how much of the two proteins are co-localized or co-distributed in the particular cell line.  
+
+```{r show_images, fig.width=7, fig.height=2.5}
+# load required libraries
+library(imager)
+library(colocr)
+
+# load images
+img <- load.image(system.file('extdata', 'Image0001_.jpg', package = 'colocr'))       # merge
+img1 <- channel(img, 1)  # red
+img2 <- channel(img, 2)  # green
+
+# show images
+par(mfrow = c(1,3), mar = rep(1,4))
+plot(img, axes = FALSE, main = 'Merged')
+plot(img1, axes = FALSE, main = 'RKIP')
+plot(img2, axes = FALSE, main = 'LC3')
+```
+
+The `colocr` package provides a straight forward workflow for determining the amount of co-localization. This workflow consists of two steps only:
+
+  * Choosing regions of interest (ROI)
+  * Calculating the correlation between the pixel intensities
+
+The first step can be achieved by calling `roi_select` on the image. In addition, `roi_show` can be used to visualize the regions that were selected to make sure they
+match the expectations. Similarly, `roi_check` can be used to visualize the 
+pixel intensities of the selected regions. The second step is calling `roi_test`
+to calculate the co-localization statistics.
+
+The calls to these functions can be piped using `%>%` to reduce the amount of typing
+and make the code more readable.  
+
+```{r workflow, echo=FALSE, out.width='300px'}
+workflow_fig <- system.file('colocr_app', 'workflow.png', package = 'colocr')
+knitr::include_graphics(workflow_fig)
+```
+
+### Choosing ROIs
+
+The function `roi_select` relies on different algorithms from the `imager` package. However, using the functions to select the ROIs doesn't require any background knowledge in the workings of the algorithms and can be done through trying different parameters and choosing the most appropriate ones. Typically, one wants to select the 
+regions of the image occupied by a cell or a group of cells. However, the package can
+also be used to select certain areas/structures within the cell if they are distinct 
+enough. The details of these parameters are documented in the function help page `?roi_select`.
+
+```{r call_roi_select}
+# select regions of interest
+img_rois <- img %>%
+  roi_select(threshold = 90)
+```
+
+This function returns `cimg` object containing the original input image and an added attribut called `label` which indicates the selected regions. `label` is a vector of `integer`s; with 0 indicating the non-selected pixels and 1 for the selected regions. When the argument `n` is provided to `roi_select`, 1 is replaced by `integer` labels for each of the selected regions separatels
+
+```{r output_str}
+# class of the returned object
+class(img); class(img_rois)
+
+# name of added attribut
+names(attributes(img)); names(attributes(img_rois))
+
+# str of labels
+label <- attr(img_rois, 'label')
+str(label)
+
+# unique labels 
+unique(label)
+```
+
+Now, to make sure these parameters are appropriately encompassing the ROIs, call the `roi_show` to visualize side by side the original merge picture, a low resolution picture of the ROI and the images from the two different channels highlighted by the ROIs.
+
+```{r call_roi_show, fig.width=7, fig.height=7}
+# select ROI and show the results
+par(mfrow = c(2,2), mar = rep(1, 4))
+
+img_rois %>%
+  roi_show()
+```
+
+Both the co-localization statistics implemented in this package quantify different aspects of the linear trend between the pixel intensities from the two channels of the image. Therefore, it is useful to visualize this trend and the distribution of the intensities to make sure the analysis is appropriate.
+
+```{r call_coloc_show, fig.width=7, fig.height=3}
+# show the scatter and density of the pixel values
+par(mfrow=c(1,2), mar = c(4,4,1,1))
+
+img_rois %>%
+  roi_check()
+```
+
+Arguable, selecting the regions of interest is the most time consuming step in this kind of analysis. Usually, one has to do this selection by hand when using image analysis software such as [imageJ]([CRAN](https://cran.r-project.org)). This package only semi-automate this step, but still relies on the user's judgment on which parameters to use and whether or not the selected ROIs are appropriate. To make life easier, the package provides a simple shiny app to interactively determine these parameters and use it in the rest of the workflow. To launch the app run the following
+
+```{r run_app2, eval=FALSE}
+# run the shiny app
+run_app()
+```
+
+And here is a screen shot from the app after applying the same parameters used previously.
+
+```{r app_screenshot, echo=FALSE, out.width="600px"}
+# show the screen shot of the shiny app
+app_ss <- system.file('colocr_app/tests/mytest-expected', '001.png', package = 'colocr')
+knitr::include_graphics(app_ss)
+```
+
+Although this app was designed to be invoked from within the package to help the users to choose the selection parameters interactively, it's a stand alone app and can run the same analysis described here. The app can be accessed from the web [here](https://mahshaaban.shinyapps.io/colocr_app2/)
+
+### Calculating Correlation Statistics
+
+The two different statistics implemented in this package are the PCC and SCC. The formal description and the rational for using them is detailed elsewhere. Invoking the test is a one function call on the selected regions of interest. 
+
+```{r call_roi_test2}
+# Calculate the co-localization statistics
+tst <- img_rois %>%
+  roi_test(type = 'both')
+tst
+```
+
+`roi_test` returns a `data.frame` with a column for each of the desired statistics. When `n` is used in the selection of the regions of interest, a separate row is returned for each 
+region.
+
+```{r output_str2}
+# str of the roi_test output
+str(tst)
+```
+
+## Selecting a subset of the cells in an image
+
+In this example, we want to select the only one cell as a regions of interest 
+and make sure no background is included in the selected region. To do that, we
+use the different arguments in `roi_select`.
+
+```{r roi_subset, fig.width=7, fig.height=7}
+# load image
+img2 <- load.image(system.file('extdata', 'Image0003_.jpg', package = 'colocr'))       # merge
+
+# select ROI and show the results
+par(mfrow = c(2,2), mar = rep(1, 4))
+
+img2 %>%
+  roi_select(threshold = 85,
+             shrink = 10,
+             clean = 10,
+             n = 1) %>%
+  roi_show()
+```
+
+## Analyzing a collection of images at once
+
+To process a collection of images at once, `map` from the `purrr` package can be used
+to map the function's call to a list of images. So the first step should be to make
+alist of images. Then apply the same workflow to the list inside `map`.
+
+```{r analyze_collection}
+# make a list of images
+image_list <- list(img, img2)
+
+# map the function calls to the list of images
+map(image_list, function(i) {
+    i %>%
+      roi_select(threshold = 90) %>%
+      roi_test()
+  })
+```
+
+In addition, `map2` or `pmap` from the `purrr` package can be used with two or more
+lists in case different inputs are needed for each image.
+
+```{r analyze_collection2}
+# make threshold input list
+thresholds <- list(90, 95)
+
+# map the function calls to the list of images and thresholds
+map2(image_list, thresholds, function(i, t) {
+  i %>%
+    roi_select(threshold = t) %>%
+    roi_test()
+})
+```
+
+
+## Reproducing the shiny app output
+
+```{r}
+# show the output
+stats <- read.csv(system.file('colocr_app', 'stats 2018-09-01 09_42_59.csv', package = 'colocr'))
+```
+
+```{r}
+# reproduce the output
+inputs <- read.csv(system.file('colocr_app', 'inputs 2018-09-01 09_43_02.csv', package = 'colocr'), stringsAsFactors = FALSE)
+
+rep_stats <- inputs %>%
+  pmap(~system.file('extdata', ..2, package = 'colocr') %>%
+         load.image %>%
+         roi_select(threshold = ..3,
+                    shrink = ..4,
+                    grow = ..5,
+                    fill = ..6, 
+                    clean = ..7,
+                    tolerance = ..8,
+                    n = ..9) %>%
+         roi_test(type = 'both'))
+```
+
+```{r}
+# all equal
+all(round(stats$pcc, 3) == round(c(rep_stats[[1]]$pcc, rep_stats[[2]]$pcc), 3))
+all(round(stats$moc, 3) == round(c(rep_stats[[1]]$moc, rep_stats[[2]]$moc), 3))
+```
+
+## Description of the co-localization statistics
+
+The following is a brief discussion of the theory and interpretations of different statistics that we used in this package as a measure of co-localization. For thorough and formal details, check this article by [Dunn et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3074624/).
+
+### PCC
+
+Pearson's correlation coefficient is the co-variance of the pixel intensity from the two channels. The mean of the intensities is subtracted from each pixel which makes the coefficient independent of the background level.
+
+The PCC is calculated as follows
+
+$$
+PPC = \frac{\sum_i{(R_i-\bar R)\times(G_i-\bar G)}}{\sqrt{\sum_i{(R_i-\bar R)^2\times\sum_i(G_i-\bar G)^2}}}
+$$
+
+Where $R_i$ and the $G_i$ is the intensities of the red and green channels and the $\bar R$ and $\bar G$ are the average intensities.
+
+The values of PCC are between 1 and -1 for perfect correlations in the positive and negative directions respectively and 0 means no correlation.
+
+### MOC
+
+On the other hand, the Manders Overlap Coefficient doesn't require subtraction of the mean. Therefore, the values are always between 0 and 1. Also, the MOC is independent from signal proportionality. 
+
+$$
+MOC = \frac{\sum_i{(R_i\times G_i)}}{\sqrt{\sum_i{R_i^2\times\sum_i G_i^2}}}
+$$
+Where $R_i$ and the $G_i$ is the intensities of the red and green channels.
+
+## Colocalization Benchmark Source
+
+> The Colocalization Benchmark Source (CBS) is a free collection of downloadable images to test and validate the degree of colocalization of markers in fluorescence microscopy studies. It consists of computer-simulated images with exactly known (pre-defined) values of colocalization ranging from 0% to 90%. They can be downloaded as sets as well as separately.
+
+Here, we used two examples from the CBS to test the results of the analysis using `colocr`.
+
+```{r example1_roi, fig.height=4, fig.width=4}
+# load image
+fl1 <- system.file('extdata', 'example1.png', package = 'colocr')
+ex1 <- load.image(fl1)
+
+# select and show regioins of interest (based on the app)
+par(mfrow=c(2,2), mar = rep(1, 4))
+
+ex1 %>%
+  roi_select(threshold = 90, shrink = 8, n = 50) %>%
+  roi_show()
+```
+
+```{r example1_test}
+# calculate co-localization statistics
+# (expected ppc = 0.68, moc = 0.83)
+ex1 %>%
+  roi_select(threshold = 90, shrink = 8, n = 50) %>%
+  roi_test(type = 'both') %>%
+  colMeans()
+```
+
+```{r example3_roi, fig.height=4, fig.width=4}
+# load image
+fl3 <- system.file('extdata', 'example3.png', package = 'colocr')
+ex3 <- load.image(fl3)
+
+# select and show regioins of interest (based on the app)
+par(mfrow=c(2,2), mar = rep(1, 4))
+
+ex3 %>%
+  roi_select(threshold = 90, shrink = 9, grow = 1, fill = 10, clean = 10, n = 20) %>%
+  roi_show()
+```
+
+```{r example3_test}
+# calculate co-localization statistics
+# (expected ppc = 0.61, moc = 0.71)
+ex3 %>%
+  roi_select(threshold = 90, shrink = 9, grow = 1, fill = 10, clean = 10, n = 20) %>%
+  roi_test() %>%
+  colMeans()
+```
+
+## Acknowledgement
+
+* The vignette images from [Lai Huyen Trang](https://www.researchgate.net/profile/Lai_Huyen_Trang)  
+* The test examples from [Colocalization Benchmark Source (CBS)](https://www.colocalization-benchmark.com/index.html)  
+* The implementation of the co-localization statistics from [Dunn et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3074624/)  

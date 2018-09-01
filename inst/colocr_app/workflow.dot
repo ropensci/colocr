@@ -1,0 +1,25 @@
+digraph G {
+
+  splines=ortho;
+  nodesep=.5
+
+  a1 [shape=box, label="Merge Image"]
+  a2 [shape=box, label="ROI", style=dashed]
+  a3 [shape=box, label="Channel One"]
+  a4 [shape=box, label="Channel Two"]
+  a5 [shape=box, label="Pixel intensities", style=dashed]
+  a6 [shape=box, label="stats: PCC & MOC"]
+
+  node [shape=none, width=0, height=0, label=""]
+  p1; p2; p3
+
+  {rank=same; p1; p2; p3}
+  a1 -> a2 [dir=none, label="  roi_select", fontcolor=blue]
+  a2 -> p2 [dir=none, label="  roi_show", fontcolor=blue]
+  p1 -> p2 -> p3 [dir=none]
+  p1 -> a3
+  p3 -> a4
+  a3 -> a5
+  a4 -> a5
+  a5 -> a6 [label="  roi_check \l  roi_test \l", fontcolor=blue]
+}

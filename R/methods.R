@@ -200,31 +200,31 @@ roi_show.cimg <- function(img, ind = c(1,2)) {
 #'
 #' # choose ROI and show the pixel intensities
 #' roi_select(img, threshold = 90) %>%
-#'   intensity_show()
+#'   roi_check()
 #'
 #' @importFrom stats density
 #' @importFrom scales alpha
 #' @importFrom graphics plot lines
 #'
 #' @export
-intensity_show <- function(img, ind = c(1,2)) {
-  UseMethod('intensity_show')
+roi_check <- function(img, ind = c(1,2)) {
+  UseMethod('roi_check')
 }
 
 #' @export
-intensity_show.default <- function(img, ...) {
+roi_check.default <- function(img, ...) {
   warning(paste("img is of class",
                 class(img),
                 ". img should be a cimg object."))
 }
 
 #' @export
-intensity_show.cimg <- function(img, ind = c(1,2)) {
+roi_check.cimg <- function(img, ind = c(1,2)) {
   # get pixel intensities
   pix_int <- .intensity_get(img, ind = ind)
 
   if(!is.list(pix_int)) {
-    stop('pix_int should be a list, output of coloc_test.')
+    stop('pix_int should be a list, output of roi_test.')
   }
 
   # scatter plot
@@ -252,7 +252,7 @@ intensity_show.cimg <- function(img, ind = c(1,2)) {
 #'
 #' @inheritParams roi_show
 #' @param type A \code{character} vector of the desired co-localization
-#' statistics. Default is 'pearsons', other inputs are 'manders' or 'all'.
+#' statistics. Default is 'pcc', other inputs are 'moc' or 'both'.
 #'
 #' @return A \code{list}.
 #'
@@ -271,29 +271,29 @@ intensity_show.cimg <- function(img, ind = c(1,2)) {
 #'
 #' # choose roi and test colocalization
 #' roi_select(img, threshold = 90) %>%
-#'   coloc_test()
+#'   roi_test()
 #'
 #' @importFrom imager is.cimg is.pixset channel
 #'
 #' @export
-coloc_test <- function(img, ind = c(1,2), type = 'pearsons') {
-  UseMethod('coloc_test')
+roi_test <- function(img, ind = c(1,2), type = 'pcc') {
+  UseMethod('roi_test')
 }
 
 #' @export
-coloc_test.default <- function(img, ...) {
+roi_test.default <- function(img, ...) {
   warning(paste("img is of class",
                 class(img),
                 ". img should be a cimg object."))
 }
 
 #' @export
-coloc_test.cimg <- function(img, ind = c(1,2), type = 'pearsons') {
+roi_test.cimg <- function(img, ind = c(1,2), type = 'pcc') {
   # get pixel intensity
   pix_int <- .intensity_get(img, ind = ind)
 
-  if(!type %in% c('pearsons', 'manders', 'all')) {
-    stop('type takes one of these values; pearsons, manders or all')
+  if(!type %in% c('pcc', 'moc', 'both')) {
+    stop('type takes one of these values; pcc, moc or both')
   }
 
   # unpack pix_int
@@ -308,29 +308,41 @@ coloc_test.cimg <- function(img, ind = c(1,2), type = 'pearsons') {
     ll <- lapply(list(img1.num, img2.num), split, f = f)
 
     corr <- switch (type,
-                    'pearsons' = list(p = unlist(mapply(function(x, y) {
+                    'pcc' = data.frame(pcc = unlist(mapply(function(x, y) {
                       .pearson(x, y)
                       }, ll[[1]], ll[[2]]))),
-                    'manders' = list(r = unlist(mapply(function(x, y) {
+                    'moc' = data.frame(moc = unlist(mapply(function(x, y) {
                       .manders(x, y)
                       }, ll[[1]], ll[[2]]))),
-                    'all' = list(p = unlist(mapply(function(x, y) {
+                    'both' = data.frame(pcc = unlist(mapply(function(x, y) {
                       .pearson(x, y)
                       }, ll[[1]], ll[[2]])),
-                                 r = unlist(mapply(function(x, y) {
+                                 moc = unlist(mapply(function(x, y) {
                                    .manders(x, y)
                                    }, ll[[1]], ll[[2]])))
     )
   } else {
     # calculate correlations
     corr <- switch (type,
-                    'pearsons' = list(p = .pearson(img1.num, img2.num)),
-                    'manders' = list(r = .manders(img1.num, img2.num)),
-                    'all' = list(p = .pearson(img1.num, img2.num),
-                                 r = .manders(img1.num, img2.num))
+                    'pcc' = data.frame(pcc = .pearson(img1.num, img2.num)),
+                    'moc' = data.frame(moc = .manders(img1.num, img2.num)),
+                    'both' = data.frame(pcc = .pearson(img1.num, img2.num),
+                                 moc = .manders(img1.num, img2.num))
     )
   }
 
   # retrun corr
   return(corr)
+}
+
+#' Run the shiny App
+#'
+#' @return NULL
+#'
+#' @importFrom shiny runApp
+#'
+#' @export
+run_app <- function(){
+  app_dir <- system.file('colocr_app', package = 'colocr')
+  runApp(app_dir, display.mode = 'normal')
 }

@@ -24,16 +24,16 @@ test_that("roi_select works with labels", {
   expect_equal(length(unique(labels)), 3)
 })
 
-test_that("intensity_show works.", {
+test_that("roi_check works.", {
   g <- roi_select(img, threshold = 90) %>%
-    intensity_show()
+    roi_check()
   class(g)
   expect_true(is.null(g))
 })
 
-test_that("coloc_test works.", {
+test_that("roi_test works.", {
   res <- roi_select(img, threshold = 90) %>%
-    coloc_test()
+    roi_test()
 
   expect_true(is.list(res))
 })
