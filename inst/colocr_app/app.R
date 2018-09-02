@@ -183,15 +183,10 @@ server <- function(input, output) {
   ## table
   output$tab2 <- renderTable({values$df2})
 
-  # import in r button
-#  observeEvent((input$return), {
-#    stopApp(values$df)
-#  })
-
   ## download buttons
   output$download_stats <- downloadHandler(
     filename = function() {
-      paste0('stats ', Sys.time(), '.csv')
+      format(Sys.time(), 'stats_%y.%m.%d_%H.%M.%S.csv')
     },
     content = function(con) {
       write.csv(values$df, con, row.names = FALSE)
@@ -200,7 +195,7 @@ server <- function(input, output) {
 
   output$download_inputs <- downloadHandler(
     filename = function() {
-      paste0('inputs ', Sys.time(), '.csv')
+      format(Sys.time(), 'inputs_%y.%m.%d_%H.%M.%S.csv')
     },
     content = function(con) {
       write.csv(values$df2, con, row.names = FALSE)
@@ -228,21 +223,6 @@ server <- function(input, output) {
     axis(1, unique(x), labels = unique(values$df$name))
   })
 
-  ## export code
-  txt <- paste0("
-# input
-
-# output
-           ")
-
-  output$export <- downloadHandler(
-    filename = function() {
-      paste0('script ', Sys.time(), '.R')
-    },
-    content = function(con) {
-      writeLines(txt, con)
-    }
-  )
 }
 
 # Run the application

@@ -267,12 +267,12 @@ map2(image_list, thresholds, function(i, t) {
 
 ```{r}
 # show the output
-stats <- read.csv(system.file('colocr_app', 'stats 2018-09-01 09_42_59.csv', package = 'colocr'))
+stats <- read.csv(system.file('colocr_app', 'stats_18.09.02_05.15.01.csv', package = 'colocr'))
 ```
 
 ```{r}
 # reproduce the output
-inputs <- read.csv(system.file('colocr_app', 'inputs 2018-09-01 09_43_02.csv', package = 'colocr'), stringsAsFactors = FALSE)
+inputs <- read.csv(system.file('colocr_app', 'inputs_18.09.02_05.15.08.csv', package = 'colocr'), stringsAsFactors = FALSE)
 
 rep_stats <- inputs %>%
   pmap(~system.file('extdata', ..2, package = 'colocr') %>%
