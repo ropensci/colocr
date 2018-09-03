@@ -183,7 +183,7 @@ And here is a screen shot from the app after applying the same parameters used p
 
 ```{r app_screenshot, echo=FALSE, out.width="600px"}
 # show the screen shot of the shiny app
-app_ss <- system.file('colocr_app/tests/mytest-expected', '001.png', package = 'colocr')
+app_ss <- system.file('colocr_app/tests/one_image-expected', '001.png', package = 'colocr')
 knitr::include_graphics(app_ss)
 ```
 
@@ -208,9 +208,9 @@ region.
 str(tst)
 ```
 
-## Selecting a subset of the cells in an image
+## Selecting a multiple regions in an image
 
-In this example, we want to select the only one cell as a regions of interest 
+In this example, we want to select the all cells as regions of interest 
 and make sure no background is included in the selected region. To do that, we
 use the different arguments in `roi_select`.
 
@@ -225,72 +225,93 @@ img2 %>%
   roi_select(threshold = 85,
              shrink = 10,
              clean = 10,
-             n = 1) %>%
+             n = 3) %>%
   roi_show()
 ```
 
 ## Analyzing a collection of images at once
 
-To process a collection of images at once, `map` from the `purrr` package can be used
-to map the function's call to a list of images. So the first step should be to make
-alist of images. Then apply the same workflow to the list inside `map`.
+To process a collection of images at once, we first make a `list` of the image objects
+and pass it to the `roi_select`. Other arguments can be provided as a single value to
+be applied to all images or specific values for each image.
 
 ```{r analyze_collection}
 # make a list of images
 image_list <- list(img, img2)
 
-# map the function calls to the list of images
-map(image_list, function(i) {
-    i %>%
-      roi_select(threshold = 90) %>%
-      roi_test()
-  })
+# call roi_select on multiple images
+image_list %>%
+  roi_select(threshold = 90) %>%
+  roi_test()
 ```
-
-In addition, `map2` or `pmap` from the `purrr` package can be used with two or more
-lists in case different inputs are needed for each image.
 
 ```{r analyze_collection2}
 # make threshold input list
-thresholds <- list(90, 95)
+thresholds <- c(90, 95)
 
-# map the function calls to the list of images and thresholds
-map2(image_list, thresholds, function(i, t) {
-  i %>%
-    roi_select(threshold = t) %>%
-    roi_test()
-})
+# call roi_select on multiple images and specific thresholds for each
+image_list %>%
+  roi_select(threshold = thresholds) %>%
+  roi_test()
 ```
 
+The same applies of the other two functions; `roi_show` and `roi_check`. When a `list`
+of images is provided, they return same set of plots for each of the images.
 
 ## Reproducing the shiny app output
 
-```{r}
+The interactive shiny app can be useful when trying the analysis for the first time.
+Or when choosing the appropriate input values to select the regions of interest. 
+To make things easier for the users, we enabled exporting the input and the output 
+from the shiny app. These can be used to report an analysis directly, or to 
+reproduce the results using R code.
+
+This section describes how to use the exported input and output tables from the app
+and using them to reproduce the same results. First, we start by loading `stats_18.09.02_05.15.01.csv` which is the output of an analysis of two images 
+performed by in the shiny app. Second, we load the `inputs_18.09.02_05.15.08.csv`
+which contains the input parameters used in that analysis. Then, we call `roi_select`
+and `roi_test` using these inputs. Finally, we compare the outputs form the app
+and the script.
+
+```{r read_output}
 # show the output
 stats <- read.csv(system.file('colocr_app', 'stats_18.09.02_05.15.01.csv', package = 'colocr'))
+
+stats
 ```
 
-```{r}
-# reproduce the output
+```{r read_inputs}
+# show the inputs
 inputs <- read.csv(system.file('colocr_app', 'inputs_18.09.02_05.15.08.csv', package = 'colocr'), stringsAsFactors = FALSE)
 
-rep_stats <- inputs %>%
-  pmap(~system.file('extdata', ..2, package = 'colocr') %>%
-         load.image %>%
-         roi_select(threshold = ..3,
-                    shrink = ..4,
-                    grow = ..5,
-                    fill = ..6, 
-                    clean = ..7,
-                    tolerance = ..8,
-                    n = ..9) %>%
-         roi_test(type = 'both'))
+inputs
 ```
 
-```{r}
-# all equal
-all(round(stats$pcc, 3) == round(c(rep_stats[[1]]$pcc, rep_stats[[2]]$pcc), 3))
-all(round(stats$moc, 3) == round(c(rep_stats[[1]]$moc, rep_stats[[2]]$moc), 3))
+```{r apply_inputs}
+# read images
+imgs <- map(inputs$image, function(x) {
+  system.file('extdata', x, package = 'colocr') %>%
+    load.image()
+})
+
+# use the app input to the roi_select function
+rep_stats <- imgs %>%
+  roi_select(threshold = inputs$threshold,
+             shrin = inputs$shrink,
+             grow = inputs$grow,
+             fill = inputs$fill,
+             clean = inputs$clean,
+             tolerance = inputs$tolerance,
+             n = inputs$roi_num) %>%
+  roi_test(type = 'both')
+
+rep_stats
+```
+
+```{r check_equal}
+# check the app and the package output is equal
+all(round(stats$pcc, 2) == round(c(rep_stats[[1]]$pcc, rep_stats[[2]]$pcc), 2))
+all(round(stats$moc, 2) == round(c(rep_stats[[1]]$moc, rep_stats[[2]]$moc), 2))
 ```
 
 ## Description of the co-localization statistics

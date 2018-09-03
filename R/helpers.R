@@ -96,7 +96,7 @@
 #' @importFrom stats reorder
 #'
 #' @export
-.labels_add <- function(px, tolerance = .1, n = 1) {
+.labels_add <- function(px, tolerance, n) {
   px.labs <- label(px, tolerance = tolerance)
   value <- as.data.frame(px.labs)$value
 

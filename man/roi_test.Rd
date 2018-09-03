@@ -7,24 +7,26 @@
 roi_test(img, ind = c(1, 2), type = "pcc")
 }
 \arguments{
-\item{img}{A \code{\link[imager]{cimg}} obeject such as the one returned
-from \code{\link{roi_select}}}
+\item{img}{A \code{\link[imager]{cimg}} obeject or a \code{list} of multiple
+images such as the one returned from \code{\link{roi_select}}}
 
-\item{ind}{A \code{numeric} object of length two. For the channel indexes.}
+\item{ind}{A \code{numeric} object of length two. For the channel indexes.
+or a \code{list} of similar vectors for each of \code{img} items.}
 
 \item{type}{A \code{character} vector of the desired co-localization
 statistics. Default is 'pcc', other inputs are 'moc' or 'both'.}
 }
 \value{
-A \code{list}.
+A \code{data.frame} or a \code{list} of \code{data.frame}s.
 }
 \description{
 Perform co-localization test statistics.
 }
 \details{
 The co-localization stats requested in \code{type} is returned as
-list items for each. When different labels are provided, the stats are
-calculated for each label individually.
+a column for each. When different labels are provided, the stats are
+calculated for each label individually. When is \code{img} is a \code{list}
+a \code{list} of such \code{data.frame}s is returned
 }
 \examples{
 # load required libraries

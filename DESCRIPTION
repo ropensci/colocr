@@ -4,8 +4,8 @@ Title: Conduct Co-localization Analysis of Fluorescence Microscopy Images
 Version: 0.1.0
 License: GPL-3
 Authors@R: person("Mahmoud", "Ahmed",
-    email = "mahmoud.s.fahmy@students.kasralainy.edu.eg",
-    role = c("aut", "cre"))
+  email = "mahmoud.s.fahmy@students.kasralainy.edu.eg",
+  role = c("aut", "cre"))
 URL: https://github.com/MahShaaban/colocr
 BugReports: https://github.com/MahShaaban/colocr/issues
 Description: Automate the co-localization analysis of fluorescence microscopy 
@@ -14,12 +14,12 @@ Description: Automate the co-localization analysis of fluorescence microscopy
 Encoding: UTF-8
 LazyData: true
 Suggests: testthat,
-    shinytest,
-    covr,
-    knitr,
-    rmarkdown,
-    devtools,
-    purrr
+  shinytest,
+  covr,
+  knitr,
+  rmarkdown,
+  devtools,
+  purrr
 RoxygenNote: 6.0.1
 Imports: imager,
   shiny,

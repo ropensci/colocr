@@ -1,5 +1,5 @@
 app <- ShinyDriver$new("../")
-app$snapshotInit("mytest")
+app$snapshotInit("one_image")
 
 app$uploadFile(image1 = system.file('extdata', 'Image0001_.jpg', package = 'colocr'))
 app$setInputs(threshold = 90)

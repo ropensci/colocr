@@ -2,20 +2,29 @@
 #'
 #' Select regions of interest in an image using different morphological operations
 #'
-#' @param img An object of class \code{\link[imager]{cimg}}
+#' @param img An object of class \code{\link[imager]{cimg}} or a \code{list} of
+#' multiple \code{\link[imager]{cimg}} items
 #' @param threshold A \code{numeric} to be passed to
-#' \code{\link[imager]{threshold}}
+#' \code{\link[imager]{threshold}} or a \code{vector} of values fo each
+#' image in \code{img}
 #' @param shrink A \code{numeric} to be passed to \code{\link[imager]{shrink}}
+#' or a \code{vector} of values fo each image in \code{img}
 #' @param grow A \code{numeric} to be passed to \code{\link[imager]{grow}}
+#' or a \code{vector} of values fo each image in \code{img}
 #' @param fill A \code{numeric} to be passed to \code{\link[imager]{fill}}
+#' or a \code{vector} of values fo each image in \code{img}
 #' @param clean A \code{numeric} to be passed to \code{\link[imager]{clean}}
+#' or a \code{vector} of values fo each image in \code{img}
 #' @param tolerance A \code{numeric} to be passed to \code{\link[imager]{label}}
+#' or a \code{vector} of values fo each image in \code{img}
 #' @param n A \code{numeric} of the number of regions of interest
+#' or a \code{vector} of values fo each image in \code{img}
 #'
 #' @return A \code{\link[imager]{cimg}}. The original input \code{img} with an
 #' additional attribute \code{label}. \code{label} is a \code{vector} of
 #' \code{integer}s. The labels for the selected regions of interests starts
-#' from 1 and 0 is ignored.
+#' from 1 and 0 is ignored. When \code{img} is a list, a \code{list} is
+#' returned.
 #'
 #' @details The function applies several \code{\link{imager}} morphological
 #' manipulations to select the regions of interest. These include
@@ -45,7 +54,7 @@
 #'
 #' @export
 roi_select <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
-                             clean = 5, tolerance = .1, n) {
+                             clean = 5, tolerance = .1, n = 1) {
   UseMethod('roi_select')
 }
 
@@ -53,12 +62,12 @@ roi_select <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
 roi_select.default <- function(img, ...) {
   warning(paste("img is of class",
                 class(img),
-                ". img should be a cimg object."))
+                ". img should be a cimg or a list of cimg objects."))
 }
 
 #' @export
 roi_select.cimg <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
-                            clean = 5, tolerance = .1, n) {
+                            clean = 5, tolerance = .1, n = 1) {
 
   if(!is.numeric(threshold)) {
     stop('threshold should be a numeric between 0 and 100.')
@@ -86,24 +95,70 @@ roi_select.cimg <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
   px.m <- clean(px.m, clean)
 
   # add labels when n is provided
-  if(!missing(n)) {
-    labs.px <- .labels_add(px.m, tolerance = tolerance, n = n)
-    newimg <- img
-    attr(newimg, 'label') <- as.numeric(labs.px)
-  } else {
-    newimg <- img
-    attr(newimg, 'label') <- as.numeric(px.m)
-  }
-  return(newimg)
+  labs.px <- .labels_add(px.m, tolerance = tolerance, n = n)
+  attr(img, 'label') <- as.numeric(labs.px)
+
+  # return object
+  return(img)
 }
+
+#' @export
+roi_select.list <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
+                              clean = 5, tolerance = .1, n = 1) {
+  # get the length of the image list
+  img_n <- length(img)
+
+  # repeat arguments to match list length
+  inputs <- list(threshold = threshold,
+                 shrink = shrink,
+                 grow = grow,
+                 fill = fill,
+                 clean = clean,
+                 tolerance = tolerance,
+                 n = n)
+
+  for(i in seq_along(inputs)) {
+    # lenght of argument
+    input_n <- length(inputs[[i]])
+
+    # use first item and return warning if not a single value or doesn't match
+    # length of image list
+    if(input_n != img_n & input_n != 1) {
+      inputs[[i]] <- inputs[[i]][1]
+      warning(paste0("Only first value in ", names(inputs)[[i]], ' will be used.'))
+    }
+
+    # match length of the arguments to that of the list of images
+    if(input_n != img_n) {
+      inputs[[i]] <- rep(inputs[[i]], img_n)
+    }
+  }
+
+  # loop over the list of images and call roi_select
+  newimgs <- list()
+  for(i in 1:img_n) {
+      newimgs[[i]] <- roi_select(img[[i]],
+                            threshold = inputs$threshold[i],
+                            shrink = inputs$shrink[i],
+                            grow = inputs$grow[i],
+                            fill = inputs$fill[i],
+                            clean = inputs$clean[i],
+                            tolerance = inputs$tolerance[i],
+                            n = inputs$n[i])
+  }
+
+  # return list of images
+  return(newimgs)
+  }
 
 #' Show the selected regions of interest
 #'
 #' Show/highlight the selected regions of interest on different image channels
 #'
-#' @param img A \code{\link[imager]{cimg}} obeject such as the one returned
-#' from \code{\link{roi_select}}
+#' @param img A \code{\link[imager]{cimg}} obeject or a \code{list} of multiple
+#' images such as the one returned from \code{\link{roi_select}}
 #' @param ind A \code{numeric} object of length two. For the channel indexes.
+#' or a \code{list} of similar vectors for each of \code{img} items.
 #'
 #' @return NULL
 #'
@@ -138,7 +193,7 @@ UseMethod('roi_show')
 roi_show.default <- function(img, ...) {
   warning(paste("img is of class",
                 class(img),
-                ". img should be a cimg object."))
+                ". img should be a cimg or a list of cimg objects."))
 }
 
 #' @export
@@ -175,6 +230,24 @@ roi_show.cimg <- function(img, ind = c(1,2)) {
        axes = FALSE,
        main = 'Channel Two')
   highlight(px)
+}
+
+#' @export
+roi_show.list <- function(img, ind = c(1,2)) {
+
+  # get the length of the image list
+  img_n <- length(img)
+
+  # repeat argument to match list length
+  if(!is.list(ind)) {
+    ind <- rep(list(ind), img_n)
+  }
+
+  # loop over the images of lists and call roi_show
+  for(i in 1:img_n){
+    roi_show(img[[i]],
+             ind = ind[[i]])
+  }
 }
 
 #' Show pixel intensities
@@ -215,7 +288,7 @@ roi_check <- function(img, ind = c(1,2)) {
 roi_check.default <- function(img, ...) {
   warning(paste("img is of class",
                 class(img),
-                ". img should be a cimg object."))
+                ". img should be a cimg or a list of cimg objects."))
 }
 
 #' @export
@@ -246,6 +319,23 @@ roi_check.cimg <- function(img, ind = c(1,2)) {
         col = alpha('red', .5))
 }
 
+#' @export
+roi_check.list <- function(img, ind = c(1,2)) {
+  # get the length of the image list
+  img_n <- length(img)
+
+  # repeat argument to match list length
+  if(!is.list(ind)) {
+    ind <- rep(list(ind), img_n)
+  }
+
+  # loop over the images of lists and call roi_check
+  for(i in 1:img_n) {
+    roi_check(img[[i]],
+              ind = ind[[i]])
+  }
+}
+
 #' Test Co-localization
 #'
 #' Perform co-localization test statistics.
@@ -254,11 +344,12 @@ roi_check.cimg <- function(img, ind = c(1,2)) {
 #' @param type A \code{character} vector of the desired co-localization
 #' statistics. Default is 'pcc', other inputs are 'moc' or 'both'.
 #'
-#' @return A \code{list}.
+#' @return A \code{data.frame} or a \code{list} of \code{data.frame}s.
 #'
 #' @details The co-localization stats requested in \code{type} is returned as
-#' list items for each. When different labels are provided, the stats are
-#' calculated for each label individually.
+#' a column for each. When different labels are provided, the stats are
+#' calculated for each label individually. When is \code{img} is a \code{list}
+#' a \code{list} of such \code{data.frame}s is returned
 #'
 #' @examples
 #' # load required libraries
@@ -284,7 +375,7 @@ roi_test <- function(img, ind = c(1,2), type = 'pcc') {
 roi_test.default <- function(img, ...) {
   warning(paste("img is of class",
                 class(img),
-                ". img should be a cimg object."))
+                "img should be a cimg or a list of cimg objects."))
 }
 
 #' @export
@@ -333,6 +424,28 @@ roi_test.cimg <- function(img, ind = c(1,2), type = 'pcc') {
 
   # retrun corr
   return(corr)
+}
+
+#' @export
+roi_test.list <- function(img, ind = c(1,2), type = 'pcc') {
+  # get the length of the image list
+  img_n <- length(img)
+
+  # repeat arguments to match list length
+  if(!is.list(ind)) {
+    ind <- rep(list(ind), img_n)
+  }
+
+  # loop over the images of lists and call roi_check
+  tst <- list()
+  for(i in 1:img_n) {
+    tst[[i]] <- roi_test(img[[i]],
+                         ind = ind[[i]],
+                         type = type)
+  }
+
+  # return list
+  return(tst)
 }
 
 #' Run the shiny App

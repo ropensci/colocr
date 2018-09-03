@@ -12,7 +12,7 @@ ui <- navbarPage(title = 'colocr',
                                       parameters to fit the regions of interest. Finally, assign a
                                       name to probe used in this image to be used in the output'),
                               tags$hr(),
-                              fileInput('image1', 'Merge Image'),
+                              fileInput('image1', 'Merge Image', multiple = TRUE),
                               tags$hr(),
                               sliderInput('threshold', 'Threshold', 1, 100, 50, 1),
                               sliderInput('shrink', 'Shrink', 1, 10, 5, 1),
@@ -61,8 +61,7 @@ ui <- navbarPage(title = 'colocr',
                                            downloadButton('download_inputs', 'Download Table'),
                                            tableOutput('tab2')
                                   ),
-                                  tabPanel('Graph View', plotOutput('res_plot')),
-                                  tabPanel("Script", downloadButton('export', 'Export'))
+                                  tabPanel('Graph View', plotOutput('res_plot'))
                                 )
                                 )
                                 )
@@ -90,7 +89,11 @@ server <- function(input, output) {
 
   # load images
   img1 <- reactive({
-    load.image(input$image1$datapath)
+    if(length(input$image1$datapath) > 1) {
+      lapply(input$image1$datapath, load.image)
+    } else {
+      load.image(input$image1$datapath)
+    }
   })
 
   # calculate the pixset
@@ -115,22 +118,39 @@ server <- function(input, output) {
   output$image_plot <- renderPlot({
     req(input$image1)
 
-    par(mfrow=c(2,2), mar = rep(1, 4))
+    n <- length(input$image1$name) * 2
+
+    par(mfrow=c(n,2), mar = rep(1, 4))
     roi_show(px())
   })
 
   ## text output of the calculated correlations
   output$cor <- renderText({
     req(input$image1)
-    paste("Average Pearson's Correlation Coefficient:", round(mean(corr()$pcc, na.rm = TRUE), 2),
-          ' and ',
-          "Average Manders Overlap Coefficient: ", round(mean(corr()$moc, na.rm = TRUE), 2))
+    if(length(input$image1$name) > 1) {
+      name <- input$image1$name
+      pcc <- 0
+      moc <- 0
+      for(i in 1:length(name)) {
+        pcc[i] <- round(mean(corr()[[i]]$pcc, na.rm = TRUE), 2)
+        moc[i] <- round(mean(corr()[[i]]$moc, na.rm = TRUE), 2)
+      }
+      paste(name, ": Average Pearson's Correlation Coefficient:", pcc,
+            ' and ',
+            "Average Manders Overlap Coefficient: ", moc)
+    } else {
+      paste("Average Pearson's Correlation Coefficient:", round(mean(corr()$pcc, na.rm = TRUE), 2),
+            ' and ',
+            "Average Manders Overlap Coefficient: ", round(mean(corr()$moc, na.rm = TRUE), 2))
+    }
+
   })
 
   # quality control view
   output$scatter <- renderPlot({
     req(input$image1)
-    par(mfrow=c(1,2), mar = c(4,4,1,1))
+    n <- length(input$image1$name) * 2
+    par(mfrow=c(n,2), mar = c(4,4,1,1))
     roi_check(px())
   })
 
@@ -140,10 +160,23 @@ server <- function(input, output) {
 
   ## add button
   observeEvent((input$add), {
-    newLine <- cbind(name = input$name,
-                     image = input$image1$name,
-                     roi = rownames(corr()),
-                     corr())
+
+    if(length(input$image1$name) > 1) {
+      newdf <- corr()
+      for(i in 1:length(input$image1$name)) {
+        newdf[[i]] <- cbind(name = input$name,
+                            image = input$image1$name[i],
+                            roi = rownames(newdf[[i]]),
+                            newdf[[i]])
+      }
+
+      newLine <- Reduce(rbind, newdf)
+    } else {
+      newLine <- cbind(name = input$name,
+                       image = input$image1$name,
+                       roi = rownames(corr()),
+                       corr())
+    }
 
     values$df <- rbind(values$df, newLine)
   })
