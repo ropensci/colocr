@@ -30,7 +30,7 @@
 #' manipulations to select the regions of interest. These include
 #' \code{\link[imager]{threshold}} which sets all values below certain cut to
 #' 0; \code{\link[imager]{shrink}}/\code{\link[imager]{grow}} for pixel set
-#' dilation and erosion; \code{\link[imager]{fill}}\\code{\link[imager]{clean}}
+#' dilation and erosion; \code{\link[imager]{fill}}/\code{\link[imager]{clean}}
 #' for removing isolated regions and holes. When \code{n} is provided, the
 #' individual regions (connected components) are selected where \code{tolerance}
 #' is used to determine if two pixels belong to the same region.
@@ -66,12 +66,19 @@ roi_select.default <- function(img, ...) {
 }
 
 #' @export
-roi_select.cimg <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
+roi_select.cimg <- function(img, threshold = 50, shrink = 5, grow = 5, fill = 5,
                             clean = 5, tolerance = .1, n = 1) {
 
-  if(!is.numeric(threshold)) {
-    stop('threshold should be a numeric between 0 and 100.')
+  # check valid input
+  if(!missing(threshold) & !is.numeric(threshold)) {
+    stop('threshold should be a numeric >= 0 and < 100.')
   }
+  if(!missing(threshold) & (threshold >= 100 | threshold < 0)) {
+    stop('threshold should be a numeric >= 0 and < 100.')
+  }
+
+  # Ideally, I'd like to check type and value of other arguments,
+  # however, I currently cannot since these arguments are optional
 
   # change image to gray scale
   img.g <- grayscale(img)
@@ -230,6 +237,8 @@ roi_show.cimg <- function(img, ind = c(1,2)) {
        axes = FALSE,
        main = 'Channel Two')
   highlight(px)
+
+  return(NULL)
 }
 
 #' @export
@@ -295,10 +304,6 @@ roi_check.default <- function(img, ...) {
 roi_check.cimg <- function(img, ind = c(1,2)) {
   # get pixel intensities
   pix_int <- .intensity_get(img, ind = ind)
-
-  if(!is.list(pix_int)) {
-    stop('pix_int should be a list, output of roi_test.')
-  }
 
   # scatter plot
   plot(pix_int[[1]], pix_int[[2]],
@@ -455,7 +460,7 @@ roi_test.list <- function(img, ind = c(1,2), type = 'pcc') {
 #' @importFrom shiny runApp
 #'
 #' @export
-run_app <- function(){
+colocr_app <- function(){
   app_dir <- system.file('colocr_app', package = 'colocr')
   runApp(app_dir, display.mode = 'normal')
 }

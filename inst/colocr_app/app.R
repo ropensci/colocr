@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyBS)
 library(imager)
 library(colocr)
 
@@ -13,16 +14,43 @@ ui <- navbarPage(title = 'colocr',
                                       name to probe used in this image to be used in the output'),
                               tags$hr(),
                               fileInput('image1', 'Merge Image', multiple = TRUE),
+                              bsTooltip('image1',
+                                        'Upload one or more merge images.',
+                                        'right', options = list(container = "body")),
                               tags$hr(),
                               sliderInput('threshold', 'Threshold', 1, 100, 50, 1),
+                              bsTooltip('threshold',
+                                        'Choose a threshold for excluding the background.',
+                                        'right', options = list(container = "body")),
                               sliderInput('shrink', 'Shrink', 1, 10, 5, 1),
+                              bsTooltip('shrink',
+                                        'Shrink the selected area by eroding the bounderies around it.',
+                                        'right', options = list(container = "body")),
                               sliderInput('grow', 'Grow', 1, 10, 5, 1),
+                              bsTooltip('grow',
+                                        'Grow the selected area by dilating the bounderies around it.',
+                                        'right', options = list(container = "body")),
                               sliderInput('fill', 'Fill', 1, 10, 5, 1),
+                              bsTooltip('fill',
+                                        'Remove holes in the selected area.',
+                                        'right', options = list(container = "body")),
                               sliderInput('clean', 'Clean', 1, 10, 5, 1),
+                              bsTooltip('clean',
+                                        'Remove small isolated parts in the selected area.',
+                                        'right', options = list(container = "body")),
                               sliderInput('tolerance', 'Tolerance', 0, .99, .1, .1),
+                              bsTooltip('tolerance',
+                                        'Set value to determine which two neighboring pixels are in same selected area.',
+                                        'right', options = list(container = "body")),
                               numericInput('roi_num', 'ROI Num', 1, 1, 50, 1),
+                              bsTooltip('roi_num',
+                                        'Select the number of regions. Default is one.',
+                                        'right', options = list(container = "body")),
                               tags$hr(),
-                              textInput('name', 'Probe Name')
+                              textInput('name', 'Probe Name'),
+                              bsTooltip('name',
+                                        'Enter the name of the probe used for staining. A name for all images or one for each separated by a comma.',
+                                        'right', options = list(container = "body"))
                               ),
                             mainPanel(
                               fluidRow(
@@ -84,8 +112,7 @@ ui <- navbarPage(title = 'colocr',
 # Define server
 server <- function(input, output) {
   # intiate interactive values
-  values <- reactiveValues(img1 = '',
-                           px = 0, corr = list(4))
+  values <- reactiveValues()
 
   # load images
   img1 <- reactive({
@@ -98,13 +125,13 @@ server <- function(input, output) {
 
   # calculate the pixset
   px <- reactive({
-    values$px <- roi_select(img1(),
-                           threshold = input$threshold,
-                           shrink = input$shrink,
-                           grow = input$grow,
-                           fill = input$fill,
-                           clean = input$clean,
-                           n = input$roi_num)
+    roi_select(img1(),
+               threshold = input$threshold,
+               shrink = input$shrink,
+               grow = input$grow,
+               fill = input$fill,
+               clean = input$clean,
+               n = input$roi_num)
   })
 
 
@@ -160,11 +187,16 @@ server <- function(input, output) {
 
   ## add button
   observeEvent((input$add), {
-
-    if(length(input$image1$name) > 1) {
+    img_n <- length(input$image1$name)
+    if(img_n > 1) {
       newdf <- corr()
-      for(i in 1:length(input$image1$name)) {
-        newdf[[i]] <- cbind(name = input$name,
+      name <- unlist(strsplit(input$name, ','))
+      if(length(name) != img_n) {
+        name <- rep(name[1], img_n)
+      }
+
+      for(i in 1:img_n) {
+        newdf[[i]] <- cbind(name = name[i],
                             image = input$image1$name[i],
                             roi = rownames(newdf[[i]]),
                             newdf[[i]])
@@ -195,8 +227,7 @@ server <- function(input, output) {
 
   ## add button
   observeEvent((input$add2), {
-    newLine <- data.frame(name = input$name,
-                          image = input$image1$name,
+    newLine <- data.frame(image = input$image1$name,
                           threshold = input$threshold,
                           shrink = input$shrink,
                           grow = input$grow,

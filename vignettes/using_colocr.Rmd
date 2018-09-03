@@ -31,9 +31,12 @@ A few R packages are available for conducting image analysis, which is a very wi
 The package development version is available at [github](https://github.com/MahShaaban/colocr).
 
 ```{r install_github, eval=FALSE}
-devtools::install_github('MahShaaban/colocr')
+# install from github (pipeable branch)
+devtools::install_github('MahShaaban/colocr@pipeable')
 ```
 
+This packge depends on `imager` which has some external dependencies. The instructions for
+installing `imager` can be found [here](https://github.com/dahtah/imager).
 
 ## Getting started
 
@@ -65,8 +68,8 @@ img %>%
 The same can be achieved interactively using an accompanying **shiny** app.
 To launch the app run.
 
-```{r run_app, eval=FALSE}
-run_app()
+```{r colocr_app, eval=FALSE}
+colocr_app()
 ```
 
 The reset of the analysis depends on the particular kind of images. Now, `colocr`
@@ -127,15 +130,15 @@ knitr::include_graphics(workflow_fig)
 The function `roi_select` relies on different algorithms from the `imager` package. However, using the functions to select the ROIs doesn't require any background knowledge in the workings of the algorithms and can be done through trying different parameters and choosing the most appropriate ones. Typically, one wants to select the 
 regions of the image occupied by a cell or a group of cells. However, the package can
 also be used to select certain areas/structures within the cell if they are distinct 
-enough. The details of these parameters are documented in the function help page `?roi_select`.
-
+enough. By default, the largest contiguous region of the image is selected, more regions can be added using the argument `n`. The details of the other inputs are documented in the function help page `?roi_select`.
+ 
 ```{r call_roi_select}
 # select regions of interest
 img_rois <- img %>%
   roi_select(threshold = 90)
 ```
 
-This function returns `cimg` object containing the original input image and an added attribut called `label` which indicates the selected regions. `label` is a vector of `integer`s; with 0 indicating the non-selected pixels and 1 for the selected regions. When the argument `n` is provided to `roi_select`, 1 is replaced by `integer` labels for each of the selected regions separatels
+This function returns `cimg` object containing the original input image and an added attribute called `label` which indicates the selected regions. `label` is a vector of `integer`s; with 0 indicating the non-selected pixels and 1 for the selected regions. When the argument `n` is provided to `roi_select`, 1 is replaced by `integer` labels for each of the selected regions separately.
 
 ```{r output_str}
 # class of the returned object
@@ -174,9 +177,9 @@ img_rois %>%
 
 Arguable, selecting the regions of interest is the most time consuming step in this kind of analysis. Usually, one has to do this selection by hand when using image analysis software such as [imageJ]([CRAN](https://cran.r-project.org)). This package only semi-automate this step, but still relies on the user's judgment on which parameters to use and whether or not the selected ROIs are appropriate. To make life easier, the package provides a simple shiny app to interactively determine these parameters and use it in the rest of the workflow. To launch the app run the following
 
-```{r run_app2, eval=FALSE}
+```{r colocr_app2, eval=FALSE}
 # run the shiny app
-run_app()
+colocr_app()
 ```
 
 And here is a screen shot from the app after applying the same parameters used previously.

@@ -23,6 +23,7 @@ Suggests: testthat,
 RoxygenNote: 6.0.1
 Imports: imager,
   shiny,
+  shinyBS,
   scales,
   magrittr
 VignetteBuilder: knitr
