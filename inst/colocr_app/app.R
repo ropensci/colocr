@@ -154,6 +154,7 @@ server <- function(input, output) {
   ## text output of the calculated correlations
   output$cor <- renderText({
     req(input$image1)
+
     if(length(input$image1$name) > 1) {
       name <- input$image1$name
       pcc <- 0
@@ -162,13 +163,13 @@ server <- function(input, output) {
         pcc[i] <- round(mean(corr()[[i]]$pcc, na.rm = TRUE), 2)
         moc[i] <- round(mean(corr()[[i]]$moc, na.rm = TRUE), 2)
       }
-      paste(name, ": Average Pearson's Correlation Coefficient:", pcc,
-            ' and ',
-            "Average Manders Overlap Coefficient: ", moc)
+      paste(name, ": Average PCC:", pcc,
+            "and",
+            "Average MOC:", moc)
     } else {
-      paste("Average Pearson's Correlation Coefficient:", round(mean(corr()$pcc, na.rm = TRUE), 2),
-            ' and ',
-            "Average Manders Overlap Coefficient: ", round(mean(corr()$moc, na.rm = TRUE), 2))
+      paste("Average PCC:", round(mean(corr()$pcc, na.rm = TRUE), 2),
+            " and ",
+            "Average MOC:", round(mean(corr()$moc, na.rm = TRUE), 2))
     }
 
   })
@@ -270,21 +271,23 @@ server <- function(input, output) {
   output$res_plot <- renderPlot({
     req(input$image1)
 
-    par(mfrow = c(1, 2))
-    x <- as.numeric(values$df$name)
-    plot(x, values$df$pcc,
-         type = 'n', xaxt = 'n',
-         xlab = '', ylab = 'PCC',
-         ylim = c(0,1))
-    points(x, y = jitter(values$df$pcc), pch = 16)
-    axis(1, unique(x), labels = unique(values$df$name))
+    if(nrow(values$df) >= 1) {
+      par(mfrow = c(1, 2))
+      x <- as.numeric(values$df$name)
+      plot(x, values$df$pcc,
+           type = 'n', xaxt = 'n',
+           xlab = '', ylab = 'PCC',
+           ylim = c(0,1))
+      points(x, y = jitter(values$df$pcc), pch = 16)
+      axis(1, unique(x), labels = unique(values$df$name))
 
-    plot(x, values$df$moc,
-         type = 'n', xaxt = 'n',
-         xlab = '', ylab = 'MOC',
-         ylim = c(0,1))
-    points(x, y = jitter(values$df$moc), pch = 16)
-    axis(1, unique(x), labels = unique(values$df$name))
+      plot(x, values$df$moc,
+           type = 'n', xaxt = 'n',
+           xlab = '', ylab = 'MOC',
+           ylim = c(0,1))
+      points(x, y = jitter(values$df$moc), pch = 16)
+      axis(1, unique(x), labels = unique(values$df$name))
+    }
   })
 
 }

@@ -32,7 +32,7 @@
     "tolerance": 0.1
   },
   "output": {
-    "cor": "Image0003_.jpg : Average Pearson's Correlation Coefficient: 0.83  and  Average Manders Overlap Coefficient:  0.94 Image0001_.jpg : Average Pearson's Correlation Coefficient: 0.88  and  Average Manders Overlap Coefficient:  0.98",
+    "cor": "Image0003_.jpg : Average PCC: 0.83 and Average MOC: 0.94 Image0001_.jpg : Average PCC: 0.88 and Average MOC: 0.98",
     "image_plot": {
       "src": "[image data sha1: b23643f8fa2837ded162bf1fcf4e27196855705b]",
       "width": 661,
