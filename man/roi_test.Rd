@@ -29,13 +29,9 @@ calculated for each label individually. When is \code{img} is a \code{list}
 a \code{list} of such \code{data.frame}s is returned
 }
 \examples{
-# load required libraries
-library(imager)
-library(magrittr)
-
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-img <- load.image(fl)
+img <- image_load(fl)
 
 # choose roi and test colocalization
 roi_select(img, threshold = 90) \%>\%

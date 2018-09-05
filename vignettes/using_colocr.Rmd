@@ -55,7 +55,7 @@ library(colocr)
 
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-img <- load.image(fl)
+img <- image_load(fl)
 
 # select ROI and show the results
 par(mfrow = c(2,2), mar = rep(1, 4))
@@ -72,7 +72,7 @@ To launch the app run.
 colocr_app()
 ```
 
-The reset of the analysis depends on the particular kind of images. Now, `colocr`
+The rest of the analysis depends on the particular kind of images. Now, `colocr`
 implements two simple co-localization statistics; Pearson's Coefficient Correlation [(PCC)](https://www.ncbi.nlm.nih.gov/pubmed/20653013) and the Manders Overlap Coefficient [(MOC)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3074624/).
 
 To apply both measures of correlation, we first get the pixel intensities and call `roi_test` on the merge image.
@@ -92,11 +92,10 @@ The following example uses images from the [DU145](https://en.wikipedia.org/wiki
 
 ```{r show_images, fig.width=7, fig.height=2.5}
 # load required libraries
-library(imager)
 library(colocr)
 
 # load images
-img <- load.image(system.file('extdata', 'Image0001_.jpg', package = 'colocr'))       # merge
+img <- image_load(system.file('extdata', 'Image0001_.jpg', package = 'colocr'))       # merge
 img1 <- channel(img, 1)  # red
 img2 <- channel(img, 2)  # green
 
@@ -175,7 +174,7 @@ img_rois %>%
   roi_check()
 ```
 
-Arguable, selecting the regions of interest is the most time consuming step in this kind of analysis. Usually, one has to do this selection by hand when using image analysis software such as [imageJ]([CRAN](https://cran.r-project.org)). This package only semi-automate this step, but still relies on the user's judgment on which parameters to use and whether or not the selected ROIs are appropriate. To make life easier, the package provides a simple shiny app to interactively determine these parameters and use it in the rest of the workflow. To launch the app run the following
+Arguably, selecting the regions of interest is the most time consuming step in this kind of analysis. Usually, one has to do this selection by hand when using image analysis software such as [imageJ](https://imagej.nih.gov/ij/). This package only semi-automates this step, but still relies on the user's judgment on which parameters to use and whether or not the selected ROIs are appropriate. To make life easier, the package provides a simple shiny app to interactively determine these parameters and use it in the rest of the workflow. To launch the app run the following
 
 ```{r colocr_app2, eval=FALSE}
 # run the shiny app
@@ -219,7 +218,7 @@ use the different arguments in `roi_select`.
 
 ```{r roi_subset, fig.width=7, fig.height=7}
 # load image
-img2 <- load.image(system.file('extdata', 'Image0003_.jpg', package = 'colocr'))       # merge
+img2 <- image_load(system.file('extdata', 'Image0003_.jpg', package = 'colocr'))       # merge
 
 # select ROI and show the results
 par(mfrow = c(2,2), mar = rep(1, 4))
@@ -294,13 +293,13 @@ inputs
 # read images
 imgs <- map(inputs$image, function(x) {
   system.file('extdata', x, package = 'colocr') %>%
-    load.image()
+    image_load()
 })
 
 # use the app input to the roi_select function
 rep_stats <- imgs %>%
   roi_select(threshold = inputs$threshold,
-             shrin = inputs$shrink,
+             shrink = inputs$shrink,
              grow = inputs$grow,
              fill = inputs$fill,
              clean = inputs$clean,
@@ -313,8 +312,8 @@ rep_stats
 
 ```{r check_equal}
 # check the app and the package output is equal
-all(round(stats$pcc, 2) == round(c(rep_stats[[1]]$pcc, rep_stats[[2]]$pcc), 2))
-all(round(stats$moc, 2) == round(c(rep_stats[[1]]$moc, rep_stats[[2]]$moc), 2))
+all.equal(round(stats$pcc, 2), round(c(rep_stats[[1]]$pcc, rep_stats[[2]]$pcc), 2))
+all.equal(round(stats$moc, 2), round(c(rep_stats[[1]]$moc, rep_stats[[2]]$moc), 2))
 ```
 
 ## Description of the co-localization statistics
@@ -328,7 +327,7 @@ Pearson's correlation coefficient is the co-variance of the pixel intensity from
 The PCC is calculated as follows
 
 $$
-PPC = \frac{\sum_i{(R_i-\bar R)\times(G_i-\bar G)}}{\sqrt{\sum_i{(R_i-\bar R)^2\times\sum_i(G_i-\bar G)^2}}}
+PCC = \frac{\sum_i{(R_i-\bar R)\times(G_i-\bar G)}}{\sqrt{\sum_i{(R_i-\bar R)^2\times\sum_i(G_i-\bar G)^2}}}
 $$
 
 Where $R_i$ and the $G_i$ is the intensities of the red and green channels and the $\bar R$ and $\bar G$ are the average intensities.
@@ -353,9 +352,9 @@ Here, we used two examples from the CBS to test the results of the analysis usin
 ```{r example1_roi, fig.height=4, fig.width=4}
 # load image
 fl1 <- system.file('extdata', 'example1.png', package = 'colocr')
-ex1 <- load.image(fl1)
+ex1 <- image_load(fl1)
 
-# select and show regioins of interest (based on the app)
+# select and show regions of interest (based on the app)
 par(mfrow=c(2,2), mar = rep(1, 4))
 
 ex1 %>%
@@ -365,7 +364,7 @@ ex1 %>%
 
 ```{r example1_test}
 # calculate co-localization statistics
-# (expected ppc = 0.68, moc = 0.83)
+# (expected pcc = 0.68, moc = 0.83)
 ex1 %>%
   roi_select(threshold = 90, shrink = 8, n = 50) %>%
   roi_test(type = 'both') %>%
@@ -375,7 +374,7 @@ ex1 %>%
 ```{r example3_roi, fig.height=4, fig.width=4}
 # load image
 fl3 <- system.file('extdata', 'example3.png', package = 'colocr')
-ex3 <- load.image(fl3)
+ex3 <- image_load(fl3)
 
 # select and show regioins of interest (based on the app)
 par(mfrow=c(2,2), mar = rep(1, 4))
@@ -387,7 +386,7 @@ ex3 %>%
 
 ```{r example3_test}
 # calculate co-localization statistics
-# (expected ppc = 0.61, moc = 0.71)
+# (expected pcc = 0.61, moc = 0.71)
 ex3 %>%
   roi_select(threshold = 90, shrink = 9, grow = 1, fill = 10, clean = 10, n = 20) %>%
   roi_test() %>%

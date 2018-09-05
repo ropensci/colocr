@@ -36,13 +36,9 @@
 #' is used to determine if two pixels belong to the same region.
 #'
 #' @examples
-#' # load required libraries
-#' library(imager)
-#' library(magrittr)
-#'
 #' # load images
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-#' img <- load.image(fl)
+#' img <- image_load(fl)
 #'
 #' # choose ROI
 #' newimg <- roi_select(img, threshold = 90)
@@ -175,13 +171,9 @@ roi_select.list <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
 #' two channels indicated through \code{ind} highlighted.
 #'
 #' @examples
-#' # load required libraries
-#' library(imager)
-#' library(magrittr)
-#'
 #' # load images
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-#' img <- load.image(fl)
+#' img <- image_load(fl)
 #'
 #' # choose and show ROI
 #' par(mfrow=c(2,2))
@@ -238,7 +230,8 @@ roi_show.cimg <- function(img, ind = c(1,2)) {
        main = 'Channel Two')
   highlight(px)
 
-  return(NULL)
+  # return null
+  invisible(NULL)
 }
 
 #' @export
@@ -257,6 +250,9 @@ roi_show.list <- function(img, ind = c(1,2)) {
     roi_show(img[[i]],
              ind = ind[[i]])
   }
+
+  # return null
+  invisible(NULL)
 }
 
 #' Show pixel intensities
@@ -272,13 +268,9 @@ roi_show.list <- function(img, ind = c(1,2)) {
 #' distribution of the intensities from the two channels.
 #'
 #' @examples
-#' # load required libraries
-#' library(imager)
-#' library(magrittr)
-#'
 #' # load images
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-#' img <- load.image(fl)
+#' img <- image_load(fl)
 #'
 #' # choose ROI and show the pixel intensities
 #' roi_select(img, threshold = 90) %>%
@@ -322,6 +314,9 @@ roi_check.cimg <- function(img, ind = c(1,2)) {
        xlab = 'Pixel Value', ylab = 'Density')
   lines(d2$x, d2$y,
         col = alpha('red', .5))
+
+  # return null
+  invisible(NULL)
 }
 
 #' @export
@@ -339,6 +334,9 @@ roi_check.list <- function(img, ind = c(1,2)) {
     roi_check(img[[i]],
               ind = ind[[i]])
   }
+
+  # return null
+  invisible(NULL)
 }
 
 #' Test Co-localization
@@ -357,13 +355,9 @@ roi_check.list <- function(img, ind = c(1,2)) {
 #' a \code{list} of such \code{data.frame}s is returned
 #'
 #' @examples
-#' # load required libraries
-#' library(imager)
-#' library(magrittr)
-#'
 #' # load images
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-#' img <- load.image(fl)
+#' img <- image_load(fl)
 #'
 #' # choose roi and test colocalization
 #' roi_select(img, threshold = 90) %>%

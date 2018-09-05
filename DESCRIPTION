@@ -20,10 +20,10 @@ Suggests: testthat,
   rmarkdown,
   devtools,
   purrr,
-  shinyBS,
-  magrittr
+  shinyBS
 RoxygenNote: 6.0.1
 Imports: imager,
   shiny,
-  scales
+  scales,
+  magrittr
 VignetteBuilder: knitr

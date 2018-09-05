@@ -22,13 +22,9 @@ plot of the pixel intensities from two channels. The second is the density
 distribution of the intensities from the two channels.
 }
 \examples{
-# load required libraries
-library(imager)
-library(magrittr)
-
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-img <- load.image(fl)
+img <- image_load(fl)
 
 # choose ROI and show the pixel intensities
 roi_select(img, threshold = 90) \%>\%

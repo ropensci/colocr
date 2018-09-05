@@ -23,13 +23,9 @@ low resolution representation of the selected regions of interest and the
 two channels indicated through \code{ind} highlighted.
 }
 \examples{
-# load required libraries
-library(imager)
-library(magrittr)
-
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-img <- load.image(fl)
+img <- image_load(fl)
 
 # choose and show ROI
 par(mfrow=c(2,2))

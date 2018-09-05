@@ -28,7 +28,7 @@
     "tolerance": 0.1
   },
   "output": {
-    "cor": "Average PCC: 0.85  and  Average MOC: 0.94",
+    "cor": "Average PCC: 0.85 and Average MOC: 0.94",
     "image_plot": {
       "src": "[image data sha1: 63356020b4f8748ce253d36759a635452ba8f23f]",
       "width": 661,

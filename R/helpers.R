@@ -168,3 +168,54 @@
   den <- sqrt(sum(r**2) * sum(g**2))
   nom/den
 }
+
+#' Load images from files
+#'
+#' A wrap around \code{\link[imager]{load.image}} to load one or more images
+#' from files
+#'
+#' @param image_file A \code{character} vector of one or more paths to image
+#' files
+#'
+#' @return A \code{cimg} object or a \code{list} of \code{cimg} objects when
+#' multiple files are passed to \code{image_file}.
+#'
+#' @examples
+#' # load image
+#' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
+#' img <- image_load(fl)
+#'
+#' @importFrom imager load.image
+#'
+#' @export
+image_load <- function(image_file) {
+
+  # load multiple images
+  if(length(image_file) > 1) {
+    lapply(image_file, function(x) {
+
+      # stop and return error if file doesn't exist
+      if(!file.exists(x)) {
+        stop(
+          paste(x, 'is invalide file path.')
+        )
+      }
+
+      # load image
+      load.image(x)
+    })
+  } else {
+    # stop and return error if file doesn't exist
+    if(!file.exists(image_file)) {
+      stop(
+        paste(image_file, 'is invalide file path.')
+      )
+    }
+    # load images
+    load.image(image_file)
+  }
+}
+
+#' @importFrom magrittr %>%
+#' @export
+magrittr::`%>%`

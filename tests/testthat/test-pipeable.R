@@ -7,12 +7,12 @@ library(purrr)
 
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-img <- load.image(fl)
+img <- image_load(fl)
 
 fls <- c(system.file('extdata', 'Image0001_.jpg', package = 'colocr'),
          system.file('extdata', 'Image0003_.jpg', package = 'colocr'))
 
-imgs <- map(fls, load.image)
+imgs <- image_load(fls)
 
 test_that("roi_select works", {
   newimg <- roi_select(img, threshold = 90)

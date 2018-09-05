@@ -4,126 +4,178 @@ library(imager)
 library(colocr)
 
 # Define UI for application that draws a histogram
-ui <- navbarPage(title = 'colocr',
-                 tabPanel('Main',
-                          sidebarLayout(
-                            sidebarPanel(
-                              tags$h3('Input Panel'),
-                              tags$p('Get started by uploading the merge image. Then adjust the
-                                      parameters to fit the regions of interest. Finally, assign a
-                                      name to probe used in this image to be used in the output'),
-                              tags$hr(),
-                              fileInput('image1', 'Merge Image', multiple = TRUE),
-                              bsTooltip('image1',
-                                        'Upload one or more merge images.',
-                                        'right', options = list(container = "body")),
-                              tags$hr(),
-                              sliderInput('threshold', 'Threshold', 1, 100, 50, 1),
-                              bsTooltip('threshold',
-                                        'Choose a threshold for excluding the background.',
-                                        'right', options = list(container = "body")),
-                              sliderInput('shrink', 'Shrink', 1, 10, 5, 1),
-                              bsTooltip('shrink',
-                                        'Shrink the selected area by eroding the bounderies around it.',
-                                        'right', options = list(container = "body")),
-                              sliderInput('grow', 'Grow', 1, 10, 5, 1),
-                              bsTooltip('grow',
-                                        'Grow the selected area by dilating the bounderies around it.',
-                                        'right', options = list(container = "body")),
-                              sliderInput('fill', 'Fill', 1, 10, 5, 1),
-                              bsTooltip('fill',
-                                        'Remove holes in the selected area.',
-                                        'right', options = list(container = "body")),
-                              sliderInput('clean', 'Clean', 1, 10, 5, 1),
-                              bsTooltip('clean',
-                                        'Remove small isolated parts in the selected area.',
-                                        'right', options = list(container = "body")),
-                              sliderInput('tolerance', 'Tolerance', 0, .99, .1, .1),
-                              bsTooltip('tolerance',
-                                        'Set value to determine which two neighboring pixels are in same selected area.',
-                                        'right', options = list(container = "body")),
-                              numericInput('roi_num', 'ROI Num', 1, 1, 50, 1),
-                              bsTooltip('roi_num',
-                                        'Select the number of regions. Default is one.',
-                                        'right', options = list(container = "body")),
-                              tags$hr(),
-                              textInput('name', 'Probe Name'),
-                              bsTooltip('name',
-                                        'Enter the name of the probe used for staining. A name for all images or one for each separated by a comma.',
-                                        'right', options = list(container = "body"))
-                              ),
-                            mainPanel(
-                              fluidRow(
-                                tags$h2('What are the different tabs for?'),
-                                tags$br(),
-                                tags$p('Each of the below tabs provide a view of your image, data
-                                       and analysis output. The different tabs are connected and are
-                                       updated automatically whenever the input panel is used.'),
-                                tags$li('Select ROI: Choose regions of interst by adjusting the input
-                                        parameters.'),
-                                tags$li('Pixel Intensities: Check the scatter and density distribution
-                                         of the pixel intensities from the two channels.'),
-                                tags$li('Tabular Output: View the different colocalization
-                                        co-efficients in tabular format.'),
-                                tags$li('Graph View: View the co-localization co-efficients in graphical
-                                        format.'),
-                                tags$br(),
-                                tags$br(),
-                                tabsetPanel(
-                                  tabPanel('Select ROI',
-                                           plotOutput("image_plot"),
-                                           textOutput('cor')
-                                  ),
-                                  tabPanel('Pixel Intensities', plotOutput('scatter')),
-                                  tabPanel('Tabular View',
-                                           tags$br(),
-                                           tags$h3('Co-localization stats table.'),
-                                           actionButton('add', 'Add'),
-                                           actionButton('remove', 'Remove'),
-                                           downloadButton('download_stats', 'Download Table'),
-                                           tableOutput('tab'),
-                                           tags$br(),
-                                           tags$h3('Input parameters'),
-                                           actionButton('add2', 'Add'),
-                                           actionButton('remove2', 'Remove'),
-                                           downloadButton('download_inputs', 'Download Table'),
-                                           tableOutput('tab2')
-                                  ),
-                                  tabPanel('Graph View', plotOutput('res_plot'))
-                                )
-                                )
-                                )
-                          )),
-                 tabPanel('GitHub',
-                          "Comments, issues and contributions are welcomed.",
-                          tags$a(href='https://github.com/MahShaaban/colocr_app',
-                                 'https://github.com/MahShaaban/colocr_app')),
-#                 tabPanel('About',
-#                          includeMarkdown('README.md')),
-                 tabPanel('Contact us',
-                          tags$p('Department of Biochemistry and Convergence Medical Sciences
+ui <- navbarPage(
+  # Application page Title
+  title = 'colocr',
+
+  # Navigation Pages
+  #
+  # There are four navigation pages
+  #     1. Main: contains the input panel and the output views
+  #     2. GitHub: the link to the github repository containing the source code
+  #     3. Contact Us: contact information
+
+  ## Main
+  tabPanel('Main',
+           sidebarLayout(
+             sidebarPanel(
+               # Input Panel
+               #
+               # This Part of th UI is dedicated to take the user input.
+               # The panel is devided into four parts:
+               #    1. Description
+               #    2. Merge Image: to uplaod the image/s
+               #    3. Selection parameters: threshold, shrink, grow, fill,
+               #       clean, tolerance and ROI Num.
+               #    4. Probe Name: for the name/s of the probe/s used in image/s
+
+               tags$h3('Input Panel'),
+
+               ## Description
+               tags$p('Get started by uploading the merge image/s. Then, adjust the
+                      parameters to select the regions of interest. Finally, assign a
+                      name to the probe used in this image/s to be used in the output'),
+               tags$hr(),
+
+               ## Merge Image
+               fileInput('image1', 'Merge Image', multiple = TRUE),
+               bsTooltip('image1',
+                         'Upload one or more merge images.',
+                         'right', options = list(container = "body")),
+               tags$hr(),
+
+               ## Selection Parameters
+               sliderInput('threshold', 'Threshold', 1, 99, 50, 1),
+               bsTooltip('threshold',
+                         'Choose a threshold for excluding the background.',
+                         'right', options = list(container = "body")),
+               sliderInput('shrink', 'Shrink', 1, 10, 5, 1),
+               bsTooltip('shrink',
+                         'Shrink the selected area by eroding the bounderies around it.',
+                         'right', options = list(container = "body")),
+               sliderInput('grow', 'Grow', 1, 10, 5, 1),
+               bsTooltip('grow',
+                         'Grow the selected area by dilating the bounderies around it.',
+                         'right', options = list(container = "body")),
+               sliderInput('fill', 'Fill', 1, 10, 5, 1),
+               bsTooltip('fill',
+                         'Remove holes in the selected area.',
+                         'right', options = list(container = "body")),
+               sliderInput('clean', 'Clean', 1, 10, 5, 1),
+               bsTooltip('clean',
+                         'Remove small isolated parts in the selected area.',
+                         'right', options = list(container = "body")),
+               sliderInput('tolerance', 'Tolerance', 0, .99, .1, .1),
+               bsTooltip('tolerance',
+                         'Set value to determine which two neighboring pixels are in same selected area.',
+                         'right', options = list(container = "body")),
+               numericInput('roi_num', 'ROI Num', 1, 1, 50, 1),
+               bsTooltip('roi_num',
+                         'Select the number of regions. Default is one.',
+                         'right', options = list(container = "body")),
+               tags$hr(),
+
+               # Probe Name
+               textInput('name', 'Probe Name'),
+               bsTooltip('name',
+                         'Enter the name of the probe used for staining. A name for all images or one for each separated by a comma.',
+                         'right', options = list(container = "body"))
+             ),
+             mainPanel(
+               # Output Views
+               #
+               # This part of the app contains the different views of the output
+               # It is divided into description and four tabs. The four tabs are:
+               #    1. Select ROI
+               #    2. Pixel Intensities
+               #    3. Tabular View
+               #    4. Graph View
+
+               fluidRow(
+
+                 ## Description
+                 tags$h2('What are the different tabs for?'),
+                 tags$br(),
+                 tags$p('Each of the below tabs provide a view of your image, data
+                        and analysis output. The different tabs are connected and are
+                        updated automatically whenever the input panel is used.'),
+                 tags$li('Select ROI: Choose regions of interst by adjusting the input
+                         parameters.'),
+                 tags$li('Pixel Intensities: Check the scatter and density distribution
+                         of the pixel intensities from the two channels.'),
+                 tags$li('Tabular Output: View the different colocalization
+                         co-efficients in tabular format.'),
+                 tags$li('Graph View: View the co-localization co-efficients in graphical
+                         format.'),
+                 tags$br(),
+                 tags$br(),
+
+                 # Tabs
+                 tabsetPanel(
+
+                   ## Select ROI
+                   tabPanel('Select ROI',
+                            plotOutput("image_plot"),
+                            textOutput('cor')
+                   ),
+
+                   ## Pixel Intensities
+                   tabPanel('Pixel Intensities',
+                            plotOutput('scatter')),
+
+                   ## Tabular View
+                   tabPanel('Tabular View',
+                            tags$br(),
+                            tags$h3('Co-localization stats table.'),
+                            actionButton('add', 'Add'),
+                            actionButton('remove', 'Remove'),
+                            downloadButton('download_stats', 'Download Table'),
+                            tableOutput('tab'),
+                            tags$br(),
+                            tags$h3('Input parameters'),
+                            actionButton('add2', 'Add'),
+                            actionButton('remove2', 'Remove'),
+                            downloadButton('download_inputs', 'Download Table'),
+                            tableOutput('tab2')
+                   ),
+
+                   # Graph View
+                   tabPanel('Graph View',
+                            plotOutput('res_plot'))
+                 )
+               )
+               )
+             )),
+
+  # GitHub
+  tabPanel('GitHub',
+           "Comments, issues and contributions are welcomed.",
+           tags$a(href='https://github.com/MahShaaban/colocr_app',
+                  'https://github.com/MahShaaban/colocr_app')),
+
+  # Contact us
+  tabPanel('Contact us',
+           tags$p('Department of Biochemistry and Convergence Medical Sciences
                                  Institute of Health Sciences,'),
-                          tags$p('Gyeonsange National University School of Medicine'),
-                          tags$p('861 Beongil 15 jinju-daero, jinju, Gyeongnam 660-751,'),
-                          tags$p('Republic of Korea'),
-                          tags$p('Mob:+82-10-4045-1767')))
+           tags$p('Gyeonsange National University School of Medicine'),
+           tags$p('861 Beongil 15 jinju-daero, jinju, Gyeongnam 660-751,'),
+           tags$p('Republic of Korea'),
+           tags$p('Mob:+82-10-4045-1767')
+           ))
 
 
 # Define server
 server <- function(input, output) {
-  # intiate interactive values
-  values <- reactiveValues()
 
   # load images
   img1 <- reactive({
-    if(length(input$image1$datapath) > 1) {
-      lapply(input$image1$datapath, load.image)
-    } else {
-      load.image(input$image1$datapath)
-    }
+    image_load(input$image1$datapath)
   })
 
-  # calculate the pixset
+  # intiate interactive values
+  values <- reactiveValues()
+
+  ## calculate the pixset
   px <- reactive({
     roi_select(img1(),
                threshold = input$threshold,
@@ -134,14 +186,15 @@ server <- function(input, output) {
                n = input$roi_num)
   })
 
-
-  # calculate correlations
+  ## calculate correlations
   corr <- reactive({
     roi_test(px(), type = 'both')
   })
 
-  # choose ROI view
-  ## plot images
+  # Output Views
+  ## Select ROI
+
+  # plots
   output$image_plot <- renderPlot({
     req(input$image1)
 
@@ -151,7 +204,7 @@ server <- function(input, output) {
     roi_show(px())
   })
 
-  ## text output of the calculated correlations
+  # text output
   output$cor <- renderText({
     req(input$image1)
 
@@ -168,13 +221,13 @@ server <- function(input, output) {
             "Average MOC:", moc)
     } else {
       paste("Average PCC:", round(mean(corr()$pcc, na.rm = TRUE), 2),
-            " and ",
+            "and",
             "Average MOC:", round(mean(corr()$moc, na.rm = TRUE), 2))
     }
 
   })
 
-  # quality control view
+  ## Pixel Intensities
   output$scatter <- renderPlot({
     req(input$image1)
     n <- length(input$image1$name) * 2
@@ -182,11 +235,12 @@ server <- function(input, output) {
     roi_check(px())
   })
 
-  # tabular view
-  ## co-localization stats table
+  ## Tabular View
+
+  # co-localization stats table
   values$df = data.frame()
 
-  ## add button
+  # add button
   observeEvent((input$add), {
     img_n <- length(input$image1$name)
     if(img_n > 1) {
@@ -214,19 +268,29 @@ server <- function(input, output) {
     values$df <- rbind(values$df, newLine)
   })
 
-  ## remove button
+  # remove button
   observeEvent((input$remove), {
     n <- nrow(values$df)
     values$df <- values$df[-n, ]
   })
 
-  ## table
+  # download button
+  output$download_stats <- downloadHandler(
+    filename = function() {
+      format(Sys.time(), 'stats_%y.%m.%d_%H.%M.%S.csv')
+    },
+    content = function(con) {
+      write.csv(values$df, con, row.names = FALSE)
+    }
+  )
+
+  # table
   output$tab <- renderTable({values$df})
 
   # input parameters table
   values$df2 = data.frame()
 
-  ## add button
+  # add button
   observeEvent((input$add2), {
     newLine <- data.frame(image = input$image1$name,
                           threshold = input$threshold,
@@ -239,25 +303,13 @@ server <- function(input, output) {
     values$df2 <- rbind(values$df2, newLine)
   })
 
-  ## remove button
+  # remove button
   observeEvent((input$remove2), {
     n <- nrow(values$df2)
     values$df2 <- values$df2[-n, ]
   })
 
-  ## table
-  output$tab2 <- renderTable({values$df2})
-
-  ## download buttons
-  output$download_stats <- downloadHandler(
-    filename = function() {
-      format(Sys.time(), 'stats_%y.%m.%d_%H.%M.%S.csv')
-    },
-    content = function(con) {
-      write.csv(values$df, con, row.names = FALSE)
-    }
-  )
-
+  # download button
   output$download_inputs <- downloadHandler(
     filename = function() {
       format(Sys.time(), 'inputs_%y.%m.%d_%H.%M.%S.csv')
@@ -267,7 +319,10 @@ server <- function(input, output) {
     }
   )
 
-  ## graph view
+  # table
+  output$tab2 <- renderTable({values$df2})
+
+  ## Graph View
   output$res_plot <- renderPlot({
     req(input$image1)
 
@@ -294,4 +349,3 @@ server <- function(input, output) {
 
 # Run the application
 shinyApp(ui = ui, server = server)
-

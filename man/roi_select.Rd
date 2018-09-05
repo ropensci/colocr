@@ -54,13 +54,9 @@ individual regions (connected components) are selected where \code{tolerance}
 is used to determine if two pixels belong to the same region.
 }
 \examples{
-# load required libraries
-library(imager)
-library(magrittr)
-
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-img <- load.image(fl)
+img <- image_load(fl)
 
 # choose ROI
 newimg <- roi_select(img, threshold = 90)
