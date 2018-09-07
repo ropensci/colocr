@@ -237,7 +237,9 @@ be applied to all images or specific values for each image.
 
 ```{r analyze_collection}
 # make a list of images
-image_list <- list(img, img2)
+fls <- c(system.file('extdata', 'Image0001_.jpg', package = 'colocr'),
+         system.file('extdata', 'Image0003_.jpg', package = 'colocr'))
+image_list <- image_load(fls)
 
 # call roi_select on multiple images
 image_list %>%
