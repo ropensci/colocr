@@ -49,8 +49,6 @@ parameters by highlighting the ROIs on the image.
 
 ```{r getting_started, fig.width=7, fig.height=7}
 # load libraries
-library(imager)
-library(purrr)
 library(colocr)
 
 # load images
@@ -96,8 +94,8 @@ library(colocr)
 
 # load images
 img <- image_load(system.file('extdata', 'Image0001_.jpg', package = 'colocr'))       # merge
-img1 <- channel(img, 1)  # red
-img2 <- channel(img, 2)  # green
+img1 <- imager::channel(img, 1)  # red
+img2 <- imager::channel(img, 2)  # green
 
 # show images
 par(mfrow = c(1,3), mar = rep(1,4))
@@ -291,10 +289,10 @@ inputs
 
 ```{r apply_inputs}
 # read images
-imgs <- map(inputs$image, function(x) {
-  system.file('extdata', x, package = 'colocr') %>%
-    image_load()
-})
+fls <- lapply(inputs$image, function(x) {
+  system.file('extdata', x, package = 'colocr')
+  })
+imgs <- image_load(fls)
 
 # use the app input to the roi_select function
 rep_stats <- imgs %>%

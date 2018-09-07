@@ -35,13 +35,11 @@ parameters by highlighting the ROIs on the image.
 
 ```
 # load libraries
-library(imager)
-library(purrr)
 library(colocr)
 
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-img <- load.image(fl)
+img <- image_load(fl)
 
 # select ROI and show the results
 par(mfrow = c(2,2), mar = rep(1, 4))
