@@ -5,20 +5,20 @@
 #' @param img An object of class \code{\link[imager]{cimg}} or a \code{list} of
 #' multiple \code{\link[imager]{cimg}} items
 #' @param threshold A \code{numeric} to be passed to
-#' \code{\link[imager]{threshold}} or a \code{vector} of values fo each
+#' \code{\link[imager]{threshold}} or a \code{vector} of values for each
 #' image in \code{img}
 #' @param shrink A \code{numeric} to be passed to \code{\link[imager]{shrink}}
-#' or a \code{vector} of values fo each image in \code{img}
+#' or a \code{vector} of values for each image in \code{img}
 #' @param grow A \code{numeric} to be passed to \code{\link[imager]{grow}}
-#' or a \code{vector} of values fo each image in \code{img}
+#' or a \code{vector} of values for each image in \code{img}
 #' @param fill A \code{numeric} to be passed to \code{\link[imager]{fill}}
-#' or a \code{vector} of values fo each image in \code{img}
+#' or a \code{vector} of values for each image in \code{img}
 #' @param clean A \code{numeric} to be passed to \code{\link[imager]{clean}}
-#' or a \code{vector} of values fo each image in \code{img}
+#' or a \code{vector} of values for each image in \code{img}
 #' @param tolerance A \code{numeric} to be passed to \code{\link[imager]{label}}
-#' or a \code{vector} of values fo each image in \code{img}
+#' or a \code{vector} of values for each image in \code{img}
 #' @param n A \code{numeric} of the number of regions of interest
-#' or a \code{vector} of values fo each image in \code{img}
+#' or a \code{vector} of values for each image in \code{img}
 #'
 #' @return A \code{\link[imager]{cimg}}. The original input \code{img} with an
 #' additional attribute \code{label}. \code{label} is a \code{vector} of
@@ -158,7 +158,7 @@ roi_select.list <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
 #'
 #' Show/highlight the selected regions of interest on different image channels
 #'
-#' @param img A \code{\link[imager]{cimg}} obeject or a \code{list} of multiple
+#' @param img A \code{\link[imager]{cimg}} object or a \code{list} of multiple
 #' images such as the one returned from \code{\link{roi_select}}
 #' @param ind A \code{numeric} object of length two. For the channel indexes.
 #' or a \code{list} of similar vectors for each of \code{img} items.

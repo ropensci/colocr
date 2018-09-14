@@ -35,7 +35,7 @@ The package development version is available at [github](https://github.com/MahS
 devtools::install_github('MahShaaban/colocr@pipeable')
 ```
 
-This packge depends on `imager` which has some external dependencies. The instructions for
+This package depends on `imager` which has some external dependencies. The instructions for
 installing `imager` can be found [here](https://github.com/dahtah/imager).
 
 ## Getting started

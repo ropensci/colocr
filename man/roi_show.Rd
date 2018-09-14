@@ -7,7 +7,7 @@
 roi_show(img, ind = c(1, 2))
 }
 \arguments{
-\item{img}{A \code{\link[imager]{cimg}} obeject or a \code{list} of multiple
+\item{img}{A \code{\link[imager]{cimg}} object or a \code{list} of multiple
 images such as the one returned from \code{\link{roi_select}}}
 
 \item{ind}{A \code{numeric} object of length two. For the channel indexes.

@@ -12,26 +12,26 @@ roi_select(img, threshold, shrink = 5, grow = 5, fill = 5, clean = 5,
 multiple \code{\link[imager]{cimg}} items}
 
 \item{threshold}{A \code{numeric} to be passed to
-\code{\link[imager]{threshold}} or a \code{vector} of values fo each
+\code{\link[imager]{threshold}} or a \code{vector} of values for each
 image in \code{img}}
 
 \item{shrink}{A \code{numeric} to be passed to \code{\link[imager]{shrink}}
-or a \code{vector} of values fo each image in \code{img}}
+or a \code{vector} of values for each image in \code{img}}
 
 \item{grow}{A \code{numeric} to be passed to \code{\link[imager]{grow}}
-or a \code{vector} of values fo each image in \code{img}}
+or a \code{vector} of values for each image in \code{img}}
 
 \item{fill}{A \code{numeric} to be passed to \code{\link[imager]{fill}}
-or a \code{vector} of values fo each image in \code{img}}
+or a \code{vector} of values for each image in \code{img}}
 
 \item{clean}{A \code{numeric} to be passed to \code{\link[imager]{clean}}
-or a \code{vector} of values fo each image in \code{img}}
+or a \code{vector} of values for each image in \code{img}}
 
 \item{tolerance}{A \code{numeric} to be passed to \code{\link[imager]{label}}
-or a \code{vector} of values fo each image in \code{img}}
+or a \code{vector} of values for each image in \code{img}}
 
 \item{n}{A \code{numeric} of the number of regions of interest
-or a \code{vector} of values fo each image in \code{img}}
+or a \code{vector} of values for each image in \code{img}}
 }
 \value{
 A \code{\link[imager]{cimg}}. The original input \code{img} with an
