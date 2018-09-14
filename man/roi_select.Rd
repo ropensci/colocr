@@ -5,28 +5,40 @@
 \title{Select regions of interest}
 \usage{
 roi_select(img, threshold, shrink = 5, grow = 5, fill = 5, clean = 5,
-  tolerance = 0.1, n)
+  tolerance = 0.1, n = 1)
 }
 \arguments{
-\item{img}{An object of class \code{\link[imager]{cimg}}}
+\item{img}{An object of class \code{\link[imager]{cimg}} or a \code{list} of
+multiple \code{\link[imager]{cimg}} items}
 
 \item{threshold}{A \code{numeric} to be passed to
-\code{\link[imager]{threshold}}}
+\code{\link[imager]{threshold}} or a \code{vector} of values fo each
+image in \code{img}}
 
-\item{shrink}{A \code{numeric} to be passed to \code{\link[imager]{shrink}}}
+\item{shrink}{A \code{numeric} to be passed to \code{\link[imager]{shrink}}
+or a \code{vector} of values fo each image in \code{img}}
 
-\item{grow}{A \code{numeric} to be passed to \code{\link[imager]{grow}}}
+\item{grow}{A \code{numeric} to be passed to \code{\link[imager]{grow}}
+or a \code{vector} of values fo each image in \code{img}}
 
-\item{fill}{A \code{numeric} to be passed to \code{\link[imager]{fill}}}
+\item{fill}{A \code{numeric} to be passed to \code{\link[imager]{fill}}
+or a \code{vector} of values fo each image in \code{img}}
 
-\item{clean}{A \code{numeric} to be passed to \code{\link[imager]{clean}}}
+\item{clean}{A \code{numeric} to be passed to \code{\link[imager]{clean}}
+or a \code{vector} of values fo each image in \code{img}}
 
-\item{tolerance}{A \code{numeric} to be passed to \code{\link[imager]{label}}}
+\item{tolerance}{A \code{numeric} to be passed to \code{\link[imager]{label}}
+or a \code{vector} of values fo each image in \code{img}}
 
-\item{n}{A \code{numeric} of the number of regions of interest}
+\item{n}{A \code{numeric} of the number of regions of interest
+or a \code{vector} of values fo each image in \code{img}}
 }
 \value{
-A \code{\link[imager]{pixset}} or a labeled image \code{\link[imager]{cimg}}
+A \code{\link[imager]{cimg}}. The original input \code{img} with an
+additional attribute \code{label}. \code{label} is a \code{vector} of
+\code{integer}s. The labels for the selected regions of interests starts
+from 1 and 0 is ignored. When \code{img} is a list, a \code{list} is
+returned.
 }
 \description{
 Select regions of interest in an image using different morphological operations
@@ -36,25 +48,20 @@ The function applies several \code{\link{imager}} morphological
 manipulations to select the regions of interest. These include
 \code{\link[imager]{threshold}} which sets all values below certain cut to
 0; \code{\link[imager]{shrink}}/\code{\link[imager]{grow}} for pixel set
-dilation and erosion; \code{\link[imager]{fill}}\\code{\link[imager]{clean}}
+dilation and erosion; \code{\link[imager]{fill}}/\code{\link[imager]{clean}}
 for removing isolated regions and holes. When \code{n} is provided, the
 individual regions (connected components) are selected where \code{tolerance}
 is used to determine if two pixels belong to the same region.
 }
 \examples{
-# load libraries
-library(imager)
-library(colocr)
-
 # load images
 fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-img <- load.image(fl)
+img <- image_load(fl)
 
-# choose parameters
-px <- roi_select(img, threshold = 90)
+# choose ROI
+newimg <- roi_select(img, threshold = 90)
 
-# highlight chosen region of interest
-plot(img)
-highlight(px)
+# check the ROI labels
+unique(attr(newimg, 'label'))
 
 }

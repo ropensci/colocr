@@ -1,0 +1,68 @@
+{
+  "input": {
+    "add": 1,
+    "add2": 1,
+    "clean": 5,
+    "fill": 5,
+    "grow": 5,
+    "image1": {
+      "name": [
+        "Image0003_.jpg",
+        "Image0001_.jpg"
+      ],
+      "size": [
+        317994,
+        302634
+      ],
+      "type": [
+        "image/jpeg",
+        "image/jpeg"
+      ],
+      "datapath": [
+        "0.jpg",
+        "1.jpg"
+      ]
+    },
+    "name": "LC3",
+    "remove": 0,
+    "remove2": 0,
+    "roi_num": 3,
+    "shrink": 5,
+    "threshold": 90,
+    "tolerance": 0.1
+  },
+  "output": {
+    "cor": "Image0003_.jpg : Average PCC: 0.83 and Average MOC: 0.94 Image0001_.jpg : Average PCC: 0.88 and Average MOC: 0.98",
+    "image_plot": {
+      "src": "[image data sha1: b23643f8fa2837ded162bf1fcf4e27196855705b]",
+      "width": 661,
+      "height": 400,
+      "coordmap": [
+        {
+          "domain": {
+            "left": -751.365048399842,
+            "right": 1552.36504839984,
+            "bottom": 600,
+            "top": 1
+          },
+          "range": {
+            "left": 19.008,
+            "right": 641.992,
+            "bottom": 360.984,
+            "top": 37.0160000000001
+          },
+          "log": {
+            "x": null,
+            "y": null
+          },
+          "mapping": {
+
+          }
+        }
+      ]
+    }
+  },
+  "export": {
+
+  }
+}

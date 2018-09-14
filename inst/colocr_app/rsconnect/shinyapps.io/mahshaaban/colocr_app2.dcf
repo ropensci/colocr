@@ -1,0 +1,13 @@
+name: colocr_app2
+title: colocr_app2
+username:
+account: mahshaaban
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 391651
+bundleId: 1525811
+url: https://mahshaaban.shinyapps.io/colocr_app2/
+when: 1533789637.12797
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .git|.Rprofile|.travis.yml|run_tests.R|workflow.dot|tests/mytest.R|tests/mytest-expected/001.json|tests/mytest-expected/001.png

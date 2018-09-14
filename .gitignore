@@ -7,3 +7,5 @@ packrat/lib*/
 inst/.DS_Store
 .Rprofile
 .gitignore
+inst/doc
+inst/colocr_app/.git

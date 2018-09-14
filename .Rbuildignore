@@ -9,3 +9,4 @@
 ^inst/colocr_app/\.git$
 ^inst/colocr_app/packrat/.*$
 ^inst/colocr_app/packrat/*/.*$
+^CONTRIBUTING\.md$
