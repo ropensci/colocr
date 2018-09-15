@@ -2,7 +2,7 @@
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/MahShaaban/colocr?branch=pipeable&svg=true)](https://ci.appveyor.com/project/MahShaaban/colocr)
 [![Coverage Status](https://img.shields.io/codecov/c/github/MahShaaban/colocr/pipeable.svg)](https://codecov.io/github/MahShaaban/colocr?branch=pipeable)
 [![Build Status](https://travis-ci.org/MahShaaban/colocr_app.svg?branch=pipeable)](https://travis-ci.org/MahShaaban/colocr_app)
-[![status](https://img.shields.io/badge/shinyapps.io-running-green.svg)](https://mahshaaban.shinyapps.io/colocr_app/) 
+[![status](https://img.shields.io/badge/shinyapps.io-running-green.svg)](https://mahshaaban.shinyapps.io/colocr_app2/) 
 [![](https://badges.ropensci.org/243_status.svg)](https://github.com/ropensci/onboarding/issues/243)
 
 # colocr
@@ -19,8 +19,8 @@ A few R packages are available for conducting image analysis, which is a very wi
 The package development version is available at [github](https://github.com/MahShaaban/colocr).
 
 ```
-# install from github (pipeable branch)
-devtools::install_github('MahShaaban/colocr@pipeable')
+# install from github
+devtools::install_github('MahShaaban/colocr')
 ```
 
 
