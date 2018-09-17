@@ -17,6 +17,7 @@ cache:
 
 build_script:
   - travis-tool.sh install_deps
+  - Rscript -e "shinytest::installDependencies()"
 
 test_script:
   - travis-tool.sh run_tests
