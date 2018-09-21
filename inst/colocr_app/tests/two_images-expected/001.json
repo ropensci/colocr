@@ -32,9 +32,9 @@
     "tolerance": 0.1
   },
   "output": {
-    "cor": "Image0003_.jpg : Average PCC: 0.83 and Average MOC: 0.94 Image0001_.jpg : Average PCC: 0.88 and Average MOC: 0.98",
+    "cor": "Image0003_.jpg : Average PCC: 0.72 and Average MOC: 0.91 Image0001_.jpg : Average PCC: 0.82 and Average MOC: 0.97",
     "image_plot": {
-      "src": "[image data sha1: b23643f8fa2837ded162bf1fcf4e27196855705b]",
+      "src": "[image data sha1: 3d6dfc0fb3f490414959b2d9690d982c463f94db]",
       "width": 661,
       "height": 400,
       "coordmap": [
