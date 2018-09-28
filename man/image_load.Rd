@@ -15,8 +15,8 @@ A \code{cimg} object or a \code{list} of \code{cimg} objects when
 multiple files are passed to \code{image_file}.
 }
 \description{
-A wrap around \code{\link[imager]{load.image}} to load one or more images
-from files
+A wrap around \code{\link[magick]{image_read}} and
+\code{\link[imager]{magick2cimg}} to load one or more images from files.
 }
 \examples{
 # load image

@@ -4,8 +4,8 @@
 \alias{roi_select}
 \title{Select regions of interest}
 \usage{
-roi_select(img, threshold, shrink = 5, grow = 5, fill = 5, clean = 5,
-  tolerance = 0.1, n = 1)
+roi_select(img, threshold, shrink = 5, grow = 5, fill = 5,
+  clean = 5, tolerance = 0.1, n = 1)
 }
 \arguments{
 \item{img}{An object of class \code{\link[imager]{cimg}} or a \code{list} of
