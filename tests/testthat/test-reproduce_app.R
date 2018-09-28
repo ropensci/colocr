@@ -3,6 +3,7 @@ context('reproduce_app')
 # load required libraries
 library(colocr)
 library(imager)
+library(magick)
 
 test_that('the app results are reproduced faithfuly', {
   # read input and output from the app
@@ -29,10 +30,10 @@ test_that('the app results are reproduced faithfuly', {
     roi_test(type = 'both')
 
   expect_true(
-    all.equal(round(stats$pcc, 2), round(c(rep_stats[[1]]$pcc, rep_stats[[2]]$pcc), 2))
+    all.equal(round(stats$pcc, 3), round(c(rep_stats[[1]]$pcc, rep_stats[[2]]$pcc), 3))
   )
   expect_true(
-    all.equal(round(stats$moc, 2), round(c(rep_stats[[1]]$moc, rep_stats[[2]]$moc), 2))
+    all.equal(round(stats$moc, 3), round(c(rep_stats[[1]]$moc, rep_stats[[2]]$moc), 3))
   )
 })
 
@@ -47,7 +48,8 @@ test_that('the app results are reproduced using imager only', {
   num <- list()
   for(i in 1:2) {
     fl <- system.file('extdata', lst$image[i], package = 'colocr')
-    img <- load.image(fl)
+    img <- image_read(fl)
+    img <- magick2cimg(img)
 
     # transform to gray scale
     img.g <- grayscale(img)
@@ -121,7 +123,7 @@ test_that('the app results are reproduced using imager only', {
     corr[[i]] <- res
   }
 
-  expect_true(all.equal(round(stats$pcc, 5), round(unlist(corr), 5)))
+  expect_true(all.equal(round(stats$pcc, 3), round(unlist(corr), 3)))
 
   # test moc
   corr <- list()
@@ -140,5 +142,5 @@ test_that('the app results are reproduced using imager only', {
     corr[[i]] <- res
   }
 
-  expect_true(all.equal(round(stats$moc, 5), round(unlist(corr), 5)))
+  expect_true(all.equal(round(stats$moc, 3), round(unlist(corr), 3)))
 })

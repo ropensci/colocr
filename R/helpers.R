@@ -10,13 +10,9 @@
 #' the labels of the individual regions of interest.
 #'
 #' @examples
-#' # load required libraries
-#' library(imager)
-#' library(magrittr)
-#'
-#' # load images
+#' # load image
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
-#' img <- load.image(fl)
+#' img <- image_load(fl)
 #'
 #' # choose parameters
 #' int <- roi_select(img, threshold = 90) %>%
@@ -171,8 +167,8 @@
 
 #' Load images from files
 #'
-#' A wrap around \code{\link[imager]{load.image}} to load one or more images
-#' from files
+#' A wrap around \code{\link[magick]{image_read}} and
+#' \code{\link[imager]{magick2cimg}} to load one or more images from files.
 #'
 #' @param image_file A \code{character} vector of one or more paths to image
 #' files
@@ -185,7 +181,8 @@
 #' fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 #' img <- image_load(fl)
 #'
-#' @importFrom imager load.image
+#' @importFrom magick image_read
+#' @importFrom imager magick2cimg
 #'
 #' @export
 image_load <- function(image_file) {
@@ -202,7 +199,8 @@ image_load <- function(image_file) {
       }
 
       # load image
-      load.image(x)
+      img <- image_read(x)
+      magick2cimg(img)
     })
   } else {
     # stop and return error if file doesn't exist
@@ -212,7 +210,8 @@ image_load <- function(image_file) {
       )
     }
     # load images
-    load.image(image_file)
+    img <- image_read(image_file)
+    magick2cimg(img)
   }
 }
 
