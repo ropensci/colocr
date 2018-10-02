@@ -1,6 +1,6 @@
-[![Travis-CI Build Status](https://travis-ci.org/MahShaaban/colocr.svg?branch=pipeable)](https://travis-ci.org/MahShaaban/colocr)
-[![Build status](https://ci.appveyor.com/api/projects/status/m23tb10jxnq8b6xn?svg=true)](https://ci.appveyor.com/project/MahShaaban/colocr)
-[![Coverage Status](https://img.shields.io/codecov/c/github/MahShaaban/colocr/pipeable.svg)](https://codecov.io/github/MahShaaban/colocr?branch=pipeable)
+[![Build Status](https://travis-ci.org/ropensci/colocr.svg?branch=master)](https://travis-ci.org/ropensci/colocr)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/ropensci/colocr?branch=master&svg=true)](https://ci.appveyor.com/project/MahShaaban/colocr)
+[![codecov](https://codecov.io/gh/ropensci/colocr/branch/master/graph/badge.svg)](https://codecov.io/gh/ropensci/colocr)
 [![Build Status](https://travis-ci.org/MahShaaban/colocr_app.svg?branch=master)](https://travis-ci.org/MahShaaban/colocr_app)
 [![status](https://img.shields.io/badge/shinyapps.io-running-green.svg)](https://mahshaaban.shinyapps.io/colocr_app2/) 
 [![](https://badges.ropensci.org/243_status.svg)](https://github.com/ropensci/onboarding/issues/243)
@@ -81,3 +81,5 @@ The same analysis and more can be conducted using a web interface for the packag
 ```r
 browseVignettes('colocr')
 ```
+
+[![ropensci_footer](https://ropensci.org/public_images/ropensci_footer.png)](https://ropensci.org)
