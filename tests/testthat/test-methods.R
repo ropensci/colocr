@@ -1,4 +1,4 @@
-context("pipeable")
+context("methods")
 
 # load required libraries
 library(imager)

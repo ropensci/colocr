@@ -1,4 +1,4 @@
-context('reproduce_app')
+context('reproduce app')
 
 # load required libraries
 library(colocr)

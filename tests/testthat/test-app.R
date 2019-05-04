@@ -1,4 +1,4 @@
-context('test app')
+context('app')
 
 test_that("app works", {
   library(shinytest)

@@ -30,32 +30,38 @@
   "output": {
     "cor": "Average PCC: 0.85 and Average MOC: 0.94",
     "image_plot": {
-      "src": "[image data sha1: 63356020b4f8748ce253d36759a635452ba8f23f]",
+      "src": "[image data sha1: 2c683098b8a040d9cf3975e22bba94772aa96fbc]",
       "width": 661,
       "height": 400,
-      "coordmap": [
-        {
-          "domain": {
-            "left": -310.308638469926,
-            "right": 983.308638469926,
-            "bottom": 744,
-            "top": 1
-          },
-          "range": {
-            "left": 23.904,
-            "right": 637.096,
-            "bottom": 375.096,
-            "top": 22.904
-          },
-          "log": {
-            "x": null,
-            "y": null
-          },
-          "mapping": {
+      "coordmap": {
+        "panels": [
+          {
+            "domain": {
+              "left": -310.308638469926,
+              "right": 983.308638469926,
+              "bottom": 744,
+              "top": 1
+            },
+            "range": {
+              "left": 342.452,
+              "right": 649.048,
+              "bottom": 387.048,
+              "top": 210.952
+            },
+            "log": {
+              "x": null,
+              "y": null
+            },
+            "mapping": {
 
+            }
           }
+        ],
+        "dims": {
+          "width": 661,
+          "height": 400
         }
-      ]
+      }
     }
   },
   "export": {

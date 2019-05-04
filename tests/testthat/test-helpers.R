@@ -1,4 +1,4 @@
-context("helpers.R")
+context("helpers")
 
 library(imager)
 

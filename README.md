@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/ropensci/colocr.svg?branch=master)](https://travis-ci.org/ropensci/colocr)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/ropensci/colocr?branch=master&svg=true)](https://ci.appveyor.com/project/MahShaaban/colocr)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/ropensci/colocr?branch=master&svg=true)](https://ci.appveyor.com/project/ropensci/colocr)
 [![codecov](https://codecov.io/gh/ropensci/colocr/branch/master/graph/badge.svg)](https://codecov.io/gh/ropensci/colocr)
 [![Build Status](https://travis-ci.org/MahShaaban/colocr_app.svg?branch=master)](https://travis-ci.org/MahShaaban/colocr_app)
 [![status](https://img.shields.io/badge/shinyapps.io-running-green.svg)](https://mahshaaban.shinyapps.io/colocr_app2/) 
@@ -16,11 +16,11 @@ A few R packages are available for conducting image analysis, which is a very wi
 
 ## Installing `colocr`
 
-The package development version is available at [github](https://github.com/MahShaaban/colocr).
+The package development version is available at [github](https://github.com/ropensci/colocr).
 
 ```
 # install from github
-devtools::install_github('MahShaaban/colocr')
+devtools::install_github('ropensci/colocr')
 ```
 
 
