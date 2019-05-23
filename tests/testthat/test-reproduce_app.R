@@ -7,8 +7,8 @@ library(magick)
 
 test_that('the app results are reproduced faithfuly', {
   # read input and output from the app
-  stats <- read.csv(system.file('colocr_app', 'stats_18.09.02_05.15.01.csv', package = 'colocr'))
-  inputs <- read.csv(system.file('colocr_app', 'inputs_18.09.02_05.15.08.csv', package = 'colocr'),
+  stats <- read.csv(system.file('colocr_app', 'stats_19.05.23_05.55.21.csv', package = 'colocr'))
+  inputs <- read.csv(system.file('colocr_app', 'inputs_19.05.23_05.55.22.csv', package = 'colocr'),
                      stringsAsFactors = FALSE)
 
   # read images
@@ -39,8 +39,8 @@ test_that('the app results are reproduced faithfuly', {
 
 test_that('the app results are reproduced using imager only', {
   # read input and output from the app
-  stats <- read.csv(system.file('colocr_app', 'stats_18.09.02_05.15.01.csv', package = 'colocr'))
-  inputs <- read.csv(system.file('colocr_app', 'inputs_18.09.02_05.15.08.csv', package = 'colocr'),
+  stats <- read.csv(system.file('colocr_app', 'stats_19.05.23_05.55.21.csv', package = 'colocr'))
+  inputs <- read.csv(system.file('colocr_app', 'inputs_19.05.23_05.55.22.csv', package = 'colocr'),
                      stringsAsFactors = FALSE)
 
   # read images

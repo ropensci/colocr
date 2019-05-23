@@ -11,7 +11,7 @@
         "Image0001_.jpg"
       ],
       "size": [
-        317994,
+        376503,
         302634
       ],
       "type": [
@@ -32,9 +32,9 @@
     "tolerance": 0.1
   },
   "output": {
-    "cor": "Image0003_.jpg : Average PCC: 0.83 and Average MOC: 0.94 Image0001_.jpg : Average PCC: 0.88 and Average MOC: 0.98",
+    "cor": "Image0003_.jpg : Average PCC: 0.83 and Average MOC: 0.95 Image0001_.jpg : Average PCC: 0.88 and Average MOC: 0.98",
     "image_plot": {
-      "src": "[image data sha1: 9bba66e907acde63b60b8bca438bfbfb48bd6d41]",
+      "src": "[image data sha1: 6f3e1b890b082f17ad78434b8a578a4040ae365e]",
       "width": 661,
       "height": 400,
       "coordmap": {

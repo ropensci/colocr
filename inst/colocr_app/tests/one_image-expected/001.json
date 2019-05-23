@@ -10,7 +10,7 @@
         "Image0003_.jpg"
       ],
       "size": [
-        317994
+        376503
       ],
       "type": [
         "image/jpeg"
@@ -28,9 +28,9 @@
     "tolerance": 0.1
   },
   "output": {
-    "cor": "Average PCC: 0.85 and Average MOC: 0.94",
+    "cor": "Average PCC: 0.86 and Average MOC: 0.94",
     "image_plot": {
-      "src": "[image data sha1: 2c683098b8a040d9cf3975e22bba94772aa96fbc]",
+      "src": "[image data sha1: 8fc5716bfc2b481e36c36e1b4e2ecc4ddbc0f3ff]",
       "width": 661,
       "height": 400,
       "coordmap": {
