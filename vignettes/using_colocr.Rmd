@@ -269,7 +269,7 @@ from the shiny app. These can be used to report an analysis directly, or to
 reproduce the results using R code.
 
 This section describes how to use the exported input and output tables from the app
-and using them to reproduce the same results. First, we start by loading `stats_18.09.02_05.15.01.csv` which is the output of an analysis of two images 
+and using them to reproduce the same results. First, we start by loading `inputs_19.05.23_05.55.22.csv` which is the output of an analysis of two images 
 performed by in the shiny app. Second, we load the `inputs_18.09.02_05.15.08.csv`
 which contains the input parameters used in that analysis. Then, we call `roi_select`
 and `roi_test` using these inputs. Finally, we compare the outputs form the app
@@ -277,14 +277,14 @@ and the script.
 
 ```{r read_output}
 # show the output
-stats <- read.csv(system.file('colocr_app', 'stats_18.09.02_05.15.01.csv', package = 'colocr'))
+stats <- read.csv(system.file('colocr_app', 'stats_19.05.23_05.55.21.csv', package = 'colocr'))
 
 stats
 ```
 
 ```{r read_inputs}
 # show the inputs
-inputs <- read.csv(system.file('colocr_app', 'inputs_18.09.02_05.15.08.csv', package = 'colocr'), stringsAsFactors = FALSE)
+inputs <- read.csv(system.file('colocr_app', 'inputs_19.05.23_05.55.22.csv', package = 'colocr'), stringsAsFactors = FALSE)
 
 inputs
 ```
