@@ -1,8 +1,8 @@
 Package: colocr
 Type: Package
-Title: Conduct Co-localization Analysis of Fluorescence Microscopy Images
+Title: Conduct Co-Localization Analysis of Fluorescence Microscopy Images
 Version: 0.1.0
-License: GPL-3 + file LICENSE
+License: GPL-3
 Authors@R: person("Mahmoud", "Ahmed",
     email = "mahmoud.s.fahmy@students.kasralainy.edu.eg",
     role = c("aut", "cre"),
@@ -11,7 +11,9 @@ URL: https://github.com/ropensci/colocr
 BugReports: https://github.com/ropensci/colocr/issues
 Description: Automate the co-localization analysis of fluorescence microscopy 
   images. Selecting regions of interest, extract pixel intensities from 
-  the image channels and calculate different co-localization statistics.
+  the image channels and calculate different co-localization statistics. The
+  methods implemented in this package is based on Dunn (2011) 
+  <doi:10.1152/ajpcell.00462.2010>
 Encoding: UTF-8
 LazyData: true
 Suggests: testthat,
