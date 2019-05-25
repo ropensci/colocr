@@ -12,7 +12,7 @@ BugReports: https://github.com/ropensci/colocr/issues
 Description: Automate the co-localization analysis of fluorescence microscopy 
   images. Selecting regions of interest, extract pixel intensities from 
   the image channels and calculate different co-localization statistics. The
-  methods implemented in this package is based on Dunn et al. (2011) 
+  methods implemented in this package are based on Dunn et al. (2011) 
   <doi:10.1152/ajpcell.00462.2010>.
 Encoding: UTF-8
 LazyData: true
