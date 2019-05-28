@@ -27,7 +27,9 @@ fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- image_load(fl)
 
 # choose ROI and show the pixel intensities
+oldpar <- par(mfrow = c(1, 2))
 roi_select(img, threshold = 90) \%>\%
   roi_check()
+par(oldpar)
 
 }

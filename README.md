@@ -15,14 +15,23 @@ A few R packages are available for conducting image analysis, which is a very wi
 
 
 ## Installing `colocr`
+`colocr` is available on [CRAN](https://cran.r-project.org) 
+and can be installed using
+
+```r
+# install from cran
+install.packages('colocr')
+```
 
 The package development version is available at [github](https://github.com/ropensci/colocr).
 
-```
+```r
 # install from github
 devtools::install_github('ropensci/colocr')
 ```
 
+This package depends on `imager` which has some external dependencies. The instructions for installing `imager` can be found
+[here](https://github.com/dahtah/imager).
 
 ## Getting started
 
@@ -33,7 +42,7 @@ Then, apply the appropriate parameters for choosing the regions of interest
 using the `roi_select`. Finally, check the appropriateness of the 
 parameters by highlighting the ROIs on the image.
 
-```
+```r
 # load libraries
 library(colocr)
 
@@ -52,7 +61,7 @@ img %>%
 The same can be achieved interactively using an accompanying **shiny** app.
 To launch the app run.
 
-```{r run_app, eval=FALSE}
+```r
 run_app()
 ```
 
@@ -61,7 +70,7 @@ implements two simple co-localization statistics; Pearson's Coefficient Correlat
 
 To apply both measures of correlation, we first get the pixel intensities and call `roi_test` on the merge image.
 
-```
+```r
 # calculate co-localization statistics
 img %>%
   roi_select(threshold = 90) %>%
