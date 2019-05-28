@@ -176,9 +176,12 @@ roi_select.list <- function(img, threshold, shrink = 5, grow = 5, fill = 5,
 #' img <- image_load(fl)
 #'
 #' # choose and show ROI
-#' oldpar <- par(mfrow=c(2,2))
+#' oldpar <- par()
+#' par(mfrow=c(2,2))
+#'
 #' roi_select(img, threshold = 90) %>%
 #'   roi_show()
+#'
 #' par(oldpar)
 #'
 #' @importFrom imager highlight channel cimg
@@ -274,9 +277,12 @@ roi_show.list <- function(img, ind = c(1,2)) {
 #' img <- image_load(fl)
 #'
 #' # choose ROI and show the pixel intensities
-#' oldpar <- par(mfrow = c(1, 2))
+#' oldpar <- par()
+#' par(mfrow = c(1, 2))
+#'
 #' roi_select(img, threshold = 90) %>%
 #'   roi_check()
+#'
 #' par(oldpar)
 #'
 #' @importFrom stats density

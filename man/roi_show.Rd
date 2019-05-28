@@ -28,9 +28,12 @@ fl <- system.file('extdata', 'Image0001_.jpg', package = 'colocr')
 img <- image_load(fl)
 
 # choose and show ROI
-oldpar <- par(mfrow=c(2,2))
+oldpar <- par()
+par(mfrow=c(2,2))
+
 roi_select(img, threshold = 90) \%>\%
   roi_show()
+
 par(oldpar)
 
 }
