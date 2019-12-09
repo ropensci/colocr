@@ -7,7 +7,7 @@ Authors@R: person("Mahmoud", "Ahmed",
     email = "mahmoud.s.fahmy@students.kasralainy.edu.eg",
     role = c("aut", "cre"),
     comment = c(ORCID = "0000-0002-4377-6541"))
-URL: https://github.com/ropensci/colocr
+URL: https://docs.ropensci.org/colocr, https://github.com/ropensci/colocr
 BugReports: https://github.com/ropensci/colocr/issues
 Description: Automate the co-localization analysis of fluorescence microscopy 
   images. Selecting regions of interest, extract pixel intensities from 
