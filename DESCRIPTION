@@ -1,7 +1,7 @@
 Package: colocr
 Type: Package
 Title: Conduct Co-Localization Analysis of Fluorescence Microscopy Images
-Version: 0.1.0
+Version: 0.1.1
 License: GPL-3
 Authors@R: person("Mahmoud", "Ahmed",
     email = "mahmoud.s.fahmy@students.kasralainy.edu.eg",

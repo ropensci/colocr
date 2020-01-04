@@ -85,10 +85,10 @@ The same analysis and more can be conducted using a web interface for the packag
 * The test examples from [Colocalization Benchmark Source (CBS)](https://www.colocalization-benchmark.com/index.html)  
 * The implementation of the co-localization statistics from [Dunn et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3074624/)  
 
-## More
+## Citation
 
 ```r
-browseVignettes('colocr')
+citation('colocr')
 ```
 
 [![ropensci_footer](https://ropensci.org/public_images/ropensci_footer.png)](https://ropensci.org)

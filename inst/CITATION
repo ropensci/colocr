@@ -1,0 +1,13 @@
+citEntry(entry="article",
+         title = "colocr: an R package for conducting co-localization analysis on fluorescence microscopy images",
+         author = personList(as.person("Mahmoud Ahmed"),
+                             as.person("Trang Huyen Lai"),
+                             as.person("Deok Ryong Kim")),
+         year = 2019,
+         journal = "PeerJ",
+         doi = "10.7717/peerj.7255",
+         volume = 7,
+         pages = 'e7255',
+         textVersion = paste("Ahmed M, Lai TH, Kim DR. 2019.",
+                             "colocr: an R package for conducting co-localization analysis on fluorescence microscopy images.",
+                             "PeerJ 7:e7255 https://doi.org/10.7717/peerj.7255"))
